@@ -8,13 +8,18 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.FrameLayout;
+import android.view.LayoutInflater;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 
 import com.brentvatne.react.R;
 import com.brentvatne.receiver.AudioBecomingNoisyReceiver;
 import com.brentvatne.receiver.BecomingNoisyListener;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.github.rubensousa.previewseekbar.PreviewSeekBarLayout;
+import com.github.rubensousa.previewseekbar.base.PreviewLoader;
+import com.github.rubensousa.previewseekbar.base.PreviewView;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -53,7 +58,7 @@ import java.net.CookieManager;
 import java.net.CookiePolicy;
 
 @SuppressLint("ViewConstructor")
-class ReactExoplayerView extends FrameLayout implements
+class ReactExoplayerView extends RelativeLayout implements
         LifecycleEventListener,
         ExoPlayer.EventListener,
         BecomingNoisyListener,
@@ -78,6 +83,7 @@ class ReactExoplayerView extends FrameLayout implements
     private final AudioBecomingNoisyReceiver audioBecomingNoisyReceiver;
     private Handler mainHandler;
     private ExoPlayerView exoPlayerView;
+    private PreviewSeekBarLayout previewSeekBarLayout;
     private DataSource.Factory mediaDataSourceFactory;
     private SimpleExoPlayer player;
     private MappingTrackSelector trackSelector;
@@ -109,6 +115,10 @@ class ReactExoplayerView extends FrameLayout implements
                         progressHandler.removeMessages(SHOW_PROGRESS);
                         msg = obtainMessage(SHOW_PROGRESS);
                         sendMessageDelayed(msg, Math.round(mProgressUpdateInterval));
+
+                        ProgressBar progressBar = (ProgressBar) previewSeekBarLayout.getPreviewView();
+                        progressBar.setProgress((int) player.getCurrentPosition());
+                        progressBar.setMax((int) player.getDuration());
                     }
                     break;
             }
@@ -156,6 +166,8 @@ class ReactExoplayerView extends FrameLayout implements
             CookieHandler.setDefault(DEFAULT_COOKIE_MANAGER);
         }
 
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+
         LayoutParams layoutParams = new LayoutParams(
                 LayoutParams.MATCH_PARENT,
                 LayoutParams.MATCH_PARENT);
@@ -163,6 +175,19 @@ class ReactExoplayerView extends FrameLayout implements
         exoPlayerView.setLayoutParams(layoutParams);
 
         addView(exoPlayerView, 0, layoutParams);
+
+        previewSeekBarLayout = (PreviewSeekBarLayout) inflater.inflate(R.layout.exoplayer_controls, null);
+        LayoutParams paramsProgressbar = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+        paramsProgressbar.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        previewSeekBarLayout.setLayoutParams(paramsProgressbar);
+        addView(previewSeekBarLayout);
+
+        previewSeekBarLayout.setPreviewLoader(new PreviewLoader() {
+            @Override
+            public void loadPreview(long currentPosition, long max) {
+
+            }
+        });
     }
 
     @Override
@@ -420,6 +445,7 @@ class ReactExoplayerView extends FrameLayout implements
                 eventEmitter.ready();
                 onBuffering(false);
                 startProgressHandler();
+                setupProgressBarSeekListener();
                 videoLoaded();
                 break;
             case ExoPlayer.STATE_ENDED:
@@ -436,6 +462,30 @@ class ReactExoplayerView extends FrameLayout implements
 
     private void startProgressHandler() {
         progressHandler.sendEmptyMessage(SHOW_PROGRESS);
+    }
+
+    private void setupProgressBarSeekListener() {
+        if (previewSeekBarLayout != null &&
+                previewSeekBarLayout.getPreviewView() instanceof ProgressBar) {
+            previewSeekBarLayout.getPreviewView().addOnPreviewChangeListener(new PreviewView.OnPreviewChangeListener() {
+                @Override
+                public void onStartPreview(PreviewView previewView) {
+
+                }
+
+                @Override
+                public void onStopPreview(PreviewView previewView) {
+
+                }
+
+                @Override
+                public void onPreview(PreviewView previewView, int progress, boolean fromUser) {
+                    if (fromUser && player != null) {
+                        player.seekTo(progress);
+                    }
+                }
+            });
+        }
     }
 
     private void videoLoaded() {
