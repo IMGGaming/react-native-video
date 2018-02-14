@@ -51,7 +51,6 @@ import com.google.android.exoplayer2.util.Util;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
-import java.lang.Math;
 
 @SuppressLint("ViewConstructor")
 class ReactExoplayerView extends FrameLayout implements
@@ -73,36 +72,29 @@ class ReactExoplayerView extends FrameLayout implements
     }
 
     private final VideoEventEmitter eventEmitter;
-
+    // React
+    private final ThemedReactContext themedReactContext;
+    private final AudioManager audioManager;
+    private final AudioBecomingNoisyReceiver audioBecomingNoisyReceiver;
     private Handler mainHandler;
     private ExoPlayerView exoPlayerView;
-
     private DataSource.Factory mediaDataSourceFactory;
     private SimpleExoPlayer player;
     private MappingTrackSelector trackSelector;
     private boolean playerNeedsSource;
-
     private int resumeWindow;
     private long resumePosition;
     private boolean loadVideoStarted;
     private boolean isPaused = true;
     private boolean isBuffering;
     private float rate = 1f;
-
     // Props from React
     private Uri srcUri;
     private String extension;
     private boolean repeat;
+    // \ End props
     private boolean disableFocus;
     private float mProgressUpdateInterval = 250.0f;
-    private boolean playInBackground = false;
-    // \ End props
-
-    // React
-    private final ThemedReactContext themedReactContext;
-    private final AudioManager audioManager;
-    private final AudioBecomingNoisyReceiver audioBecomingNoisyReceiver;
-
     private final Handler progressHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -121,6 +113,7 @@ class ReactExoplayerView extends FrameLayout implements
             }
         }
     };
+    private boolean playInBackground = false;
 
     public ReactExoplayerView(ThemedReactContext context) {
         super(context);
@@ -134,6 +127,19 @@ class ReactExoplayerView extends FrameLayout implements
         initializePlayer();
     }
 
+    private static boolean isBehindLiveWindow(ExoPlaybackException e) {
+        if (e.type != ExoPlaybackException.TYPE_SOURCE) {
+            return false;
+        }
+        Throwable cause = e.getSourceException();
+        while (cause != null) {
+            if (cause instanceof BehindLiveWindowException) {
+                return true;
+            }
+            cause = cause.getCause();
+        }
+        return false;
+    }
 
     @Override
     public void setId(int id) {
@@ -164,13 +170,13 @@ class ReactExoplayerView extends FrameLayout implements
         initializePlayer();
     }
 
+    // LifecycleEventListener implementation
+
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         stopPlayback();
     }
-
-    // LifecycleEventListener implementation
 
     @Override
     public void onHostResume() {
@@ -193,12 +199,12 @@ class ReactExoplayerView extends FrameLayout implements
         stopPlayback();
     }
 
+
+    // Internal methods
+
     public void cleanUpResources() {
         stopPlayback();
     }
-
-
-    // Internal methods
 
     private void initializePlayer() {
         if (player == null) {
@@ -345,6 +351,8 @@ class ReactExoplayerView extends FrameLayout implements
         resumePosition = C.TIME_UNSET;
     }
 
+    // AudioManager.OnAudioFocusChangeListener implementation
+
     /**
      * Returns a new DataSource factory.
      *
@@ -356,7 +364,7 @@ class ReactExoplayerView extends FrameLayout implements
         return DataSourceUtil.getDefaultDataSourceFactory(getContext(), useBandwidthMeter ? BANDWIDTH_METER : null);
     }
 
-    // AudioManager.OnAudioFocusChangeListener implementation
+    // AudioBecomingNoisyListener implementation
 
     @Override
     public void onAudioFocusChange(int focusChange) {
@@ -382,14 +390,12 @@ class ReactExoplayerView extends FrameLayout implements
         }
     }
 
-    // AudioBecomingNoisyListener implementation
+    // ExoPlayer.EventListener implementation
 
     @Override
     public void onAudioBecomingNoisy() {
         eventEmitter.audioBecomingNoisy();
     }
-
-    // ExoPlayer.EventListener implementation
 
     @Override
     public void onLoadingChanged(boolean isLoading) {
@@ -504,8 +510,7 @@ class ReactExoplayerView extends FrameLayout implements
                             decoderInitializationException.decoderName);
                 }
             }
-        }
-        else if (e.type == ExoPlaybackException.TYPE_SOURCE) {
+        } else if (e.type == ExoPlaybackException.TYPE_SOURCE) {
             ex = e.getSourceException();
             errorString = getResources().getString(R.string.unrecognized_media_format);
         }
@@ -519,20 +524,6 @@ class ReactExoplayerView extends FrameLayout implements
         } else {
             updateResumePosition();
         }
-    }
-
-    private static boolean isBehindLiveWindow(ExoPlaybackException e) {
-        if (e.type != ExoPlaybackException.TYPE_SOURCE) {
-            return false;
-        }
-        Throwable cause = e.getSourceException();
-        while (cause != null) {
-            if (cause instanceof BehindLiveWindowException) {
-                return true;
-            }
-            cause = cause.getCause();
-        }
-        return false;
     }
 
     @Override
@@ -621,12 +612,12 @@ class ReactExoplayerView extends FrameLayout implements
     }
 
     public void setRateModifier(float newRate) {
-      rate = newRate;
+        rate = newRate;
 
-      if (player != null) {
-          PlaybackParameters params = new PlaybackParameters(rate, 1f);
-          player.setPlaybackParameters(params);
-      }
+        if (player != null) {
+            PlaybackParameters params = new PlaybackParameters(rate, 1f);
+            player.setPlaybackParameters(params);
+        }
     }
 
 
