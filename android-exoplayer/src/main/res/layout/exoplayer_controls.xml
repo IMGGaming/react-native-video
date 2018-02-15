@@ -1,30 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.previewseekbar.PreviewSeekBarLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/previewSeekBarLayout"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="horizontal">
 
-    <FrameLayout
-        android:id="@+id/previewFrameLayout"
-        android:layout_width="@dimen/video_preview_width"
-        android:layout_height="@dimen/video_preview_height"
-        android:visibility="gone">
+    <TextView
+        android:id="@+id/currentTimeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:text="00:00"
+        android:textColor="#ffffff"
+        android:gravity="center"
+        android:textAlignment="center"/>
 
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#a00" />
-
-    </FrameLayout>
-
-    <com.previewseekbar.PreviewSeekBar
-        android:id="@+id/previewSeekBar"
-        android:layout_width="match_parent"
+    <com.previewseekbar.PreviewSeekBarLayout
+        android:id="@+id/previewSeekBarLayout"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/previewFrameLayout"
-        android:layout_marginTop="25dp"
-        android:max="800" />
+        android:orientation="vertical"
+        android:layout_weight="1">
 
-</com.previewseekbar.PreviewSeekBarLayout>
+        <FrameLayout
+            android:id="@+id/previewFrameLayout"
+            android:layout_width="@dimen/video_preview_width"
+            android:layout_height="@dimen/video_preview_height"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#a00" />
+
+        </FrameLayout>
+
+        <com.previewseekbar.PreviewSeekBar
+            android:id="@+id/previewSeekBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/previewFrameLayout"
+            android:layout_marginTop="0dp"
+            android:max="800" />
+
+    </com.previewseekbar.PreviewSeekBarLayout>
+
+    <TextView
+        android:id="@+id/durationTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:textColor="#ffffff"
+        android:text="00:00"
+        android:gravity="center"
+        android:textAlignment="center"/>
+
+</LinearLayout>

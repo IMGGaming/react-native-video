@@ -9,17 +9,16 @@ import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.brentvatne.react.R;
 import com.brentvatne.receiver.AudioBecomingNoisyReceiver;
 import com.brentvatne.receiver.BecomingNoisyListener;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.previewseekbar.PreviewSeekBarLayout;
-import com.previewseekbar.base.PreviewLoader;
-import com.previewseekbar.base.PreviewView;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -52,10 +51,14 @@ import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.util.Util;
+import com.previewseekbar.PreviewSeekBarLayout;
+import com.previewseekbar.base.PreviewLoader;
+import com.previewseekbar.base.PreviewView;
 
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
+import java.util.Locale;
 
 @SuppressLint("ViewConstructor")
 class ReactExoplayerView extends RelativeLayout implements
@@ -87,6 +90,8 @@ class ReactExoplayerView extends RelativeLayout implements
     private DataSource.Factory mediaDataSourceFactory;
     private SimpleExoPlayer player;
     private MappingTrackSelector trackSelector;
+    private TextView currentTextView;
+    private TextView durationTextView;
     private boolean playerNeedsSource;
     private int resumeWindow;
     private long resumePosition;
@@ -101,6 +106,7 @@ class ReactExoplayerView extends RelativeLayout implements
     // \ End props
     private boolean disableFocus;
     private float mProgressUpdateInterval = 250.0f;
+    @SuppressLint("HandlerLeak")
     private final Handler progressHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -110,15 +116,13 @@ class ReactExoplayerView extends RelativeLayout implements
                             && player.getPlaybackState() == ExoPlayer.STATE_READY
                             && player.getPlayWhenReady()
                             ) {
-                        long pos = player.getCurrentPosition();
-                        eventEmitter.progressChanged(pos, player.getBufferedPercentage());
                         progressHandler.removeMessages(SHOW_PROGRESS);
+                        long currentMillis = player.getCurrentPosition();
+                        eventEmitter.progressChanged(currentMillis, player.getBufferedPercentage());
                         msg = obtainMessage(SHOW_PROGRESS);
                         sendMessageDelayed(msg, Math.round(mProgressUpdateInterval));
 
-                        ProgressBar progressBar = (ProgressBar) previewSeekBarLayout.getPreviewView();
-                        progressBar.setProgress((int) player.getCurrentPosition());
-                        progressBar.setMax((int) player.getDuration());
+                        updateProgressControl(currentMillis);
                     }
                     break;
             }
@@ -176,12 +180,15 @@ class ReactExoplayerView extends RelativeLayout implements
 
         addView(exoPlayerView, 0, layoutParams);
 
-        previewSeekBarLayout = (PreviewSeekBarLayout) inflater.inflate(R.layout.exoplayer_controls, null);
+        LinearLayout exoPlayerControls = (LinearLayout) inflater.inflate(R.layout.exoplayer_controls, null);
         LayoutParams paramsProgressbar = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         paramsProgressbar.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-        previewSeekBarLayout.setLayoutParams(paramsProgressbar);
-        addView(previewSeekBarLayout);
+        exoPlayerControls.setLayoutParams(paramsProgressbar);
+        addView(exoPlayerControls);
 
+        durationTextView = (TextView) exoPlayerControls.findViewById(R.id.durationTextView);
+        currentTextView = (TextView) exoPlayerControls.findViewById(R.id.currentTimeTextView);
+        previewSeekBarLayout = (PreviewSeekBarLayout) exoPlayerControls.findViewById(R.id.previewSeekBarLayout);
         previewSeekBarLayout.setPreviewLoader(new PreviewLoader() {
             @Override
             public void loadPreview(long currentPosition, long max) {
@@ -464,6 +471,44 @@ class ReactExoplayerView extends RelativeLayout implements
         progressHandler.sendEmptyMessage(SHOW_PROGRESS);
     }
 
+    private void updateProgressControl(long currentMillis) {
+        ProgressBar progressBar = (ProgressBar) previewSeekBarLayout.getPreviewView();
+        if (player == null || progressBar == null) {
+            return;
+        }
+        long duration = player.getDuration();
+
+        if (duration != C.TIME_UNSET && durationTextView != null) {
+            int secs = (int) (duration / 1000) % 60;
+            int mins = (int) ((duration / (1000 * 60)) % 60);
+            int hours = (int) ((duration / (1000 * 60 * 60)) % 24);
+            String durationString = "";
+            if (hours > 0) {
+                durationString = String.format(Locale.UK, "%02d:%02d:%02d", hours, mins, secs);
+            } else {
+                durationString = String.format(Locale.UK, "%02d:%02d", mins, secs);
+            }
+
+            durationTextView.setText(durationString);
+            progressBar.setMax((int) duration);
+        }
+
+        if (currentMillis != C.TIME_UNSET && currentTextView != null) {
+            int secs = (int) (currentMillis / 1000) % 60;
+            int mins = (int) ((currentMillis / (1000 * 60)) % 60);
+            int hours = (int) ((currentMillis / (1000 * 60 * 60)) % 24);
+            String currentString = "";
+            if (hours > 0) {
+                currentString = String.format(Locale.UK, "%02d:%02d:%02d", hours, mins, secs);
+            } else {
+                currentString = String.format(Locale.UK, "%02d:%02d", mins, secs);
+            }
+            currentTextView.setText(currentString);
+            progressBar.setProgress((int) currentMillis);
+        }
+
+    }
+
     private void setupProgressBarSeekListener() {
         if (previewSeekBarLayout != null &&
                 previewSeekBarLayout.getPreviewView() instanceof ProgressBar) {
@@ -482,6 +527,7 @@ class ReactExoplayerView extends RelativeLayout implements
                 public void onPreview(PreviewView previewView, int progress, boolean fromUser) {
                     if (fromUser && player != null) {
                         player.seekTo(progress);
+                        updateProgressControl(progress);
                     }
                 }
             });
