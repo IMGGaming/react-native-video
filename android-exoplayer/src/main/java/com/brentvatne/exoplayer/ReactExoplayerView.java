@@ -72,7 +72,8 @@ class ReactExoplayerView extends RelativeLayout implements
 
     private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
     private static final CookieManager DEFAULT_COOKIE_MANAGER;
-    private static final int SHOW_PROGRESS = 1;
+    private static final int SHOW_JS_PROGRESS = 1;
+    private static final int SHOW_NATIVE_PROGRESS = 2;
 
     static {
         DEFAULT_COOKIE_MANAGER = new CookieManager();
@@ -106,12 +107,13 @@ class ReactExoplayerView extends RelativeLayout implements
     // \ End props
     private boolean disableFocus;
     private float mProgressUpdateInterval = 250.0f;
+    private final float NATIVE_PROGRESS_UPDATE_INTERVAL= 250.0f;
     @SuppressLint("HandlerLeak")
     private final Handler progressHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case SHOW_PROGRESS:
+                case SHOW_JS_PROGRESS:
                     if (player != null
                             && player.getPlaybackState() == ExoPlayer.STATE_READY
                             && player.getPlayWhenReady()
@@ -119,8 +121,26 @@ class ReactExoplayerView extends RelativeLayout implements
                         progressHandler.removeMessages(SHOW_PROGRESS);
                         long currentMillis = player.getCurrentPosition();
                         eventEmitter.progressChanged(currentMillis, player.getBufferedPercentage());
-                        msg = obtainMessage(SHOW_PROGRESS);
+                        msg = obtainMessage(SHOW_JS_PROGRESS);
                         sendMessageDelayed(msg, Math.round(mProgressUpdateInterval));
+                    }
+                    break;
+            }
+        }
+    };
+
+    private final Handler nativeProgressHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case SHOW_NATIVE_PROGRESS:
+                    if (player != null
+                            && player.getPlaybackState() == ExoPlayer.STATE_READY
+                            && player.getPlayWhenReady()
+                            ) {
+                        long currentMillis = player.getCurrentPosition();
+                        msg = obtainMessage(SHOW_NATIVE_PROGRESS);
+                        sendMessageDelayed(msg, Math.round(NATIVE_PROGRESS_UPDATE_INTERVAL));
 
                         updateProgressControl(currentMillis);
                     }
@@ -299,7 +319,8 @@ class ReactExoplayerView extends RelativeLayout implements
             player = null;
             trackSelector = null;
         }
-        progressHandler.removeMessages(SHOW_PROGRESS);
+        progressHandler.removeMessages(SHOW_JS_PROGRESS);
+        progressHandler.removeMessages(SHOW_NATIVE_PROGRESS);
         themedReactContext.removeLifecycleEventListener(this);
         audioBecomingNoisyReceiver.removeListener();
     }
@@ -468,7 +489,8 @@ class ReactExoplayerView extends RelativeLayout implements
     }
 
     private void startProgressHandler() {
-        progressHandler.sendEmptyMessage(SHOW_PROGRESS);
+        progressHandler.sendEmptyMessage(SHOW_JS_PROGRESS);
+        nativeProgressHandler.sendEmptyMessage(SHOW_NATIVE_PROGRESS);
     }
 
     private void updateProgressControl(long currentMillis) {
