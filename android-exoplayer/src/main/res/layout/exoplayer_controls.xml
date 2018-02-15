@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.github.rubensousa.previewseekbar.PreviewSeekBarLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.previewseekbar.PreviewSeekBarLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/previewSeekBarLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -19,7 +19,7 @@
 
     </FrameLayout>
 
-    <com.github.rubensousa.previewseekbar.PreviewSeekBar
+    <com.previewseekbar.PreviewSeekBar
         android:id="@+id/previewSeekBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -27,4 +27,4 @@
         android:layout_marginTop="25dp"
         android:max="800" />
 
-</com.github.rubensousa.previewseekbar.PreviewSeekBarLayout>
+</com.previewseekbar.PreviewSeekBarLayout>

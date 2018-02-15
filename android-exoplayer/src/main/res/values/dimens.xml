@@ -10,6 +10,9 @@
 
     <dimen name="video_preview_width">100dp</dimen>
     <dimen name="video_preview_height">56dp</dimen>
-
+    
+    <dimen name="previewseekbar_indicator_width">10dp</dimen>
+    <dimen name="previewseekbar_thumb_offset">10dp</dimen>
+    
     <bool name="landscape">false</bool>
 </resources>
