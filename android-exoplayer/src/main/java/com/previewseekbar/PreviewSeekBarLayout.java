@@ -41,6 +41,8 @@ public class PreviewSeekBarLayout extends PreviewGeneralLayout {
      */
     @Override
     public void setupMargins() {
+        // TODO: Enable the following when adding the thumbnails
+        /*
         LayoutParams layoutParams = (LayoutParams) seekBar.getLayoutParams();
 
         layoutParams.rightMargin = (int) (previewFrameLayout.getWidth() / 2
@@ -55,6 +57,7 @@ public class PreviewSeekBarLayout extends PreviewGeneralLayout {
         seekBar.setLayoutParams(layoutParams);
         requestLayout();
         invalidate();
+        */
     }
 
     @Override

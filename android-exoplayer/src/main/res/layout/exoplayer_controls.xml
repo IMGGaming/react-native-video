@@ -2,28 +2,32 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:padding="@dimen/activity_horizontal_margin">
 
     <TextView
         android:id="@+id/currentTimeTextView"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:text="00:00"
-        android:textColor="#ffffff"
         android:gravity="center"
-        android:textAlignment="center"/>
+        android:text="@string/default_time"
+        android:textAlignment="center"
+        android:textColor="#ffffff" />
 
     <com.previewseekbar.PreviewSeekBarLayout
         android:id="@+id/previewSeekBarLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:orientation="vertical">
 
+        <!-- TODO: Enable the following when adding the thumbnails -->
+        <!-- set width to @dimen/video_preview_width -->
+        <!-- set height to @dimen/video_preview_height -->
         <FrameLayout
             android:id="@+id/previewFrameLayout"
-            android:layout_width="@dimen/video_preview_width"
-            android:layout_height="@dimen/video_preview_height"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:visibility="gone">
 
             <ImageView
@@ -40,7 +44,9 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/previewFrameLayout"
             android:layout_marginTop="0dp"
-            android:max="800" />
+            android:max="800"
+            android:paddingLeft="10dp"
+            android:paddingStart="10dp" />
 
     </com.previewseekbar.PreviewSeekBarLayout>
 
@@ -48,9 +54,9 @@
         android:id="@+id/durationTextView"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:textColor="#ffffff"
-        android:text="00:00"
         android:gravity="center"
-        android:textAlignment="center"/>
+        android:text="@string/default_time"
+        android:textAlignment="center"
+        android:textColor="#ffffff" />
 
 </LinearLayout>

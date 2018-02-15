@@ -129,6 +129,7 @@ class ReactExoplayerView extends RelativeLayout implements
         }
     };
 
+    @SuppressLint("HandlerLeak")
     private final Handler nativeProgressHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
