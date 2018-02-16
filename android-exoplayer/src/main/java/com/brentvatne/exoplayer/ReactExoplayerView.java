@@ -9,7 +9,8 @@ import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.widget.LinearLayout;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -93,6 +94,7 @@ class ReactExoplayerView extends RelativeLayout implements
     private MappingTrackSelector trackSelector;
     private TextView currentTextView;
     private TextView durationTextView;
+    private ImageButton playPauseButton;
     private boolean playerNeedsSource;
     private int resumeWindow;
     private long resumePosition;
@@ -107,7 +109,7 @@ class ReactExoplayerView extends RelativeLayout implements
     // \ End props
     private boolean disableFocus;
     private float mProgressUpdateInterval = 250.0f;
-    private final float NATIVE_PROGRESS_UPDATE_INTERVAL= 250.0f;
+    private final float NATIVE_PROGRESS_UPDATE_INTERVAL = 250.0f;
     @SuppressLint("HandlerLeak")
     private final Handler progressHandler = new Handler() {
         @Override
@@ -201,15 +203,35 @@ class ReactExoplayerView extends RelativeLayout implements
 
         addView(exoPlayerView, 0, layoutParams);
 
-        LinearLayout exoPlayerControls = (LinearLayout) inflater.inflate(R.layout.exoplayer_controls, null);
-        LayoutParams paramsProgressbar = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-        paramsProgressbar.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-        exoPlayerControls.setLayoutParams(paramsProgressbar);
-        addView(exoPlayerControls);
+        View controls = inflater.inflate(R.layout.controls, null);
+        LayoutParams controlsParam = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        controls.setLayoutParams(controlsParam);
+        addView(controls);
 
-        durationTextView = (TextView) exoPlayerControls.findViewById(R.id.durationTextView);
-        currentTextView = (TextView) exoPlayerControls.findViewById(R.id.currentTimeTextView);
-        previewSeekBarLayout = (PreviewSeekBarLayout) exoPlayerControls.findViewById(R.id.previewSeekBarLayout);
+        ImageButton rewindButton = (ImageButton) controls.findViewById(R.id.rewindImageView);
+        rewindButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                seekTo(player.getCurrentPosition() - 30000);
+            }
+        });
+        ImageButton forwardButton = (ImageButton) controls.findViewById(R.id.forwardImageView);
+        forwardButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                seekTo(player.getCurrentPosition() + 30000);
+            }
+        });
+        playPauseButton = (ImageButton) controls.findViewById(R.id.playPauseImageView);
+        playPauseButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setPausedModifier(!isPaused);
+            }
+        });
+        durationTextView = (TextView) controls.findViewById(R.id.durationTextView);
+        currentTextView = (TextView) controls.findViewById(R.id.currentTimeTextView);
+        previewSeekBarLayout = (PreviewSeekBarLayout) controls.findViewById(R.id.previewSeekBarLayout);
         previewSeekBarLayout.setPreviewLoader(new PreviewLoader() {
             @Override
             public void loadPreview(long currentPosition, long max) {
@@ -709,6 +731,14 @@ class ReactExoplayerView extends RelativeLayout implements
                 pausePlayback();
             }
         }
+        if (playPauseButton != null) {
+            if (isPaused) {
+                playPauseButton.setImageResource(R.drawable.ic_play);
+            } else {
+                playPauseButton.setImageResource(R.drawable.ic_pause);
+            }
+        }
+
     }
 
     public void setMutedModifier(boolean muted) {

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageButton
+        android:id="@+id/rewindImageView"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_centerInParent="true"
+        android:layout_toLeftOf="@+id/playPauseImageView"
+        android:layout_toStartOf="@+id/playPauseImageView"
+        android:background="@drawable/circle"
+        android:contentDescription="@string/rewind_video"
+        android:src="@drawable/ic_rewind" />
+
+    <ImageButton
+        android:id="@+id/playPauseImageView"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/circle"
+        android:contentDescription="@string/play_video"
+        android:src="@drawable/ic_play" />
+
+
+    <ImageButton
+        android:id="@+id/forwardImageView"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_centerInParent="true"
+        android:layout_toEndOf="@+id/playPauseImageView"
+        android:layout_toRightOf="@+id/playPauseImageView"
+        android:background="@drawable/circle"
+        android:contentDescription="@string/forward_video"
+        android:src="@drawable/ic_forward" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+
+        <include layout="@layout/bottom_bar" />
+    </FrameLayout>
+</RelativeLayout>

@@ -98,7 +98,7 @@ class VideoPlayer extends Component {
 
     return (
       <View style={styles.container}>
-        <TouchableOpacity
+        <View
           style={styles.fullScreen}
           onPress={() => this.setState({ paused: !this.state.paused })}
         >
@@ -120,7 +120,7 @@ class VideoPlayer extends Component {
             onAudioFocusChanged={this.onAudioFocusChanged}
             repeat={false}
           />
-        </TouchableOpacity>
+        </View>
 
         <View style={styles.controls}>
           <View style={styles.generalControls}>
@@ -224,6 +224,10 @@ const styles = StyleSheet.create({
     paddingLeft: 2,
     paddingRight: 2,
     lineHeight: 12,
+    display: 'none',
+  },
+  trackingControls: {
+    display: 'none',
   },
 });
 

@@ -12,5 +12,8 @@
     <string name="unrecognized_media_format">Unrecognized media format</string>
 
     <string name="default_time">00:00</string>
+    <string name="play_video">Play video</string>
+    <string name="rewind_video">Rewind video</string>
+    <string name="forward_video">Forward video</string>
 
 </resources>
