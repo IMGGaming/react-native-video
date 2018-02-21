@@ -15,5 +15,6 @@
     <string name="play_video">Play video</string>
     <string name="rewind_video">Rewind video</string>
     <string name="forward_video">Forward video</string>
+    <string name="fullscreen">Fullscreen</string>
 
 </resources>

@@ -40,6 +40,7 @@ class VideoEventEmitter {
     private static final String EVENT_AUDIO_BECOMING_NOISY = "onAudioBecomingNoisy";
     private static final String EVENT_AUDIO_FOCUS_CHANGE = "onAudioFocusChanged";
     private static final String EVENT_PLAYBACK_RATE_CHANGE = "onPlaybackRateChange";
+    private static final String EVENT_FULLSCREEN = "onFullscreen";
 
     static final String[] Events = {
             EVENT_LOAD_START,
@@ -57,6 +58,7 @@ class VideoEventEmitter {
             EVENT_AUDIO_BECOMING_NOISY,
             EVENT_AUDIO_FOCUS_CHANGE,
             EVENT_PLAYBACK_RATE_CHANGE,
+            EVENT_FULLSCREEN,
     };
 
     @Retention(RetentionPolicy.SOURCE)
@@ -76,6 +78,7 @@ class VideoEventEmitter {
             EVENT_AUDIO_BECOMING_NOISY,
             EVENT_AUDIO_FOCUS_CHANGE,
             EVENT_PLAYBACK_RATE_CHANGE,
+            EVENT_FULLSCREEN,
     })
     @interface VideoEvents {
     }
@@ -186,6 +189,10 @@ class VideoEventEmitter {
         WritableMap map = Arguments.createMap();
         map.putDouble(EVENT_PROP_PLAYBACK_RATE, (double)rate);
         receiveEvent(EVENT_PLAYBACK_RATE_CHANGE, map);
+    }
+
+    void fullscreenChange() {
+        receiveEvent(EVENT_FULLSCREEN, null);
     }
 
     void timedMetadata(Metadata metadata) {

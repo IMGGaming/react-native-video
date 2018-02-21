@@ -1,5 +1,6 @@
 package com.brentvatne.exoplayer;
 
+import android.animation.LayoutTransition;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.media.AudioManager;
@@ -82,19 +83,26 @@ class ReactExoplayerView extends RelativeLayout implements
     }
 
     private final VideoEventEmitter eventEmitter;
+
+    private PreviewSeekBarLayout previewSeekBarLayout;
+    private TextView currentTextView;
+    private TextView durationTextView;
+    private ImageButton playPauseButton;
+    private ImageButton fullscreenButton;
+    private View controls;
+    private long controlsVisibileTill = System.currentTimeMillis();
+    private final long CONTROLS_VISIBILITY_DURATION = 3000;
+
+
     // React
     private final ThemedReactContext themedReactContext;
     private final AudioManager audioManager;
     private final AudioBecomingNoisyReceiver audioBecomingNoisyReceiver;
     private Handler mainHandler;
     private ExoPlayerView exoPlayerView;
-    private PreviewSeekBarLayout previewSeekBarLayout;
     private DataSource.Factory mediaDataSourceFactory;
     private SimpleExoPlayer player;
     private MappingTrackSelector trackSelector;
-    private TextView currentTextView;
-    private TextView durationTextView;
-    private ImageButton playPauseButton;
     private boolean playerNeedsSource;
     private int resumeWindow;
     private long resumePosition;
@@ -106,6 +114,7 @@ class ReactExoplayerView extends RelativeLayout implements
     private Uri srcUri;
     private String extension;
     private boolean repeat;
+    private boolean menuVisible = true;
     // \ End props
     private boolean disableFocus;
     private float mProgressUpdateInterval = 250.0f;
@@ -185,7 +194,25 @@ class ReactExoplayerView extends RelativeLayout implements
         eventEmitter.setViewId(id);
     }
 
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        viewControlsFor(CONTROLS_VISIBILITY_DURATION);
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+
     private void createViews() {
+        addOnLayoutChangeListener(new OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                Log.d("onLayout", "changeListener");
+                postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        controls.requestLayout();
+                    }
+                }, 200);
+            }
+        });
         clearResumePosition();
         mediaDataSourceFactory = buildDataSourceFactory(true);
         mainHandler = new Handler();
@@ -200,10 +227,16 @@ class ReactExoplayerView extends RelativeLayout implements
                 LayoutParams.MATCH_PARENT);
         exoPlayerView = new ExoPlayerView(getContext());
         exoPlayerView.setLayoutParams(layoutParams);
-
+        exoPlayerView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewControlsFor(CONTROLS_VISIBILITY_DURATION);
+            }
+        });
         addView(exoPlayerView, 0, layoutParams);
+        setLayoutTransition(new LayoutTransition());
 
-        View controls = inflater.inflate(R.layout.controls, null);
+        controls = inflater.inflate(R.layout.controls, null);
         LayoutParams controlsParam = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         controls.setLayoutParams(controlsParam);
         addView(controls);
@@ -212,6 +245,7 @@ class ReactExoplayerView extends RelativeLayout implements
         rewindButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                viewControlsFor(CONTROLS_VISIBILITY_DURATION);
                 seekTo(player.getCurrentPosition() - 30000);
             }
         });
@@ -219,6 +253,7 @@ class ReactExoplayerView extends RelativeLayout implements
         forwardButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                viewControlsFor(CONTROLS_VISIBILITY_DURATION);
                 seekTo(player.getCurrentPosition() + 30000);
             }
         });
@@ -226,7 +261,15 @@ class ReactExoplayerView extends RelativeLayout implements
         playPauseButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                viewControlsFor(CONTROLS_VISIBILITY_DURATION);
                 setPausedModifier(!isPaused);
+            }
+        });
+        fullscreenButton = (ImageButton) findViewById(R.id.fullscreenButton);
+        fullscreenButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                eventEmitter.fullscreenChange();
             }
         });
         durationTextView = (TextView) controls.findViewById(R.id.durationTextView);
@@ -283,6 +326,7 @@ class ReactExoplayerView extends RelativeLayout implements
     }
 
     private void initializePlayer() {
+        Log.d("initialisePlayer", "--");
         if (player == null) {
             TrackSelection.Factory videoTrackSelectionFactory = new AdaptiveTrackSelection.Factory(BANDWIDTH_METER);
             trackSelector = new DefaultTrackSelector(videoTrackSelectionFactory);
@@ -571,6 +615,7 @@ class ReactExoplayerView extends RelativeLayout implements
                 @Override
                 public void onPreview(PreviewView previewView, int progress, boolean fromUser) {
                     if (fromUser && player != null) {
+                        viewControlsFor(CONTROLS_VISIBILITY_DURATION);
                         player.seekTo(progress);
                         updateProgressControl(progress);
                     }
@@ -777,5 +822,18 @@ class ReactExoplayerView extends RelativeLayout implements
 
     public void setDisableFocus(boolean disableFocus) {
         this.disableFocus = disableFocus;
+    }
+
+    public void viewControlsFor(final long duration) {
+        controlsVisibileTill = System.currentTimeMillis() + duration - 50;
+        controls.setVisibility(VISIBLE);
+        postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (controlsVisibileTill <= System.currentTimeMillis() && !isPaused) {
+                    controls.setVisibility(GONE);
+                }
+            }
+        }, duration);
     }
 }
