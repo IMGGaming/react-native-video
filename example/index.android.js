@@ -120,6 +120,7 @@ class VideoPlayer extends Component {
             onAudioFocusChanged={this.onAudioFocusChanged}
             repeat={false}
             onFullscreen={() => {}}
+            onControlsVisibilityChange={(event) => { /* event.nativeEvent */ }}
           />
         </View>
 

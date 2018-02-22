@@ -827,11 +827,13 @@ class ReactExoplayerView extends RelativeLayout implements
     public void viewControlsFor(final long duration) {
         controlsVisibileTill = System.currentTimeMillis() + duration - 50;
         controls.setVisibility(VISIBLE);
+        eventEmitter.controlsVisibilityChange(true);
         postDelayed(new Runnable() {
             @Override
             public void run() {
                 if (controlsVisibileTill <= System.currentTimeMillis() && !isPaused) {
                     controls.setVisibility(GONE);
+                    eventEmitter.controlsVisibilityChange(false);
                 }
             }
         }, duration);

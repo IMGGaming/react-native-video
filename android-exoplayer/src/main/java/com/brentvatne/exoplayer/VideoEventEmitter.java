@@ -41,6 +41,7 @@ class VideoEventEmitter {
     private static final String EVENT_AUDIO_FOCUS_CHANGE = "onAudioFocusChanged";
     private static final String EVENT_PLAYBACK_RATE_CHANGE = "onPlaybackRateChange";
     private static final String EVENT_FULLSCREEN = "onFullscreen";
+    private static final String EVENT_CONTROLS_VISIBILITY_CHANGE = "onControlsVisibilityChange";
 
     static final String[] Events = {
             EVENT_LOAD_START,
@@ -59,6 +60,7 @@ class VideoEventEmitter {
             EVENT_AUDIO_FOCUS_CHANGE,
             EVENT_PLAYBACK_RATE_CHANGE,
             EVENT_FULLSCREEN,
+            EVENT_CONTROLS_VISIBILITY_CHANGE,
     };
 
     @Retention(RetentionPolicy.SOURCE)
@@ -79,6 +81,7 @@ class VideoEventEmitter {
             EVENT_AUDIO_FOCUS_CHANGE,
             EVENT_PLAYBACK_RATE_CHANGE,
             EVENT_FULLSCREEN,
+            EVENT_CONTROLS_VISIBILITY_CHANGE
     })
     @interface VideoEvents {
     }
@@ -101,6 +104,7 @@ class VideoEventEmitter {
     private static final String EVENT_PROP_HAS_AUDIO_FOCUS = "hasAudioFocus";
     private static final String EVENT_PROP_IS_BUFFERING = "isBuffering";
     private static final String EVENT_PROP_PLAYBACK_RATE = "playbackRate";
+    private static final String EVENT_PROP_CONTROLS_VISIBLE = "controlsVisible";
 
     private static final String EVENT_PROP_ERROR = "error";
     private static final String EVENT_PROP_ERROR_STRING = "errorString";
@@ -193,6 +197,12 @@ class VideoEventEmitter {
 
     void fullscreenChange() {
         receiveEvent(EVENT_FULLSCREEN, null);
+    }
+
+    void controlsVisibilityChange(boolean visibile) {
+        WritableMap map = Arguments.createMap();
+        map.putBoolean(EVENT_PROP_CONTROLS_VISIBLE, visibile);
+        receiveEvent(EVENT_CONTROLS_VISIBILITY_CHANGE, map);
     }
 
     void timedMetadata(Metadata metadata) {
