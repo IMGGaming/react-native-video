@@ -132,6 +132,7 @@ class ReactExoplayerView extends RelativeLayout implements
                         progressHandler.removeMessages(SHOW_PROGRESS);
                         long currentMillis = player.getCurrentPosition();
                         eventEmitter.progressChanged(currentMillis, player.getBufferedPercentage());
+                        progressHandler.removeMessages(SHOW_JS_PROGRESS);
                         msg = obtainMessage(SHOW_JS_PROGRESS);
                         sendMessageDelayed(msg, Math.round(mProgressUpdateInterval));
                     }
@@ -204,7 +205,6 @@ class ReactExoplayerView extends RelativeLayout implements
         addOnLayoutChangeListener(new OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                Log.d("onLayout", "changeListener");
                 postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -826,14 +826,20 @@ class ReactExoplayerView extends RelativeLayout implements
 
     public void viewControlsFor(final long duration) {
         controlsVisibileTill = System.currentTimeMillis() + duration - 50;
+        // Don't emit unnecessary events
+        if (controls.getVisibility() != VISIBLE) {
+            eventEmitter.controlsVisibilityChange(true);
+        }
         controls.setVisibility(VISIBLE);
-        eventEmitter.controlsVisibilityChange(true);
         postDelayed(new Runnable() {
             @Override
             public void run() {
                 if (controlsVisibileTill <= System.currentTimeMillis() && !isPaused) {
+                    // Don't emit unnecessary events
+                    if (controls.getVisibility() != GONE) {
+                        eventEmitter.controlsVisibilityChange(false);
+                    }
                     controls.setVisibility(GONE);
-                    eventEmitter.controlsVisibilityChange(false);
                 }
             }
         }, duration);

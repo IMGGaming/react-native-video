@@ -36,17 +36,18 @@
                 android:id="@+id/imageView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#a00" />
+                android:background="#a00"
+                android:contentDescription="@string/preview_image" />
 
         </FrameLayout>
 
         <com.previewseekbar.PreviewSeekBar
             android:id="@+id/previewSeekBar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="44dp"
             android:layout_below="@id/previewFrameLayout"
-            android:layout_marginTop="0dp"
             android:max="800"
+            android:maxHeight="44dp"
             android:minHeight="44dp"
             android:paddingEnd="10dp"
             android:paddingLeft="10dp"
