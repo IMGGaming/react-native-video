@@ -32,6 +32,7 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
     private static final String PROP_RATE = "rate";
     private static final String PROP_PLAY_IN_BACKGROUND = "playInBackground";
     private static final String PROP_DISABLE_FOCUS = "disableFocus";
+    private static final String PROP_COLOR_PROGRESS_BAR = "colorProgressBar";
 
     @Override
     public String getName() {
@@ -153,6 +154,11 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
     @ReactProp(name = PROP_DISABLE_FOCUS, defaultBoolean = false)
     public void setDisableFocus(final ReactExoplayerView videoView, final boolean disableFocus) {
         videoView.setDisableFocus(disableFocus);
+    }
+
+    @ReactProp(name = PROP_COLOR_PROGRESS_BAR)
+    public void setColorProgressBar(final ReactExoplayerView videoView, final String color) {
+        videoView.setColorProgressBar(color);
     }
 
     private boolean startsWithValidScheme(String uriString) {

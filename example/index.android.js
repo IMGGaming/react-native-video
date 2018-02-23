@@ -119,6 +119,7 @@ class VideoPlayer extends Component {
             onAudioBecomingNoisy={this.onAudioBecomingNoisy}
             onAudioFocusChanged={this.onAudioFocusChanged}
             repeat={false}
+            colorProgressBar={'#FFFF00'}
             onFullscreen={() => {}}
             onControlsVisibilityChange={(event) => { /* event.nativeEvent */ }}
           />

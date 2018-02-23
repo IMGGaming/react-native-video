@@ -1,6 +1,8 @@
 package com.previewseekbar.base;
 
 
+import android.support.annotation.ColorInt;
+
 public interface PreviewView {
 
     int getProgress();
@@ -22,4 +24,6 @@ public interface PreviewView {
 
         void onPreview(PreviewView previewView, int progress, boolean fromUser);
     }
+
+    public void setTintColor(@ColorInt int color);
 }

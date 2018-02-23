@@ -74,16 +74,14 @@ public abstract class PreviewGeneralLayout extends RelativeLayout implements Pre
                         "and a FrameLayout as direct childs");
             }
 
+            // Set the color of the progress bar
+            getPreviewView().setTintColor(tintColor);
+
             // Set proper seek bar margins
             setupMargins();
 
             // Setup colors for the morph view and frame view
-            int color = getPreviewView().getDefaultColor();
-            if (color != 0) {
-                setTintColor(color);
-            } else {
-                setTintColor(tintColor);
-            }
+            setTintColor(tintColor);
 
             delegate.setup();
 
@@ -141,6 +139,7 @@ public abstract class PreviewGeneralLayout extends RelativeLayout implements Pre
     }
 
     public void setTintColor(@ColorInt int color) {
+        tintColor = color;
         Drawable drawable = DrawableCompat.wrap(morphView.getBackground());
         DrawableCompat.setTint(drawable, color);
         morphView.setBackground(drawable);

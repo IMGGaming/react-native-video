@@ -3,6 +3,7 @@ package com.brentvatne.exoplayer;
 import android.animation.LayoutTransition;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Handler;
@@ -152,6 +153,7 @@ class ReactExoplayerView extends RelativeLayout implements
                             && player.getPlayWhenReady()
                             ) {
                         long currentMillis = player.getCurrentPosition();
+                        progressHandler.removeMessages(SHOW_NATIVE_PROGRESS);
                         msg = obtainMessage(SHOW_NATIVE_PROGRESS);
                         sendMessageDelayed(msg, Math.round(NATIVE_PROGRESS_UPDATE_INTERVAL));
 
@@ -822,6 +824,14 @@ class ReactExoplayerView extends RelativeLayout implements
 
     public void setDisableFocus(boolean disableFocus) {
         this.disableFocus = disableFocus;
+    }
+
+    public void setColorProgressBar(String color) {
+        try {
+            previewSeekBarLayout.setTintColor(Color.parseColor(color));
+        } catch (IllegalArgumentException e) {
+            Log.e(getClass().getSimpleName(), e.getMessage(), e);
+        }
     }
 
     public void viewControlsFor(final long duration) {
