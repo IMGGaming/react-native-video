@@ -19,6 +19,7 @@
         android:id="@+id/previewSeekBarLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_weight="1"
         android:orientation="vertical">
 
@@ -42,10 +43,11 @@
         <com.previewseekbar.PreviewSeekBar
             android:id="@+id/previewSeekBar"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_below="@id/previewFrameLayout"
             android:layout_marginTop="0dp"
             android:max="800"
+            android:minHeight="44dp"
             android:paddingEnd="10dp"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
