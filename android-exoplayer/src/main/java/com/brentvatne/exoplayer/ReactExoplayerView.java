@@ -106,6 +106,7 @@ class ReactExoplayerView extends FrameLayout implements
                             ) {
                         long pos = player.getCurrentPosition();
                         eventEmitter.progressChanged(pos, player.getBufferedPercentage());
+                        progressHandler.removeMessages(SHOW_PROGRESS);
                         msg = obtainMessage(SHOW_PROGRESS);
                         sendMessageDelayed(msg, Math.round(mProgressUpdateInterval));
                     }
