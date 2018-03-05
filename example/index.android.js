@@ -122,6 +122,7 @@ class VideoPlayer extends Component {
             colorProgressBar={'#FFFF00'}
             onFullscreen={() => {}}
             onControlsVisibilityChange={(event) => { /* event.nativeEvent */ }}
+            onHorizontalSwipe={(event) => { /* event.nativeEvent */ }}
           />
         </View>
 

@@ -8,9 +8,11 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.view.GestureDetectorCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
@@ -22,6 +24,7 @@ import com.brentvatne.receiver.AudioBecomingNoisyReceiver;
 import com.brentvatne.receiver.BecomingNoisyListener;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.gestures.SwipeGestureListener;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -93,7 +96,7 @@ class ReactExoplayerView extends RelativeLayout implements
     private View controls;
     private long controlsVisibileTill = System.currentTimeMillis();
     private final long CONTROLS_VISIBILITY_DURATION = 3000;
-
+    private GestureDetectorCompat gestureDetector;
 
     // React
     private final ThemedReactContext themedReactContext;
@@ -172,6 +175,19 @@ class ReactExoplayerView extends RelativeLayout implements
         audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         themedReactContext.addLifecycleEventListener(this);
         audioBecomingNoisyReceiver = new AudioBecomingNoisyReceiver(themedReactContext);
+        SwipeGestureListener swipeGestureListener = new SwipeGestureListener();
+        swipeGestureListener.setListener(new SwipeGestureListener.Listener() {
+            @Override
+            public void swipeHorizontal(float dx) {
+
+            }
+
+            @Override
+            public void swipeVertical(float dy) {
+                eventEmitter.horizontalSwipe(dy);
+            }
+        });
+        gestureDetector = new GestureDetectorCompat(themedReactContext, swipeGestureListener);
 
         initializePlayer();
     }
@@ -202,6 +218,15 @@ class ReactExoplayerView extends RelativeLayout implements
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        gestureDetector.onTouchEvent(event);
+        if (event.getAction() == MotionEvent.ACTION_UP) {
+            viewControlsFor(CONTROLS_VISIBILITY_DURATION);
+        }
+        return true;
+    }
+
     private void createViews() {
         addOnLayoutChangeListener(new OnLayoutChangeListener() {
             @Override
@@ -228,12 +253,6 @@ class ReactExoplayerView extends RelativeLayout implements
                 LayoutParams.MATCH_PARENT);
         exoPlayerView = new ExoPlayerView(getContext());
         exoPlayerView.setLayoutParams(layoutParams);
-        exoPlayerView.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                viewControlsFor(CONTROLS_VISIBILITY_DURATION);
-            }
-        });
         addView(exoPlayerView, 0, layoutParams);
         setLayoutTransition(new LayoutTransition());
 
