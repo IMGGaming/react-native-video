@@ -42,7 +42,8 @@ class VideoEventEmitter {
     private static final String EVENT_PLAYBACK_RATE_CHANGE = "onPlaybackRateChange";
     private static final String EVENT_FULLSCREEN = "onFullscreen";
     private static final String EVENT_CONTROLS_VISIBILITY_CHANGE = "onControlsVisibilityChange";
-    private static final String EVENT_HORIZONTAL_SWIPE = "onHorizontalSwipe";
+    private static final String EVENT_TOUCH_SWIPE_HORIZONTAL = "onTouchSwipeHorizontal";
+    private static final String EVENT_TOUCH_ACTION_UP = "onTouchActionUp";
 
     static final String[] Events = {
             EVENT_LOAD_START,
@@ -62,7 +63,8 @@ class VideoEventEmitter {
             EVENT_PLAYBACK_RATE_CHANGE,
             EVENT_FULLSCREEN,
             EVENT_CONTROLS_VISIBILITY_CHANGE,
-            EVENT_HORIZONTAL_SWIPE,
+            EVENT_TOUCH_SWIPE_HORIZONTAL,
+            EVENT_TOUCH_ACTION_UP,
     };
 
     @Retention(RetentionPolicy.SOURCE)
@@ -84,7 +86,8 @@ class VideoEventEmitter {
             EVENT_PLAYBACK_RATE_CHANGE,
             EVENT_FULLSCREEN,
             EVENT_CONTROLS_VISIBILITY_CHANGE,
-            EVENT_HORIZONTAL_SWIPE,
+            EVENT_TOUCH_SWIPE_HORIZONTAL,
+            EVENT_TOUCH_ACTION_UP,
     })
     @interface VideoEvents {
     }
@@ -108,7 +111,7 @@ class VideoEventEmitter {
     private static final String EVENT_PROP_IS_BUFFERING = "isBuffering";
     private static final String EVENT_PROP_PLAYBACK_RATE = "playbackRate";
     private static final String EVENT_PROP_CONTROLS_VISIBLE = "controlsVisible";
-    private static final String EVENT_PROP_HORIZONTAL_SWIPE = "horizontalSwipe";
+    private static final String EVENT_PROP_TOUCH_SWIPE_HORIZONTAL = "touchSwipeHorizontal";
 
     private static final String EVENT_PROP_ERROR = "error";
     private static final String EVENT_PROP_ERROR_STRING = "errorString";
@@ -209,10 +212,14 @@ class VideoEventEmitter {
         receiveEvent(EVENT_CONTROLS_VISIBILITY_CHANGE, map);
     }
 
-    void horizontalSwipe(double dy) {
+    void touchSwipeHorizontal(double dy) {
         WritableMap map = Arguments.createMap();
-        map.putDouble(EVENT_PROP_HORIZONTAL_SWIPE, dy);
-        receiveEvent(EVENT_HORIZONTAL_SWIPE, map);
+        map.putDouble(EVENT_PROP_TOUCH_SWIPE_HORIZONTAL, dy);
+        receiveEvent(EVENT_TOUCH_SWIPE_HORIZONTAL, map);
+    }
+
+    void touchActionUp() {
+        receiveEvent(EVENT_TOUCH_ACTION_UP, null);
     }
 
     void timedMetadata(Metadata metadata) {

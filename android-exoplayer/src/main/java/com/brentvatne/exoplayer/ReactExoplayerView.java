@@ -8,6 +8,8 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.IntegerRes;
+import android.support.annotation.Nullable;
 import android.support.v4.view.GestureDetectorCompat;
 import android.text.TextUtils;
 import android.util.Log;
@@ -91,8 +93,11 @@ class ReactExoplayerView extends RelativeLayout implements
     private PreviewSeekBarLayout previewSeekBarLayout;
     private TextView currentTextView;
     private TextView durationTextView;
+    private TextView liveTextView;
     private ImageButton playPauseButton;
     private ImageButton fullscreenButton;
+    private View rewindContainer;
+    private View forwardContainer;
     private View controls;
     private long controlsVisibileTill = System.currentTimeMillis();
     private final long CONTROLS_VISIBILITY_DURATION = 3000;
@@ -107,6 +112,7 @@ class ReactExoplayerView extends RelativeLayout implements
     private DataSource.Factory mediaDataSourceFactory;
     private SimpleExoPlayer player;
     private MappingTrackSelector trackSelector;
+    // Props from React
     private boolean playerNeedsSource;
     private int resumeWindow;
     private long resumePosition;
@@ -114,13 +120,12 @@ class ReactExoplayerView extends RelativeLayout implements
     private boolean isPaused = true;
     private boolean isBuffering;
     private float rate = 1f;
-    // Props from React
     private Uri srcUri;
     private String extension;
     private boolean repeat;
-    private boolean menuVisible = true;
-    // \ End props
     private boolean disableFocus;
+    private boolean live = false;
+    // End props
     private float mProgressUpdateInterval = 250.0f;
     private final float NATIVE_PROGRESS_UPDATE_INTERVAL = 250.0f;
     @SuppressLint("HandlerLeak")
@@ -184,7 +189,7 @@ class ReactExoplayerView extends RelativeLayout implements
 
             @Override
             public void swipeVertical(float dy) {
-                eventEmitter.horizontalSwipe(dy);
+                eventEmitter.touchSwipeHorizontal(dy);
             }
         });
         gestureDetector = new GestureDetectorCompat(themedReactContext, swipeGestureListener);
@@ -223,6 +228,7 @@ class ReactExoplayerView extends RelativeLayout implements
         gestureDetector.onTouchEvent(event);
         if (event.getAction() == MotionEvent.ACTION_UP) {
             viewControlsFor(CONTROLS_VISIBILITY_DURATION);
+            eventEmitter.touchActionUp();
         }
         return true;
     }
@@ -261,6 +267,8 @@ class ReactExoplayerView extends RelativeLayout implements
         controls.setLayoutParams(controlsParam);
         addView(controls);
 
+        rewindContainer = controls.findViewById(R.id.rewindContainer);
+        forwardContainer = controls.findViewById(R.id.forwardContainer);
         ImageButton rewindButton = (ImageButton) controls.findViewById(R.id.rewindImageView);
         rewindButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -294,6 +302,7 @@ class ReactExoplayerView extends RelativeLayout implements
         });
         durationTextView = (TextView) controls.findViewById(R.id.durationTextView);
         currentTextView = (TextView) controls.findViewById(R.id.currentTimeTextView);
+        liveTextView = (TextView) controls.findViewById(R.id.liveTextView);
         previewSeekBarLayout = (PreviewSeekBarLayout) controls.findViewById(R.id.previewSeekBarLayout);
         previewSeekBarLayout.setPreviewLoader(new PreviewLoader() {
             @Override
@@ -849,6 +858,35 @@ class ReactExoplayerView extends RelativeLayout implements
             previewSeekBarLayout.setTintColor(Color.parseColor(color));
         } catch (IllegalArgumentException e) {
             Log.e(getClass().getSimpleName(), e.getMessage(), e);
+        }
+    }
+
+    public void setLive(final boolean live) {
+        this.live = live;
+        if (liveTextView != null && currentTextView != null && previewSeekBarLayout != null &&
+                durationTextView != null && rewindContainer != null && forwardContainer != null) {
+            liveTextView.setVisibility(live ? VISIBLE : GONE);
+            @IntegerRes int controlsVisibility = live ? INVISIBLE : VISIBLE;
+            currentTextView.setVisibility(controlsVisibility);
+            previewSeekBarLayout.setVisibility(controlsVisibility);
+            durationTextView.setVisibility(controlsVisibility);
+            rewindContainer.setVisibility(controlsVisibility);
+            forwardContainer.setVisibility(controlsVisibility);
+        }
+    }
+
+    public void setIconBottomRight(@Nullable String icon) {
+        if (icon != null) {
+            switch (icon) {
+                case "fullscreenOn":
+                    fullscreenButton.setImageResource(R.drawable.ic_fullscreen_on);
+                    break;
+                case "fullscreenOff":
+                    fullscreenButton.setImageResource(R.drawable.ic_fullscreen_off);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 

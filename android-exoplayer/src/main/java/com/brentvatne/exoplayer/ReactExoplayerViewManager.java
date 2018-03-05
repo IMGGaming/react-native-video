@@ -33,6 +33,8 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
     private static final String PROP_PLAY_IN_BACKGROUND = "playInBackground";
     private static final String PROP_DISABLE_FOCUS = "disableFocus";
     private static final String PROP_COLOR_PROGRESS_BAR = "colorProgressBar";
+    private static final String PROP_ICON_BOTTOM_RIGHT = "iconBottomRight";
+    private static final String PROP_LIVE = "live";
 
     @Override
     public String getName() {
@@ -50,7 +52,8 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
     }
 
     @Override
-    public @Nullable Map<String, Object> getExportedCustomDirectEventTypeConstants() {
+    public @Nullable
+    Map<String, Object> getExportedCustomDirectEventTypeConstants() {
         MapBuilder.Builder<String, Object> builder = MapBuilder.builder();
         for (String event : VideoEventEmitter.Events) {
             builder.put(event, MapBuilder.of("registrationName", event));
@@ -59,7 +62,8 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
     }
 
     @Override
-    public @Nullable Map<String, Object> getExportedViewConstants() {
+    public @Nullable
+    Map<String, Object> getExportedViewConstants() {
         return MapBuilder.<String, Object>of(
                 "ScaleNone", Integer.toString(ResizeMode.RESIZE_MODE_FIT),
                 "ScaleAspectFit", Integer.toString(ResizeMode.RESIZE_MODE_FIT),
@@ -86,15 +90,15 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
             }
         } else {
             int identifier = context.getResources().getIdentifier(
-                uriString,
-                "drawable",
-                context.getPackageName()
+                    uriString,
+                    "drawable",
+                    context.getPackageName()
             );
             if (identifier == 0) {
                 identifier = context.getResources().getIdentifier(
-                    uriString,
-                    "raw",
-                    context.getPackageName()
+                        uriString,
+                        "raw",
+                        context.getPackageName()
                 );
             }
             if (identifier > 0) {
@@ -161,6 +165,16 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
         videoView.setColorProgressBar(color);
     }
 
+    @ReactProp(name = PROP_ICON_BOTTOM_RIGHT)
+    public void setIconBottomRight(final ReactExoplayerView videoView, final String icon) {
+        videoView.setIconBottomRight(icon);
+    }
+
+    @ReactProp(name = PROP_LIVE, defaultBoolean = false)
+    public void setLive(final ReactExoplayerView videoView, final boolean live) {
+        videoView.setLive(live);
+    }
+
     private boolean startsWithValidScheme(String uriString) {
         return uriString.startsWith("http://")
                 || uriString.startsWith("https://")
@@ -169,7 +183,8 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
                 || uriString.startsWith("asset://");
     }
 
-    private @ResizeMode.Mode int convertToIntDef(String resizeModeOrdinalString) {
+    private @ResizeMode.Mode
+    int convertToIntDef(String resizeModeOrdinalString) {
         if (!TextUtils.isEmpty(resizeModeOrdinalString)) {
             int resizeModeOrdinal = Integer.parseInt(resizeModeOrdinalString);
             return ResizeMode.toResizeMode(resizeModeOrdinal);

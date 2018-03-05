@@ -17,5 +17,6 @@
     <string name="forward_video">Forward video</string>
     <string name="fullscreen">Fullscreen</string>
     <string name="preview_image">Preview image</string>
+    <string name="live">LIVE</string>
 
 </resources>

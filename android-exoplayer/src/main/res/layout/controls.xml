@@ -4,6 +4,7 @@
     android:layout_height="match_parent">
 
     <FrameLayout
+        android:id="@+id/rewindContainer"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_centerInParent="true"
@@ -25,17 +26,18 @@
 
     <ImageButton
         android:id="@+id/playPauseImageView"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:layout_centerInParent="true"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:background="@drawable/circle"
+        android:background="@drawable/circle_dark"
         android:contentDescription="@string/play_video"
         android:src="@drawable/ic_play" />
 
 
     <FrameLayout
+        android:id="@+id/forwardContainer"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_centerInParent="true"
