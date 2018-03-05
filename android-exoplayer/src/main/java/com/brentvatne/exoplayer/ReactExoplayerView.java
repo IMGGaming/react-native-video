@@ -130,7 +130,6 @@ class ReactExoplayerView extends RelativeLayout implements
                             && player.getPlaybackState() == ExoPlayer.STATE_READY
                             && player.getPlayWhenReady()
                             ) {
-                        progressHandler.removeMessages(SHOW_PROGRESS);
                         long currentMillis = player.getCurrentPosition();
                         eventEmitter.progressChanged(currentMillis, player.getBufferedPercentage());
                         progressHandler.removeMessages(SHOW_JS_PROGRESS);
