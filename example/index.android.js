@@ -152,6 +152,7 @@ class VideoPlayer extends Component {
               this.state.fullScreen ? 'fullscreenOn' : 'fullscreenOff'
             }
             live={false}
+            forceHideControls={true}
             onFullscreen={() => {
               this.setState({ fullScreen: !this.state.fullScreen });
             }}

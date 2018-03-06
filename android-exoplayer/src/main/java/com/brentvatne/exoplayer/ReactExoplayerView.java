@@ -125,6 +125,7 @@ class ReactExoplayerView extends RelativeLayout implements
     private boolean repeat;
     private boolean disableFocus;
     private boolean live = false;
+    private boolean forceHideControls = false;
     // End props
     private float mProgressUpdateInterval = 250.0f;
     private final float NATIVE_PROGRESS_UPDATE_INTERVAL = 250.0f;
@@ -562,10 +563,14 @@ class ReactExoplayerView extends RelativeLayout implements
                 break;
             case ExoPlayer.STATE_BUFFERING:
                 text += "buffering";
+                // Hide central control buttons when buffering
+                updateCentralControls(INVISIBLE);
                 onBuffering(true);
                 break;
             case ExoPlayer.STATE_READY:
                 text += "ready";
+                // Show central control buttons when buffering
+                updateCentralControls(VISIBLE);
                 eventEmitter.ready();
                 onBuffering(false);
                 startProgressHandler();
@@ -875,6 +880,13 @@ class ReactExoplayerView extends RelativeLayout implements
         }
     }
 
+    public void setForceHideControls(final boolean hide) {
+        this.forceHideControls = hide;
+        if (hide) {
+            controls.setVisibility(INVISIBLE);
+        }
+    }
+
     public void setIconBottomRight(@Nullable String icon) {
         if (icon != null) {
             switch (icon) {
@@ -890,24 +902,32 @@ class ReactExoplayerView extends RelativeLayout implements
         }
     }
 
-    public void viewControlsFor(final long duration) {
-        controlsVisibileTill = System.currentTimeMillis() + duration - 50;
-        // Don't emit unnecessary events
-        if (controls.getVisibility() != VISIBLE) {
-            eventEmitter.controlsVisibilityChange(true);
-        }
-        controls.setVisibility(VISIBLE);
-        postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (controlsVisibileTill <= System.currentTimeMillis() && !isPaused) {
-                    // Don't emit unnecessary events
-                    if (controls.getVisibility() != GONE) {
-                        eventEmitter.controlsVisibilityChange(false);
-                    }
-                    controls.setVisibility(GONE);
-                }
+    private void viewControlsFor(final long duration) {
+        if (!forceHideControls) {
+            controlsVisibileTill = System.currentTimeMillis() + duration - 50;
+            // Don't emit unnecessary events
+            if (controls.getVisibility() != VISIBLE) {
+                eventEmitter.controlsVisibilityChange(true);
             }
-        }, duration);
+            controls.setVisibility(VISIBLE);
+            postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (controlsVisibileTill <= System.currentTimeMillis() && !isPaused) {
+                        // Don't emit unnecessary events
+                        if (controls.getVisibility() != GONE) {
+                            eventEmitter.controlsVisibilityChange(false);
+                        }
+                        controls.setVisibility(GONE);
+                    }
+                }
+            }, duration);
+        }
+    }
+
+    private void updateCentralControls(@IntegerRes int visibility) {
+        playPauseButton.setVisibility(visibility);
+        rewindContainer.setVisibility(live ? INVISIBLE : visibility);
+        forwardContainer.setVisibility(live ? INVISIBLE : visibility);
     }
 }

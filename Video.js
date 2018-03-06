@@ -250,6 +250,7 @@ Video.propTypes = {
   fullscreen: PropTypes.bool,
   iconBottomRight: PropTypes.string,
   live: PropTypes.bool,
+  forceHideControls: PropTypes.bool,
   onVideoLoadStart: PropTypes.func,
   onVideoLoad: PropTypes.func,
   onVideoBuffer: PropTypes.func,
