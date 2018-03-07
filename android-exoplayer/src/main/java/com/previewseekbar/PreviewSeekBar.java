@@ -2,11 +2,12 @@ package com.previewseekbar;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.AppCompatSeekBar;
 import android.util.AttributeSet;
 import android.widget.SeekBar;
@@ -54,13 +55,16 @@ public class PreviewSeekBar extends AppCompatSeekBar implements PreviewView,
     }
 
     public void setTintColor(@ColorInt int color) {
-        Drawable drawable = DrawableCompat.wrap(getThumb());
-        DrawableCompat.setTint(drawable, color);
-        setThumb(drawable);
+        getThumb().setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            setProgressTintList(ColorStateList.valueOf(color));
+            setProgressBackgroundTintList(ColorStateList.valueOf(Color.WHITE));
+        } else {
+            Drawable progressDrawable = getProgressDrawable().mutate();
+            progressDrawable.setColorFilter(color, android.graphics.PorterDuff.Mode.SRC_IN);
+            setProgressDrawable(progressDrawable);
 
-        drawable = DrawableCompat.wrap(getProgressDrawable());
-        DrawableCompat.setTint(drawable, color);
-        setProgressDrawable(drawable);
+        }
     }
 
     @Override
