@@ -152,16 +152,15 @@ class VideoPlayer extends Component {
               this.state.fullScreen ? 'fullscreenOn' : 'fullscreenOff'
             }
             live={false}
-            forceHideControls={true}
+            forceHideControls={false}
             onFullscreen={() => {
               this.setState({ fullScreen: !this.state.fullScreen });
             }}
             onControlsVisibilityChange={(event) => {
               /* event.nativeEvent */
             }}
-            onTouchSwipeHorizontal={(event) => {
+            onTouchActionMove={(event) => {
               /* event.nativeEvent touchSwipeHorizontal */
-              console.log(event.nativeEvent);
             }}
             onTouchActionUp={(event) => {
               /* event.nativeEvent null */

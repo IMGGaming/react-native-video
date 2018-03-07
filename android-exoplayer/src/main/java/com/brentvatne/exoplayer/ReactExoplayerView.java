@@ -13,6 +13,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.view.GestureDetectorCompat;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -26,7 +27,6 @@ import com.brentvatne.receiver.AudioBecomingNoisyReceiver;
 import com.brentvatne.receiver.BecomingNoisyListener;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.gestures.SwipeGestureListener;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -181,19 +181,14 @@ class ReactExoplayerView extends RelativeLayout implements
         audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         themedReactContext.addLifecycleEventListener(this);
         audioBecomingNoisyReceiver = new AudioBecomingNoisyReceiver(themedReactContext);
-        SwipeGestureListener swipeGestureListener = new SwipeGestureListener();
-        swipeGestureListener.setListener(new SwipeGestureListener.Listener() {
+        GestureDetector.SimpleOnGestureListener gestureListener = new GestureDetector.SimpleOnGestureListener() {
             @Override
-            public void swipeHorizontal(float dx) {
-
+            public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+                eventEmitter.touchActionMove(distanceX, distanceY);
+                return true;
             }
-
-            @Override
-            public void swipeVertical(float dy) {
-                eventEmitter.touchSwipeHorizontal(dy);
-            }
-        });
-        gestureDetector = new GestureDetectorCompat(themedReactContext, swipeGestureListener);
+        };
+        gestureDetector = new GestureDetectorCompat(themedReactContext, gestureListener);
 
         initializePlayer();
     }
