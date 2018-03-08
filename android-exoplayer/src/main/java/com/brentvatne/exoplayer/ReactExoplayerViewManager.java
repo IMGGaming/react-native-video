@@ -36,6 +36,7 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
     private static final String PROP_ICON_BOTTOM_RIGHT = "iconBottomRight";
     private static final String PROP_LIVE = "live";
     private static final String PROP_FORCE_HIDE_CONTROLS = "forceHideControls";
+    private static final String PROP_CONTROLS_OPACITY = "controlsOpacity";
 
     @Override
     public String getName() {
@@ -179,6 +180,11 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
     @ReactProp(name = PROP_FORCE_HIDE_CONTROLS, defaultBoolean = false)
     public void setForceHideControls(final ReactExoplayerView videoView, final boolean hide) {
         videoView.setForceHideControls(hide);
+    }
+
+    @ReactProp(name = PROP_CONTROLS_OPACITY)
+    public void setControlsOpacity(final ReactExoplayerView videoView, final float opacity) {
+        videoView.setControlsOpacity(opacity);
     }
 
     private boolean startsWithValidScheme(String uriString) {

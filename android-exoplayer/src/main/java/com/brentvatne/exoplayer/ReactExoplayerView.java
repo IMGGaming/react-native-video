@@ -99,6 +99,7 @@ class ReactExoplayerView extends RelativeLayout implements
     private View rewindContainer;
     private View forwardContainer;
     private View controls;
+    private View bottomBarContainer;
     private long controlsVisibileTill = System.currentTimeMillis();
     private final long CONTROLS_VISIBILITY_DURATION = 3000;
     private GestureDetectorCompat gestureDetector;
@@ -262,6 +263,8 @@ class ReactExoplayerView extends RelativeLayout implements
         LayoutParams controlsParam = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         controls.setLayoutParams(controlsParam);
         addView(controls);
+
+        bottomBarContainer = controls.findViewById(R.id.bottomBarContainer);
 
         rewindContainer = controls.findViewById(R.id.rewindContainer);
         forwardContainer = controls.findViewById(R.id.forwardContainer);
@@ -880,6 +883,19 @@ class ReactExoplayerView extends RelativeLayout implements
         if (hide) {
             controls.setVisibility(INVISIBLE);
         }
+    }
+
+    public void
+    setControlsOpacity(final float opacity) {
+        float newTranslationY = ((1 - opacity) * bottomBarContainer.getHeight() * 0.5f);
+        if (newTranslationY < 0) {
+            newTranslationY = 0;
+        } else if (newTranslationY > bottomBarContainer.getHeight()) {
+            newTranslationY = bottomBarContainer.getHeight();
+        }
+        bottomBarContainer.setTranslationY(newTranslationY);
+        bottomBarContainer.setAlpha(opacity);
+        controls.setAlpha(opacity);
     }
 
     public void setIconBottomRight(@Nullable String icon) {
