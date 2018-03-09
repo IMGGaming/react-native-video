@@ -92,7 +92,7 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
     private TextView durationTextView;
     private TextView liveTextView;
     private ImageButton playPauseButton;
-    private ImageButton fullscreenButton;
+    private ImageButton bottomRightIconButton;
     private View rewindContainer;
     private View forwardContainer;
     private View controls;
@@ -305,11 +305,11 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
                 setPausedModifier(!isPaused);
             }
         });
-        fullscreenButton = (ImageButton) findViewById(R.id.fullscreenButton);
-        fullscreenButton.setOnClickListener(new OnClickListener() {
+        bottomRightIconButton = (ImageButton) findViewById(R.id.bottomRightIconButton);
+        bottomRightIconButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                eventEmitter.fullscreenChange();
+                eventEmitter.bottomRightIconClick();
             }
         });
         durationTextView = (TextView) controls.findViewById(R.id.durationTextView);
@@ -914,16 +914,16 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
         if (icon != null) {
             switch (icon) {
                 case "fullscreenOn":
-                    fullscreenButton.setImageResource(R.drawable.ic_fullscreen_on);
+                    bottomRightIconButton.setImageResource(R.drawable.ic_fullscreen_on);
                     break;
                 case "fullscreenOff":
-                    fullscreenButton.setImageResource(R.drawable.ic_fullscreen_off);
+                    bottomRightIconButton.setImageResource(R.drawable.ic_fullscreen_off);
                     break;
                 case "zoomCompress":
-                    fullscreenButton.setImageResource(R.drawable.ic_zoom_compress);
+                    bottomRightIconButton.setImageResource(R.drawable.ic_zoom_compress);
                     break;
                 case "zoomExpand":
-                    fullscreenButton.setImageResource(R.drawable.ic_zoom_expand);
+                    bottomRightIconButton.setImageResource(R.drawable.ic_zoom_expand);
                     break;
                 default:
                     break;

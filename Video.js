@@ -253,6 +253,7 @@ Video.propTypes = {
   forceHideControls: PropTypes.bool,
   controlsOpacity: PropTypes.number,
   onControlsVisibilityChange: PropTypes.func,
+  onBottomRightIconClick: PropTypes.func,
   onTouchActionMove: PropTypes.func,
   onTouchActionUp: PropTypes.func,
   onVideoLoadStart: PropTypes.func,

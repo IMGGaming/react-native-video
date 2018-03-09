@@ -40,7 +40,7 @@ class VideoEventEmitter {
     private static final String EVENT_AUDIO_BECOMING_NOISY = "onAudioBecomingNoisy";
     private static final String EVENT_AUDIO_FOCUS_CHANGE = "onAudioFocusChanged";
     private static final String EVENT_PLAYBACK_RATE_CHANGE = "onPlaybackRateChange";
-    private static final String EVENT_FULLSCREEN = "onFullscreen";
+    private static final String EVENT_BOTTOM_RIGHT_ICON_CLICK = "onBottomRightIconClick";
     private static final String EVENT_CONTROLS_VISIBILITY_CHANGE = "onControlsVisibilityChange";
     private static final String EVENT_TOUCH_ACTION_MOVE = "onTouchActionMove";
     private static final String EVENT_TOUCH_ACTION_UP = "onTouchActionUp";
@@ -61,7 +61,7 @@ class VideoEventEmitter {
             EVENT_AUDIO_BECOMING_NOISY,
             EVENT_AUDIO_FOCUS_CHANGE,
             EVENT_PLAYBACK_RATE_CHANGE,
-            EVENT_FULLSCREEN,
+            EVENT_BOTTOM_RIGHT_ICON_CLICK,
             EVENT_CONTROLS_VISIBILITY_CHANGE,
             EVENT_TOUCH_ACTION_MOVE,
             EVENT_TOUCH_ACTION_UP,
@@ -84,7 +84,7 @@ class VideoEventEmitter {
             EVENT_AUDIO_BECOMING_NOISY,
             EVENT_AUDIO_FOCUS_CHANGE,
             EVENT_PLAYBACK_RATE_CHANGE,
-            EVENT_FULLSCREEN,
+            EVENT_BOTTOM_RIGHT_ICON_CLICK,
             EVENT_CONTROLS_VISIBILITY_CHANGE,
             EVENT_TOUCH_ACTION_MOVE,
             EVENT_TOUCH_ACTION_UP,
@@ -203,8 +203,8 @@ class VideoEventEmitter {
         receiveEvent(EVENT_PLAYBACK_RATE_CHANGE, map);
     }
 
-    void fullscreenChange() {
-        receiveEvent(EVENT_FULLSCREEN, null);
+    void bottomRightIconClick() {
+        receiveEvent(EVENT_BOTTOM_RIGHT_ICON_CLICK, null);
     }
 
     void controlsVisibilityChange(boolean visible) {

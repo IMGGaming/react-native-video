@@ -154,7 +154,7 @@ class VideoPlayer extends Component {
             live={false}
             forceHideControls={false}
             controlsOpacity={1}
-            onFullscreen={() => {
+            onBottomRightIconClick={() => {
               this.setState({ fullScreen: !this.state.fullScreen });
             }}
             onControlsVisibilityChange={(event) => {
