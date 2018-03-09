@@ -17,6 +17,7 @@ import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -69,12 +70,8 @@ import java.net.CookiePolicy;
 import java.util.Locale;
 
 @SuppressLint("ViewConstructor")
-class ReactExoplayerView extends RelativeLayout implements
-        LifecycleEventListener,
-        ExoPlayer.EventListener,
-        BecomingNoisyListener,
-        AudioManager.OnAudioFocusChangeListener,
-        MetadataRenderer.Output {
+class ReactExoplayerView extends RelativeLayout implements LifecycleEventListener, ExoPlayer.EventListener,
+        BecomingNoisyListener, AudioManager.OnAudioFocusChangeListener, MetadataRenderer.Output {
 
     private static final String TAG = "ReactExoplayerView";
 
@@ -100,9 +97,14 @@ class ReactExoplayerView extends RelativeLayout implements
     private View forwardContainer;
     private View controls;
     private View bottomBarContainer;
-    private long controlsVisibileTill = System.currentTimeMillis();
+    private long controlsVisibleTill = System.currentTimeMillis();
+    private long lastControlsVisibilityChange = System.currentTimeMillis();
     private final long CONTROLS_VISIBILITY_DURATION = 3000;
     private GestureDetectorCompat gestureDetector;
+    private long startTouchActionDownTime;
+    private boolean controlsVisible = false;
+    private float eventDownX;
+    private float eventDownY;
 
     // React
     private final ThemedReactContext themedReactContext;
@@ -136,10 +138,7 @@ class ReactExoplayerView extends RelativeLayout implements
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case SHOW_JS_PROGRESS:
-                    if (player != null
-                            && player.getPlaybackState() == ExoPlayer.STATE_READY
-                            && player.getPlayWhenReady()
-                            ) {
+                    if (player != null && player.getPlaybackState() == ExoPlayer.STATE_READY && player.getPlayWhenReady()) {
                         long currentMillis = player.getCurrentPosition();
                         eventEmitter.progressChanged(currentMillis, player.getBufferedPercentage());
                         progressHandler.removeMessages(SHOW_JS_PROGRESS);
@@ -157,10 +156,7 @@ class ReactExoplayerView extends RelativeLayout implements
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case SHOW_NATIVE_PROGRESS:
-                    if (player != null
-                            && player.getPlaybackState() == ExoPlayer.STATE_READY
-                            && player.getPlayWhenReady()
-                            ) {
+                    if (player != null && player.getPlaybackState() == ExoPlayer.STATE_READY && player.getPlayWhenReady()) {
                         long currentMillis = player.getCurrentPosition();
                         progressHandler.removeMessages(SHOW_NATIVE_PROGRESS);
                         msg = obtainMessage(SHOW_NATIVE_PROGRESS);
@@ -186,6 +182,11 @@ class ReactExoplayerView extends RelativeLayout implements
             @Override
             public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
                 eventEmitter.touchActionMove(distanceX, distanceY);
+                float newTranslationY = bottomBarContainer.getTranslationY() + distanceY;
+                if (newTranslationY > 0 && newTranslationY < bottomBarContainer.getHeight()) {
+                    bottomBarContainer.setTranslationY(newTranslationY);
+                    controls.setAlpha(1 - newTranslationY / bottomBarContainer.getHeight());
+                }
                 return true;
             }
         };
@@ -216,15 +217,28 @@ class ReactExoplayerView extends RelativeLayout implements
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        viewControlsFor(CONTROLS_VISIBILITY_DURATION);
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         gestureDetector.onTouchEvent(event);
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            startTouchActionDownTime = System.currentTimeMillis();
+            eventDownX = event.getX();
+            eventDownY = event.getY();
+        }
         if (event.getAction() == MotionEvent.ACTION_UP) {
-            viewControlsFor(CONTROLS_VISIBILITY_DURATION);
+            long touchDuration = System.currentTimeMillis() - startTouchActionDownTime;
+            if (touchDuration < ViewConfiguration.getTapTimeout()) {
+                viewControlsFor(CONTROLS_VISIBILITY_DURATION);
+            } else {
+                if (eventDownY > event.getY()) {
+                    animateControls(0, 250);
+                } else {
+                    viewControlsFor(CONTROLS_VISIBILITY_DURATION);
+                }
+            }
             eventEmitter.touchActionUp();
         }
         return true;
@@ -233,7 +247,8 @@ class ReactExoplayerView extends RelativeLayout implements
     private void createViews() {
         addOnLayoutChangeListener(new OnLayoutChangeListener() {
             @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop,
+                                       int oldRight, int oldBottom) {
                 postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -251,9 +266,7 @@ class ReactExoplayerView extends RelativeLayout implements
 
         LayoutInflater inflater = LayoutInflater.from(getContext());
 
-        LayoutParams layoutParams = new LayoutParams(
-                LayoutParams.MATCH_PARENT,
-                LayoutParams.MATCH_PARENT);
+        LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         exoPlayerView = new ExoPlayerView(getContext());
         exoPlayerView.setLayoutParams(layoutParams);
         addView(exoPlayerView, 0, layoutParams);
@@ -309,6 +322,8 @@ class ReactExoplayerView extends RelativeLayout implements
 
             }
         });
+
+        controlsVisible = controls.getVisibility() == VISIBLE;
     }
 
     @Override
@@ -345,7 +360,6 @@ class ReactExoplayerView extends RelativeLayout implements
     public void onHostDestroy() {
         stopPlayback();
     }
-
 
     // Internal methods
 
@@ -385,8 +399,8 @@ class ReactExoplayerView extends RelativeLayout implements
     }
 
     private MediaSource buildMediaSource(Uri uri, String overrideExtension) {
-        int type = Util.inferContentType(!TextUtils.isEmpty(overrideExtension) ? "." + overrideExtension
-                : uri.getLastPathSegment());
+        int type = Util.inferContentType(
+                !TextUtils.isEmpty(overrideExtension) ? "." + overrideExtension : uri.getLastPathSegment());
         switch (type) {
             case C.TYPE_SS:
                 return new SsMediaSource(uri, buildDataSourceFactory(false),
@@ -397,8 +411,8 @@ class ReactExoplayerView extends RelativeLayout implements
             case C.TYPE_HLS:
                 return new HlsMediaSource(uri, mediaDataSourceFactory, mainHandler, null);
             case C.TYPE_OTHER:
-                return new ExtractorMediaSource(uri, mediaDataSourceFactory, new DefaultExtractorsFactory(),
-                        mainHandler, null);
+                return new ExtractorMediaSource(uri, mediaDataSourceFactory, new DefaultExtractorsFactory(), mainHandler,
+                        null);
             default: {
                 throw new IllegalStateException("Unsupported type: " + type);
             }
@@ -424,9 +438,7 @@ class ReactExoplayerView extends RelativeLayout implements
         if (disableFocus) {
             return true;
         }
-        int result = audioManager.requestAudioFocus(this,
-                AudioManager.STREAM_MUSIC,
-                AudioManager.AUDIOFOCUS_GAIN);
+        int result = audioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
         return result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED;
     }
 
@@ -491,8 +503,7 @@ class ReactExoplayerView extends RelativeLayout implements
 
     private void updateResumePosition() {
         resumeWindow = player.getCurrentWindowIndex();
-        resumePosition = player.isCurrentWindowSeekable() ? Math.max(0, player.getCurrentPosition())
-                : C.TIME_UNSET;
+        resumePosition = player.isCurrentWindowSeekable() ? Math.max(0, player.getCurrentPosition()) : C.TIME_UNSET;
     }
 
     private void clearResumePosition() {
@@ -631,8 +642,7 @@ class ReactExoplayerView extends RelativeLayout implements
     }
 
     private void setupProgressBarSeekListener() {
-        if (previewSeekBarLayout != null &&
-                previewSeekBarLayout.getPreviewView() instanceof ProgressBar) {
+        if (previewSeekBarLayout != null && previewSeekBarLayout.getPreviewView() instanceof ProgressBar) {
             previewSeekBarLayout.getPreviewView().addOnPreviewChangeListener(new PreviewView.OnPreviewChangeListener() {
                 @Override
                 public void onStartPreview(PreviewView previewView) {
@@ -712,8 +722,7 @@ class ReactExoplayerView extends RelativeLayout implements
             Exception cause = e.getRendererException();
             if (cause instanceof MediaCodecRenderer.DecoderInitializationException) {
                 // Special case for decoder initialization failures.
-                MediaCodecRenderer.DecoderInitializationException decoderInitializationException =
-                        (MediaCodecRenderer.DecoderInitializationException) cause;
+                MediaCodecRenderer.DecoderInitializationException decoderInitializationException = (MediaCodecRenderer.DecoderInitializationException) cause;
                 if (decoderInitializationException.decoderName == null) {
                     if (decoderInitializationException.getCause() instanceof MediaCodecUtil.DecoderQueryException) {
                         errorString = getResources().getString(R.string.error_querying_decoders);
@@ -824,7 +833,6 @@ class ReactExoplayerView extends RelativeLayout implements
         }
     }
 
-
     public void setVolumeModifier(float volume) {
         if (player != null) {
             player.setVolume(volume);
@@ -847,7 +855,6 @@ class ReactExoplayerView extends RelativeLayout implements
         }
     }
 
-
     public void setPlayInBackground(boolean playInBackground) {
         this.playInBackground = playInBackground;
     }
@@ -866,10 +873,11 @@ class ReactExoplayerView extends RelativeLayout implements
 
     public void setLive(final boolean live) {
         this.live = live;
-        if (liveTextView != null && currentTextView != null && previewSeekBarLayout != null &&
-                durationTextView != null && rewindContainer != null && forwardContainer != null) {
+        if (liveTextView != null && currentTextView != null && previewSeekBarLayout != null && durationTextView != null
+                && rewindContainer != null && forwardContainer != null) {
             liveTextView.setVisibility(live ? VISIBLE : GONE);
-            @IntegerRes int controlsVisibility = live ? INVISIBLE : VISIBLE;
+            @IntegerRes
+            int controlsVisibility = live ? INVISIBLE : VISIBLE;
             currentTextView.setVisibility(controlsVisibility);
             previewSeekBarLayout.setVisibility(controlsVisibility);
             durationTextView.setVisibility(controlsVisibility);
@@ -885,8 +893,7 @@ class ReactExoplayerView extends RelativeLayout implements
         }
     }
 
-    public void
-    setControlsOpacity(final float opacity) {
+    public void setControlsOpacity(final float opacity) {
         float newTranslationY = ((1 - opacity) * bottomBarContainer.getHeight() * 0.5f);
         if (newTranslationY < 0) {
             newTranslationY = 0;
@@ -894,7 +901,6 @@ class ReactExoplayerView extends RelativeLayout implements
             newTranslationY = bottomBarContainer.getHeight();
         }
         bottomBarContainer.setTranslationY(newTranslationY);
-        bottomBarContainer.setAlpha(opacity);
         controls.setAlpha(opacity);
     }
 
@@ -915,21 +921,26 @@ class ReactExoplayerView extends RelativeLayout implements
 
     private void viewControlsFor(final long duration) {
         if (!forceHideControls) {
-            controlsVisibileTill = System.currentTimeMillis() + duration - 50;
-            // Don't emit unnecessary events
-            if (controls.getVisibility() != VISIBLE) {
+            controlsVisibleTill = System.currentTimeMillis() + duration - 50;
+            // Don't emit too many events
+            if (!controlsVisible || lastControlsVisibilityChange - System.currentTimeMillis() >= 1000) {
                 eventEmitter.controlsVisibilityChange(true);
+                controlsVisible = true;
+                lastControlsVisibilityChange = System.currentTimeMillis();
             }
             controls.setVisibility(VISIBLE);
+            animateControls(1, 250);
             postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    if (controlsVisibileTill <= System.currentTimeMillis() && !isPaused) {
-                        // Don't emit unnecessary events
-                        if (controls.getVisibility() != GONE) {
+                    if (controlsVisibleTill <= System.currentTimeMillis() && !isPaused) {
+                        // Don't emit too many events
+                        if (controlsVisible || lastControlsVisibilityChange - System.currentTimeMillis() >= 1000) {
                             eventEmitter.controlsVisibilityChange(false);
+                            animateControls(0, 250);
+                            controlsVisible = false;
+                            lastControlsVisibilityChange = System.currentTimeMillis();
                         }
-                        controls.setVisibility(GONE);
                     }
                 }
             }, duration);
@@ -940,5 +951,18 @@ class ReactExoplayerView extends RelativeLayout implements
         playPauseButton.setVisibility(visibility);
         rewindContainer.setVisibility(live ? INVISIBLE : visibility);
         forwardContainer.setVisibility(live ? INVISIBLE : visibility);
+    }
+
+    private void animateControls(final float opacity, final long duration) {
+        float newTranslationY = ((1 - opacity) * bottomBarContainer.getHeight() * 0.5f);
+        if (newTranslationY < 0) {
+            newTranslationY = 0;
+        } else if (newTranslationY > bottomBarContainer.getHeight()) {
+            newTranslationY = bottomBarContainer.getHeight();
+        }
+
+        updateCentralControls(opacity == 0 || isBuffering ? INVISIBLE : VISIBLE);
+        bottomBarContainer.animate().translationY(newTranslationY).setDuration(duration).start();
+        controls.animate().alpha(opacity).setDuration(duration).start();
     }
 }
