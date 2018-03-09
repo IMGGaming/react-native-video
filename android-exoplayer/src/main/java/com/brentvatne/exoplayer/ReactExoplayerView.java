@@ -887,9 +887,15 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
     }
 
     public void setForceHideControls(final boolean hide) {
+        if (hide == forceHideControls) {
+            return;
+        }
+
         this.forceHideControls = hide;
         if (hide) {
             controls.setVisibility(INVISIBLE);
+        } else {
+            viewControlsFor(CONTROLS_VISIBILITY_DURATION * 2);
         }
     }
 
