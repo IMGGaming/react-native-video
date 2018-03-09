@@ -913,6 +913,12 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
                 case "fullscreenOff":
                     fullscreenButton.setImageResource(R.drawable.ic_fullscreen_off);
                     break;
+                case "zoomCompress":
+                    fullscreenButton.setImageResource(R.drawable.ic_zoom_compress);
+                    break;
+                case "zoomExpand":
+                    fullscreenButton.setImageResource(R.drawable.ic_zoom_expand);
+                    break;
                 default:
                     break;
             }
