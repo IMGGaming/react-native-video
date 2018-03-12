@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#40000000">
+    android:background="#80000000">
 
     <FrameLayout
         android:id="@+id/rewindContainer"
@@ -26,11 +26,11 @@
 
     <ImageButton
         android:id="@+id/playPauseImageView"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="66dp"
+        android:layout_height="66dp"
         android:layout_centerInParent="true"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
+        android:layout_marginLeft="34dp"
+        android:layout_marginRight="34dp"
         android:background="@drawable/circle_dark"
         android:contentDescription="@string/play_video"
         android:src="@drawable/ic_play" />
