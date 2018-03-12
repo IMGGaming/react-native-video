@@ -132,6 +132,7 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
     // End props
     private float mProgressUpdateInterval = 250.0f;
     private final float NATIVE_PROGRESS_UPDATE_INTERVAL = 250.0f;
+    private final int ANIMATION_DURATION_CONTROLS_VISIBILITY = 250;
     @SuppressLint("HandlerLeak")
     private final Handler progressHandler = new Handler() {
         @Override
@@ -223,23 +224,28 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         gestureDetector.onTouchEvent(event);
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            startTouchActionDownTime = System.currentTimeMillis();
-            eventDownX = event.getX();
-            eventDownY = event.getY();
-        }
-        if (event.getAction() == MotionEvent.ACTION_UP) {
-            long touchDuration = System.currentTimeMillis() - startTouchActionDownTime;
-            if (touchDuration < ViewConfiguration.getTapTimeout()) {
-                viewControlsFor(CONTROLS_VISIBILITY_DURATION);
-            } else {
-                if (eventDownY > event.getY()) {
-                    animateControls(0, 250);
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN: {
+                startTouchActionDownTime = System.currentTimeMillis();
+                eventDownX = event.getX();
+                eventDownY = event.getY();
+                break;
+            }
+            case MotionEvent.ACTION_UP: {
+                long touchDuration = System.currentTimeMillis() - startTouchActionDownTime;
+                if (touchDuration < ViewConfiguration.getTapTimeout()) {
+                    if (controlsVisible) {
+                        hideControls();
+                    } else {
+                        viewControlsFor(CONTROLS_VISIBILITY_DURATION);
+                    }
+                } else if (eventDownY > event.getY()) {
+                    animateControls(0, ANIMATION_DURATION_CONTROLS_VISIBILITY);
                 } else {
                     viewControlsFor(CONTROLS_VISIBILITY_DURATION);
                 }
+                eventEmitter.touchActionUp();
             }
-            eventEmitter.touchActionUp();
         }
         return true;
     }
@@ -941,22 +947,26 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
                 lastControlsVisibilityChange = System.currentTimeMillis();
             }
             controls.setVisibility(VISIBLE);
-            animateControls(1, 250);
+            animateControls(1, ANIMATION_DURATION_CONTROLS_VISIBILITY);
             postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     if (controlsVisibleTill <= System.currentTimeMillis() && !isPaused) {
                         // Don't emit too many events
                         if (controlsVisible || lastControlsVisibilityChange - System.currentTimeMillis() >= 1000) {
-                            eventEmitter.controlsVisibilityChange(false);
-                            animateControls(0, 250);
-                            controlsVisible = false;
-                            lastControlsVisibilityChange = System.currentTimeMillis();
+                            hideControls();
                         }
                     }
                 }
             }, duration);
         }
+    }
+
+    private void hideControls() {
+        eventEmitter.controlsVisibilityChange(false);
+        animateControls(0, ANIMATION_DURATION_CONTROLS_VISIBILITY);
+        controlsVisible = false;
+        lastControlsVisibilityChange = System.currentTimeMillis();
     }
 
     private void updateCentralControls(@IntegerRes int visibility) {
