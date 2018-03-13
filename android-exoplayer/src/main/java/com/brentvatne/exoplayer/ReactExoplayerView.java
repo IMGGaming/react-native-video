@@ -132,7 +132,7 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
     // End props
     private float mProgressUpdateInterval = 250.0f;
     private final float NATIVE_PROGRESS_UPDATE_INTERVAL = 250.0f;
-    private final int ANIMATION_DURATION_CONTROLS_VISIBILITY = 250;
+    private final int ANIMATION_DURATION_CONTROLS_VISIBILITY = 500;
     @SuppressLint("HandlerLeak")
     private final Handler progressHandler = new Handler() {
         @Override
@@ -976,15 +976,20 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
     }
 
     private void animateControls(final float opacity, final long duration) {
-        float newTranslationY = ((1 - opacity) * bottomBarContainer.getHeight() * 0.5f);
-        if (newTranslationY < 0) {
-            newTranslationY = 0;
-        } else if (newTranslationY > bottomBarContainer.getHeight()) {
-            newTranslationY = bottomBarContainer.getHeight();
-        }
+        postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                float newTranslationY = ((1 - opacity) * bottomBarContainer.getHeight() * 0.5f);
+                if (newTranslationY < 0) {
+                    newTranslationY = 0;
+                } else if (newTranslationY > bottomBarContainer.getHeight()) {
+                    newTranslationY = bottomBarContainer.getHeight();
+                }
 
-        updateCentralControls(opacity == 0 || isBuffering ? INVISIBLE : VISIBLE);
-        bottomBarContainer.animate().translationY(newTranslationY).setDuration(duration).start();
-        controls.animate().alpha(opacity).setDuration(duration).start();
+                updateCentralControls(opacity == 0 || isBuffering ? INVISIBLE : VISIBLE);
+                bottomBarContainer.animate().translationY(newTranslationY).setDuration(duration).start();
+                controls.animate().alpha(opacity).setDuration(duration).start();
+            }
+        }, 150);
     }
 }
