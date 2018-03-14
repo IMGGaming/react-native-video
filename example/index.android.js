@@ -154,7 +154,8 @@ class VideoPlayer extends Component {
             iconBottomRight={
               this.state.fullScreen ? 'fullscreenOn' : 'fullscreenOff'
             }
-            bottomBarMarginBottom={this.state.fullScreen ? 0 : 12}
+            bottomBarMarginBottom={this.state.fullScreen ? 12 : -12}
+            fullscreen={this.state.fullScreen}
             live={false}
             forceHideControls={false}
             controlsOpacity={1}

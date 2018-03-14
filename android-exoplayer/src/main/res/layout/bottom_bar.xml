@@ -6,7 +6,7 @@
     android:orientation="horizontal"
     android:paddingBottom="12dp"
     android:paddingLeft="16dp"
-    android:paddingRight="16dp"
+    android:paddingRight="0dp"
     android:paddingTop="8dp">
 
     <TextView
@@ -18,7 +18,8 @@
         android:paddingBottom="1dp"
         android:text="@string/default_time"
         android:textAlignment="center"
-        android:textColor="#ffffff" />
+        android:textColor="#ffffff"
+        android:textSize="12sp" />
 
     <com.previewseekbar.PreviewSeekBarLayout
         android:id="@+id/previewSeekBarLayout"
@@ -70,15 +71,16 @@
         android:paddingBottom="1dp"
         android:text="@string/default_time"
         android:textAlignment="center"
-        android:textColor="#ffffff" />
+        android:textColor="#ffffff"
+        android:textSize="12sp" />
 
     <TextView
         android:id="@+id/liveTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginLeft="0dp"
+        android:layout_marginStart="0dp"
         android:background="@drawable/bg_live"
         android:gravity="center"
         android:paddingLeft="10dp"

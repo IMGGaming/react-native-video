@@ -923,7 +923,6 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
             switch (icon) {
                 case "fullscreenOn":
                     bottomRightIconButton.setImageResource(R.drawable.ic_fullscreen_on);
-
                     break;
                 case "fullscreenOff":
                     bottomRightIconButton.setImageResource(R.drawable.ic_fullscreen_off);
@@ -944,6 +943,20 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
         FrameLayout bottomBarWidgetContainer = (FrameLayout) findViewById(R.id.bottomBarWidgetContainer);
         bottomBarWidgetContainer.setTranslationY(-DensityPixels.dpToPx(marginBottom));
     }
+
+    public void setFullscreen(boolean fullscreen) {
+        FrameLayout bottomBarWidgetContainer = (FrameLayout) findViewById(R.id.bottomBarWidgetContainer);
+        if (fullscreen) {
+            playPauseButton.setScaleX(1f);
+            playPauseButton.setScaleY(1f);
+            bottomBarWidgetContainer.setScaleX(0.97f);
+        } else {
+            playPauseButton.setScaleX(0.8f);
+            playPauseButton.setScaleY(0.8f);
+            bottomBarWidgetContainer.setScaleX(1f);
+        }
+    }
+
 
     private void viewControlsFor(final long duration) {
         if (!forceHideControls) {

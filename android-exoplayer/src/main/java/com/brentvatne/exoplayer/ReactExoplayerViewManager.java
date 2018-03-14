@@ -38,6 +38,7 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
     private static final String PROP_FORCE_HIDE_CONTROLS = "forceHideControls";
     private static final String PROP_CONTROLS_OPACITY = "controlsOpacity";
     private static final String PROP_BOTTOM_BAR_MARGIN_BOTTOM = "bottomBarMarginBottom";
+    private static final String PROP_FULLSCREEN = "fullscreen";
 
     @Override
     public String getName() {
@@ -191,6 +192,11 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
     @ReactProp(name = PROP_BOTTOM_BAR_MARGIN_BOTTOM, defaultInt = 0)
     public void setBottomBarMarginBottom(final ReactExoplayerView videoView, final int marginBottom) {
         videoView.setBottomBarMarginBottom(marginBottom);
+    }
+
+    @ReactProp(name = PROP_FULLSCREEN, defaultBoolean = false)
+    public void setFullscreen(final ReactExoplayerView videoView, final boolean fullscreen) {
+        videoView.setFullscreen(fullscreen);
     }
 
     private boolean startsWithValidScheme(String uriString) {
