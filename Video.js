@@ -252,6 +252,7 @@ Video.propTypes = {
   live: PropTypes.bool,
   forceHideControls: PropTypes.bool,
   controlsOpacity: PropTypes.number,
+  bottomBarMarginBottom: PropTypes.number,
   onControlsVisibilityChange: PropTypes.func,
   onBottomRightIconClick: PropTypes.func,
   onTouchActionMove: PropTypes.func,

@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -60,6 +61,7 @@ import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.util.Util;
+import com.imggaming.utils.DensityPixels;
 import com.previewseekbar.PreviewSeekBarLayout;
 import com.previewseekbar.base.PreviewLoader;
 import com.previewseekbar.base.PreviewView;
@@ -96,7 +98,7 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
     private View rewindContainer;
     private View forwardContainer;
     private View controls;
-    private View bottomBarContainer;
+    private View bottomBarWidget;
     private long controlsVisibleTill = System.currentTimeMillis();
     private long lastControlsVisibilityChange = System.currentTimeMillis();
     private final long CONTROLS_VISIBILITY_DURATION = 3000;
@@ -183,10 +185,10 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
             @Override
             public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
                 eventEmitter.touchActionMove(distanceX, distanceY);
-                float newTranslationY = bottomBarContainer.getTranslationY() + distanceY;
-                if (newTranslationY > 0 && newTranslationY < bottomBarContainer.getHeight()) {
-                    bottomBarContainer.setTranslationY(newTranslationY);
-                    controls.setAlpha(1 - newTranslationY / bottomBarContainer.getHeight());
+                float newTranslationY = bottomBarWidget.getTranslationY() + distanceY;
+                if (newTranslationY > 0 && newTranslationY < bottomBarWidget.getHeight()) {
+                    bottomBarWidget.setTranslationY(newTranslationY);
+                    controls.setAlpha(1 - newTranslationY / bottomBarWidget.getHeight());
                 }
                 return true;
             }
@@ -283,7 +285,7 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
         controls.setLayoutParams(controlsParam);
         addView(controls);
 
-        bottomBarContainer = controls.findViewById(R.id.bottomBarContainer);
+        bottomBarWidget = controls.findViewById(R.id.bottomBarWidget);
 
         rewindContainer = controls.findViewById(R.id.rewindContainer);
         forwardContainer = controls.findViewById(R.id.forwardContainer);
@@ -906,13 +908,13 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
     }
 
     public void setControlsOpacity(final float opacity) {
-        float newTranslationY = ((1 - opacity) * bottomBarContainer.getHeight() * 0.5f);
+        float newTranslationY = ((1 - opacity) * bottomBarWidget.getHeight() * 0.5f);
         if (newTranslationY < 0) {
             newTranslationY = 0;
-        } else if (newTranslationY > bottomBarContainer.getHeight()) {
-            newTranslationY = bottomBarContainer.getHeight();
+        } else if (newTranslationY > bottomBarWidget.getHeight()) {
+            newTranslationY = bottomBarWidget.getHeight();
         }
-        bottomBarContainer.setTranslationY(newTranslationY);
+        bottomBarWidget.setTranslationY(newTranslationY);
         controls.setAlpha(opacity);
     }
 
@@ -921,6 +923,7 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
             switch (icon) {
                 case "fullscreenOn":
                     bottomRightIconButton.setImageResource(R.drawable.ic_fullscreen_on);
+
                     break;
                 case "fullscreenOff":
                     bottomRightIconButton.setImageResource(R.drawable.ic_fullscreen_off);
@@ -935,6 +938,11 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
                     break;
             }
         }
+    }
+
+    public void setBottomBarMarginBottom(int marginBottom) {
+        FrameLayout bottomBarWidgetContainer = (FrameLayout) findViewById(R.id.bottomBarWidgetContainer);
+        bottomBarWidgetContainer.setTranslationY(-DensityPixels.dpToPx(marginBottom));
     }
 
     private void viewControlsFor(final long duration) {
@@ -979,15 +987,15 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
         postDelayed(new Runnable() {
             @Override
             public void run() {
-                float newTranslationY = ((1 - opacity) * bottomBarContainer.getHeight() * 0.5f);
+                float newTranslationY = ((1 - opacity) * bottomBarWidget.getHeight() * 0.5f);
                 if (newTranslationY < 0) {
                     newTranslationY = 0;
-                } else if (newTranslationY > bottomBarContainer.getHeight()) {
-                    newTranslationY = bottomBarContainer.getHeight();
+                } else if (newTranslationY > bottomBarWidget.getHeight()) {
+                    newTranslationY = bottomBarWidget.getHeight();
                 }
 
                 updateCentralControls(opacity == 0 || isBuffering ? INVISIBLE : VISIBLE);
-                bottomBarContainer.animate().translationY(newTranslationY).setDuration(duration).start();
+                bottomBarWidget.animate().translationY(newTranslationY).setDuration(duration).start();
                 controls.animate().alpha(opacity).setDuration(duration).start();
             }
         }, 150);
