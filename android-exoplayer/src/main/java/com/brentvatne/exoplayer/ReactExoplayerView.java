@@ -90,6 +90,8 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
     private final VideoEventEmitter eventEmitter;
 
     private PreviewSeekBarLayout previewSeekBarLayout;
+    private FrameLayout bottomBarWidgetContainer;
+    private View middleCoreControlsContainer;
     private TextView currentTextView;
     private TextView durationTextView;
     private TextView liveTextView;
@@ -107,6 +109,7 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
     private boolean controlsVisible = false;
     private float eventDownX;
     private float eventDownY;
+    private ControlState overlayControlState;
 
     // React
     private final ThemedReactContext themedReactContext;
@@ -188,7 +191,9 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
                 float newTranslationY = bottomBarWidget.getTranslationY() + distanceY;
                 if (newTranslationY > 0 && newTranslationY < bottomBarWidget.getHeight()) {
                     bottomBarWidget.setTranslationY(newTranslationY);
-                    controls.setAlpha(1 - newTranslationY / bottomBarWidget.getHeight());
+                    float alpha = 1 - newTranslationY / bottomBarWidget.getHeight();
+                    bottomBarWidgetContainer.setAlpha(alpha);
+                    middleCoreControlsContainer.setAlpha(alpha);
                 }
                 return true;
             }
@@ -330,6 +335,8 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
 
             }
         });
+        bottomBarWidgetContainer = (FrameLayout) controls.findViewById(R.id.bottomBarWidgetContainer);
+        middleCoreControlsContainer = findViewById(R.id.middleCoreControlsContainer);
 
         controlsVisible = controls.getVisibility() == VISIBLE;
     }
@@ -939,13 +946,11 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
         }
     }
 
-    public void setBottomBarMarginBottom(int marginBottom) {
-        FrameLayout bottomBarWidgetContainer = (FrameLayout) findViewById(R.id.bottomBarWidgetContainer);
+    public void setProgressBarMarginBottom(int marginBottom) {
         bottomBarWidgetContainer.setTranslationY(-DensityPixels.dpToPx(marginBottom));
     }
 
     public void setFullscreen(boolean fullscreen) {
-        FrameLayout bottomBarWidgetContainer = (FrameLayout) findViewById(R.id.bottomBarWidgetContainer);
         if (fullscreen) {
             playPauseButton.setScaleX(1f);
             playPauseButton.setScaleY(1f);
@@ -957,9 +962,51 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
         }
     }
 
+    public void setStateOverlay(final String state) {
+        overlayControlState = ControlState.make(state);
+        float alpha = getAlphaFromState(state);
+        controls.setAlpha(alpha);
+
+        if (overlayControlState == ControlState.ACTIVE || overlayControlState == ControlState.UNKNOWN) {
+            viewControlsFor(CONTROLS_VISIBILITY_DURATION * 2);
+        }
+    }
+
+    public void setStateMiddleCoreControls(final String state) {
+
+        boolean enabled = getEnabledFromState(state);
+        float alpha = getAlphaFromState(state);
+
+        playPauseButton.setAlpha(alpha);
+        rewindContainer.setAlpha(alpha);
+        forwardContainer.setAlpha(alpha);
+        playPauseButton.setEnabled(enabled);
+        rewindContainer.setEnabled(enabled);
+        forwardContainer.setEnabled(enabled);
+    }
+
+    public void setStateProgressBar(final String state) {
+        boolean enabled = getEnabledFromState(state);
+        float alpha = getAlphaFromState(state);
+
+        bottomBarWidgetContainer.setAlpha(alpha);
+        bottomBarWidgetContainer.setEnabled(enabled);
+        currentTextView.setEnabled(enabled);
+        currentTextView.setAlpha(alpha);
+        durationTextView.setEnabled(enabled);
+        durationTextView.setAlpha(alpha);
+        previewSeekBarLayout.setEnabled(enabled);
+        previewSeekBarLayout.setAlpha(alpha);
+        bottomRightIconButton.setEnabled(enabled);
+        bottomRightIconButton.setAlpha(alpha);
+        ProgressBar progressBar = (ProgressBar) previewSeekBarLayout.getPreviewView();
+        if (progressBar != null) {
+            progressBar.setEnabled(enabled);
+        }
+    }
 
     private void viewControlsFor(final long duration) {
-        if (!forceHideControls) {
+        if (overlayControlState != ControlState.HIDDEN) {
             controlsVisibleTill = System.currentTimeMillis() + duration - 50;
             // Don't emit too many events
             if (!controlsVisible || lastControlsVisibilityChange - System.currentTimeMillis() >= 1000) {
@@ -1012,5 +1059,33 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
                 controls.animate().alpha(opacity).setDuration(duration).start();
             }
         }, 150);
+    }
+
+    private boolean getEnabledFromState(String stateStr) {
+        ControlState state = ControlState.make(stateStr);
+        switch (state) {
+            case HIDDEN:
+                return false;
+            case INACTIVE:
+                return false;
+            case ACTIVE:
+            case UNKNOWN:
+            default:
+                return true;
+        }
+    }
+
+    private float getAlphaFromState(String stateStr) {
+        ControlState state = ControlState.make(stateStr);
+        switch (state) {
+            case HIDDEN:
+                return 0;
+            case INACTIVE:
+                return 0.5f;
+            case ACTIVE:
+            case UNKNOWN:
+            default:
+                return 1.0f;
+        }
     }
 }

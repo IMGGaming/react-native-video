@@ -37,8 +37,11 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
     private static final String PROP_LIVE = "live";
     private static final String PROP_FORCE_HIDE_CONTROLS = "forceHideControls";
     private static final String PROP_CONTROLS_OPACITY = "controlsOpacity";
-    private static final String PROP_BOTTOM_BAR_MARGIN_BOTTOM = "bottomBarMarginBottom";
     private static final String PROP_FULLSCREEN = "fullscreen";
+    private static final String PROP_PROGRESS_BAR_MARGIN_BOTTOM = "progressBarMarginBottom";
+    private static final String PROP_STATE_OVERLAY = "stateOverlay";
+    private static final String PROP_STATE_MIDDLE_CORE_CONTROLS = "stateMiddleCoreControls";
+    private static final String PROP_STATE_PROGRESS_BAR = "stateProgressBar";
 
     @Override
     public String getName() {
@@ -189,14 +192,29 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
         videoView.setControlsOpacity(opacity);
     }
 
-    @ReactProp(name = PROP_BOTTOM_BAR_MARGIN_BOTTOM, defaultInt = 0)
-    public void setBottomBarMarginBottom(final ReactExoplayerView videoView, final int marginBottom) {
-        videoView.setBottomBarMarginBottom(marginBottom);
-    }
-
     @ReactProp(name = PROP_FULLSCREEN, defaultBoolean = false)
     public void setFullscreen(final ReactExoplayerView videoView, final boolean fullscreen) {
         videoView.setFullscreen(fullscreen);
+    }
+
+    @ReactProp(name = PROP_PROGRESS_BAR_MARGIN_BOTTOM, defaultInt = 0)
+    public void setProgressBarMarginBottom(final ReactExoplayerView videoView, final int margin) {
+        videoView.setProgressBarMarginBottom(margin);
+    }
+
+    @ReactProp(name = PROP_STATE_OVERLAY)
+    public void setStateOverlay(final ReactExoplayerView videoView, final String state) {
+        videoView.setStateOverlay(state);
+    }
+
+    @ReactProp(name = PROP_STATE_MIDDLE_CORE_CONTROLS)
+    public void setStateMiddleCoreControls(final ReactExoplayerView videoView, final String state) {
+        videoView.setStateMiddleCoreControls(state);
+    }
+
+    @ReactProp(name = PROP_STATE_PROGRESS_BAR)
+    public void setStateProgressBar(final ReactExoplayerView videoView, final String state) {
+        videoView.setStateProgressBar(state);
     }
 
     private boolean startsWithValidScheme(String uriString) {
