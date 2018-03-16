@@ -101,15 +101,10 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
     private View forwardContainer;
     private View controls;
     private View bottomBarWidget;
-    private long controlsVisibleTill = System.currentTimeMillis();
-    private long lastControlsVisibilityChange = System.currentTimeMillis();
-    private final long CONTROLS_VISIBILITY_DURATION = 3000;
     private GestureDetectorCompat gestureDetector;
     private long startTouchActionDownTime;
-    private boolean controlsVisible = false;
     private float eventDownX;
     private float eventDownY;
-    private ControlState overlayControlState;
 
     // React
     private final ThemedReactContext themedReactContext;
@@ -133,7 +128,6 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
     private boolean repeat;
     private boolean disableFocus;
     private boolean live = false;
-    private boolean forceHideControls = false;
     // End props
     private float mProgressUpdateInterval = 250.0f;
     private final float NATIVE_PROGRESS_UPDATE_INTERVAL = 250.0f;
@@ -240,16 +234,8 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
             }
             case MotionEvent.ACTION_UP: {
                 long touchDuration = System.currentTimeMillis() - startTouchActionDownTime;
-                if (touchDuration < ViewConfiguration.getTapTimeout()) {
-                    if (controlsVisible) {
-                        hideControls();
-                    } else {
-                        viewControlsFor(CONTROLS_VISIBILITY_DURATION);
-                    }
-                } else if (eventDownY > event.getY()) {
+                if (touchDuration >= ViewConfiguration.getTapTimeout() && eventDownY > event.getY()) {
                     animateControls(0, ANIMATION_DURATION_CONTROLS_VISIBILITY);
-                } else {
-                    viewControlsFor(CONTROLS_VISIBILITY_DURATION);
                 }
                 eventEmitter.touchActionUp();
             }
@@ -298,7 +284,6 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
         rewindButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                viewControlsFor(CONTROLS_VISIBILITY_DURATION);
                 seekTo(player.getCurrentPosition() - 30000);
             }
         });
@@ -306,7 +291,6 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
         forwardButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                viewControlsFor(CONTROLS_VISIBILITY_DURATION);
                 seekTo(player.getCurrentPosition() + 30000);
             }
         });
@@ -314,7 +298,6 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
         playPauseButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                viewControlsFor(CONTROLS_VISIBILITY_DURATION);
                 setPausedModifier(!isPaused);
             }
         });
@@ -337,8 +320,6 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
         });
         bottomBarWidgetContainer = (FrameLayout) controls.findViewById(R.id.bottomBarWidgetContainer);
         middleCoreControlsContainer = findViewById(R.id.middleCoreControlsContainer);
-
-        controlsVisible = controls.getVisibility() == VISIBLE;
     }
 
     @Override
@@ -588,13 +569,13 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
             case ExoPlayer.STATE_BUFFERING:
                 text += "buffering";
                 // Hide central control buttons when buffering
-                updateCentralControls(INVISIBLE);
+                middleCoreControlsContainer.setVisibility(INVISIBLE);
                 onBuffering(true);
                 break;
             case ExoPlayer.STATE_READY:
                 text += "ready";
                 // Show central control buttons when buffering
-                updateCentralControls(VISIBLE);
+                middleCoreControlsContainer.setVisibility(VISIBLE);
                 eventEmitter.ready();
                 onBuffering(false);
                 startProgressHandler();
@@ -672,7 +653,6 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
                 @Override
                 public void onPreview(PreviewView previewView, int progress, boolean fromUser) {
                     if (fromUser && player != null) {
-                        viewControlsFor(CONTROLS_VISIBILITY_DURATION);
                         player.seekTo(progress);
                         updateProgressControl(progress);
                     }
@@ -901,19 +881,6 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
         }
     }
 
-    public void setForceHideControls(final boolean hide) {
-        if (hide == forceHideControls) {
-            return;
-        }
-
-        this.forceHideControls = hide;
-        if (hide) {
-            controls.setVisibility(INVISIBLE);
-        } else {
-            viewControlsFor(CONTROLS_VISIBILITY_DURATION * 2);
-        }
-    }
-
     public void setControlsOpacity(final float opacity) {
         float newTranslationY = ((1 - opacity) * bottomBarWidget.getHeight() * 0.5f);
         if (newTranslationY < 0) {
@@ -963,13 +930,8 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
     }
 
     public void setStateOverlay(final String state) {
-        overlayControlState = ControlState.make(state);
         float alpha = getAlphaFromState(state);
-        controls.setAlpha(alpha);
-
-        if (overlayControlState == ControlState.ACTIVE || overlayControlState == ControlState.UNKNOWN) {
-            viewControlsFor(CONTROLS_VISIBILITY_DURATION * 2);
-        }
+        controls.animate().alpha(alpha).setDuration(ANIMATION_DURATION_CONTROLS_VISIBILITY).start();
     }
 
     public void setStateMiddleCoreControls(final String state) {
@@ -977,6 +939,7 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
         boolean enabled = getEnabledFromState(state);
         float alpha = getAlphaFromState(state);
 
+        middleCoreControlsContainer.animate().alpha(alpha).start();
         playPauseButton.setAlpha(alpha);
         rewindContainer.setAlpha(alpha);
         forwardContainer.setAlpha(alpha);
@@ -989,8 +952,18 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
         boolean enabled = getEnabledFromState(state);
         float alpha = getAlphaFromState(state);
 
-        bottomBarWidgetContainer.setAlpha(alpha);
+        float newTranslationY = ((1 - alpha) * bottomBarWidget.getHeight() * 0.5f);
+        if (newTranslationY < 0) {
+            newTranslationY = 0;
+        } else if (newTranslationY > bottomBarWidget.getHeight()) {
+            newTranslationY = bottomBarWidget.getHeight();
+        }
+        bottomBarWidget.setTranslationY(newTranslationY);
+
+
+        bottomBarWidgetContainer.animate().alpha(alpha).start();
         bottomBarWidgetContainer.setEnabled(enabled);
+        bottomBarWidget.setAlpha(alpha);
         currentTextView.setEnabled(enabled);
         currentTextView.setAlpha(alpha);
         durationTextView.setEnabled(enabled);
@@ -1005,44 +978,6 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
         }
     }
 
-    private void viewControlsFor(final long duration) {
-        if (overlayControlState != ControlState.HIDDEN) {
-            controlsVisibleTill = System.currentTimeMillis() + duration - 50;
-            // Don't emit too many events
-            if (!controlsVisible || lastControlsVisibilityChange - System.currentTimeMillis() >= 1000) {
-                eventEmitter.controlsVisibilityChange(true);
-                controlsVisible = true;
-                lastControlsVisibilityChange = System.currentTimeMillis();
-            }
-            controls.setVisibility(VISIBLE);
-            animateControls(1, ANIMATION_DURATION_CONTROLS_VISIBILITY);
-            postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if (controlsVisibleTill <= System.currentTimeMillis() && !isPaused) {
-                        // Don't emit too many events
-                        if (controlsVisible || lastControlsVisibilityChange - System.currentTimeMillis() >= 1000) {
-                            hideControls();
-                        }
-                    }
-                }
-            }, duration);
-        }
-    }
-
-    private void hideControls() {
-        eventEmitter.controlsVisibilityChange(false);
-        animateControls(0, ANIMATION_DURATION_CONTROLS_VISIBILITY);
-        controlsVisible = false;
-        lastControlsVisibilityChange = System.currentTimeMillis();
-    }
-
-    private void updateCentralControls(@IntegerRes int visibility) {
-        playPauseButton.setVisibility(visibility);
-        rewindContainer.setVisibility(live ? INVISIBLE : visibility);
-        forwardContainer.setVisibility(live ? INVISIBLE : visibility);
-    }
-
     private void animateControls(final float opacity, final long duration) {
         postDelayed(new Runnable() {
             @Override
@@ -1054,9 +989,8 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
                     newTranslationY = bottomBarWidget.getHeight();
                 }
 
-                updateCentralControls(opacity == 0 || isBuffering ? INVISIBLE : VISIBLE);
-                bottomBarWidget.animate().translationY(newTranslationY).setDuration(duration).start();
-                controls.animate().alpha(opacity).setDuration(duration).start();
+                bottomBarWidget.setTranslationY(newTranslationY);
+                bottomBarWidget.setAlpha(opacity);
             }
         }, 150);
     }

@@ -250,7 +250,6 @@ Video.propTypes = {
   fullscreen: PropTypes.bool,
   iconBottomRight: PropTypes.string,
   live: PropTypes.bool,
-  forceHideControls: PropTypes.bool,
   controlsOpacity: PropTypes.number,
   progressBarMarginBottom: PropTypes.number,
   stateOverlay: PropTypes.oneOf(['ACTIVE', 'INACTIVE', 'HIDDEN']),
