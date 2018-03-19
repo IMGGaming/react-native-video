@@ -91,7 +91,7 @@ public final class ExoPlayerView extends FrameLayout {
      *
      * @param player The {@link SimpleExoPlayer} to use.
      */
-    public void setPlayer(SimpleExoPlayer player) {
+    public void setPlayer(SimpleExoPlayer player, boolean subtitlesEnabled) {
         if (this.player == player) {
             return;
         }
@@ -112,7 +112,9 @@ public final class ExoPlayerView extends FrameLayout {
             }
             player.setVideoListener(componentListener);
             player.addListener(componentListener);
-            player.setTextOutput(componentListener);
+            if (subtitlesEnabled) {
+                player.setTextOutput(componentListener);
+            }
             player.setMetadataOutput(componentListener);
         }
     }

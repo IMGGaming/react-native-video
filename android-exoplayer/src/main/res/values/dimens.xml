@@ -13,6 +13,9 @@
     
     <dimen name="previewseekbar_indicator_width">10dp</dimen>
     <dimen name="previewseekbar_thumb_offset">10dp</dimen>
-    
+    <dimen name="previewseekbar_progress_height">5dp</dimen>
+    <dimen name="previewseekbar_progress_width">5dp</dimen>
+    <dimen name="previewseekbar_progress_corner_radius">10dp</dimen>
+
     <bool name="landscape">false</bool>
 </resources>

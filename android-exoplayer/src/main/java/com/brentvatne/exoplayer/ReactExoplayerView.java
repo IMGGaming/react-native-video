@@ -233,10 +233,6 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
                 break;
             }
             case MotionEvent.ACTION_UP: {
-                long touchDuration = System.currentTimeMillis() - startTouchActionDownTime;
-                if (touchDuration >= ViewConfiguration.getTapTimeout() && eventDownY > event.getY()) {
-                    animateControls(0, ANIMATION_DURATION_CONTROLS_VISIBILITY);
-                }
                 eventEmitter.touchActionUp();
             }
         }
@@ -371,7 +367,7 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
             player = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector, new DefaultLoadControl());
             player.addListener(this);
             player.setMetadataOutput(this);
-            exoPlayerView.setPlayer(player);
+            exoPlayerView.setPlayer(player, false);
             audioBecomingNoisyReceiver.setListener(this);
             setPlayWhenReady(!isPaused);
             playerNeedsSource = true;
