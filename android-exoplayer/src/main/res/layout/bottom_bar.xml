@@ -81,13 +81,16 @@
         android:layout_marginStart="0dp"
         android:background="@drawable/bg_live"
         android:gravity="center"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
         android:text="@string/live"
         android:textAlignment="center"
         android:textColor="#ffffff"
         android:textSize="10sp"
         android:textStyle="bold" />
+
 
     <ImageButton
         android:id="@+id/bottomRightIconButton"
