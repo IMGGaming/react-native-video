@@ -1,6 +1,13 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import {StyleSheet, requireNativeComponent, NativeModules, View, ViewPropTypes, Image} from 'react-native';
+import {
+  StyleSheet,
+  requireNativeComponent,
+  NativeModules,
+  View,
+  ViewPropTypes,
+  Image,
+} from 'react-native';
 import resolveAssetSource from 'react-native/Libraries/Image/resolveAssetSource';
 import VideoResizeMode from './VideoResizeMode.js';
 
@@ -11,7 +18,6 @@ const styles = StyleSheet.create({
 });
 
 export default class Video extends Component {
-
   constructor(props) {
     super(props);
 
@@ -66,7 +72,7 @@ export default class Video extends Component {
 
   _onSeek = (event) => {
     if (this.state.showPoster) {
-      this.setState({showPoster: false});
+      this.setState({ showPoster: false });
     }
 
     if (this.props.onSeek) {
@@ -129,8 +135,8 @@ export default class Video extends Component {
   };
 
   _onPlaybackRateChange = (event) => {
-    if (this.state.showPoster && (event.nativeEvent.playbackRate !== 0)) {
-      this.setState({showPoster: false});
+    if (this.state.showPoster && event.nativeEvent.playbackRate !== 0) {
+      this.setState({ showPoster: false });
     }
 
     if (this.props.onPlaybackRateChange) {
@@ -166,15 +172,19 @@ export default class Video extends Component {
     }
 
     const isNetwork = !!(uri && uri.match(/^https?:/));
-    const isAsset = !!(uri && uri.match(/^(assets-library|file|content|ms-appx|ms-appdata):/));
+    const isAsset = !!(
+      uri && uri.match(/^(assets-library|file|content|ms-appx|ms-appdata):/)
+    );
 
     let nativeResizeMode;
     if (resizeMode === VideoResizeMode.stretch) {
       nativeResizeMode = NativeModules.UIManager.RCTVideo.Constants.ScaleToFill;
     } else if (resizeMode === VideoResizeMode.contain) {
-      nativeResizeMode = NativeModules.UIManager.RCTVideo.Constants.ScaleAspectFit;
+      nativeResizeMode =
+        NativeModules.UIManager.RCTVideo.Constants.ScaleAspectFit;
     } else if (resizeMode === VideoResizeMode.cover) {
-      nativeResizeMode = NativeModules.UIManager.RCTVideo.Constants.ScaleAspectFill;
+      nativeResizeMode =
+        NativeModules.UIManager.RCTVideo.Constants.ScaleAspectFill;
     } else {
       nativeResizeMode = NativeModules.UIManager.RCTVideo.Constants.ScaleNone;
     }
@@ -223,24 +233,13 @@ export default class Video extends Component {
 
       return (
         <View style={nativeProps.style}>
-          <RCTVideo
-            ref={this._assignRoot}
-            {...nativeProps}
-          />
-          <Image
-            style={posterStyle}
-            source={{uri: this.props.poster}}
-          />
+          <RCTVideo ref={this._assignRoot} {...nativeProps} />
+          <Image style={posterStyle} source={{ uri: this.props.poster }} />
         </View>
       );
     }
 
-    return (
-      <RCTVideo
-        ref={this._assignRoot}
-        {...nativeProps}
-      />
-    );
+    return <RCTVideo ref={this._assignRoot} {...nativeProps} />;
   }
 }
 
@@ -249,6 +248,17 @@ Video.propTypes = {
   src: PropTypes.object,
   seek: PropTypes.number,
   fullscreen: PropTypes.bool,
+  iconBottomRight: PropTypes.string,
+  live: PropTypes.bool,
+  controlsOpacity: PropTypes.number,
+  progressBarMarginBottom: PropTypes.number,
+  stateOverlay: PropTypes.oneOf(['ACTIVE', 'INACTIVE', 'HIDDEN']),
+  stateMiddleCoreControls: PropTypes.oneOf(['ACTIVE', 'INACTIVE', 'HIDDEN']),
+  stateProgressBar: PropTypes.oneOf(['ACTIVE', 'INACTIVE', 'HIDDEN']),
+  onControlsVisibilityChange: PropTypes.func,
+  onBottomRightIconClick: PropTypes.func,
+  onTouchActionMove: PropTypes.func,
+  onTouchActionUp: PropTypes.func,
   onVideoLoadStart: PropTypes.func,
   onVideoLoad: PropTypes.func,
   onVideoBuffer: PropTypes.func,
@@ -265,10 +275,10 @@ Video.propTypes = {
   /* Wrapper component */
   source: PropTypes.oneOfType([
     PropTypes.shape({
-      uri: PropTypes.string
+      uri: PropTypes.string,
     }),
     // Opaque type returned by require('./video.mp4')
-    PropTypes.number
+    PropTypes.number,
   ]),
   resizeMode: PropTypes.string,
   poster: PropTypes.string,
@@ -281,6 +291,7 @@ Video.propTypes = {
   playWhenInactive: PropTypes.bool,
   ignoreSilentSwitch: PropTypes.oneOf(['ignore', 'obey']),
   disableFocus: PropTypes.bool,
+  colorProgressBar: PropTypes.string,
   controls: PropTypes.bool,
   currentTime: PropTypes.number,
   progressUpdateInterval: PropTypes.number,

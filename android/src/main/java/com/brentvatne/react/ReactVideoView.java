@@ -80,8 +80,8 @@ public class ReactVideoView extends ScalableVideoView implements MediaPlayer.OnP
 
     private Handler mProgressUpdateHandler = new Handler();
     private Runnable mProgressUpdateRunnable = null;
-    private Handler videoControlHandler = new Handler();
-    private MediaController mediaController;
+    private Handler mVideoControlHandler = new Handler();
+    private MediaController mMediaController;
 
 
     private String mSrcUriString = null;
@@ -140,7 +140,7 @@ public class ReactVideoView extends ScalableVideoView implements MediaPlayer.OnP
     public boolean onTouchEvent(MotionEvent event) {
         if (mUseNativeControls) {
             initializeMediaControllerIfNeeded();
-            mediaController.show();
+            mMediaController.show();
         }
 
         return super.onTouchEvent(event);
@@ -186,14 +186,14 @@ public class ReactVideoView extends ScalableVideoView implements MediaPlayer.OnP
     }
 
     private void initializeMediaControllerIfNeeded() {
-        if (mediaController == null) {
-            mediaController = new MediaController(this.getContext());
+        if (mMediaController == null) {
+            mMediaController = new MediaController(this.getContext());
         }
     }
 
     public void cleanupMediaPlayerResources() {
-        if ( mediaController != null ) {
-            mediaController.hide();
+        if ( mMediaController != null ) {
+            mMediaController.hide();
         }
         if ( mMediaPlayer != null ) {
             mMediaPlayerValid = false;
@@ -433,14 +433,14 @@ public class ReactVideoView extends ScalableVideoView implements MediaPlayer.OnP
 
         if (mUseNativeControls) {
             initializeMediaControllerIfNeeded();
-            mediaController.setMediaPlayer(this);
-            mediaController.setAnchorView(this);
+            mMediaController.setMediaPlayer(this);
+            mMediaController.setAnchorView(this);
 
-            videoControlHandler.post(new Runnable() {
+            mVideoControlHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    mediaController.setEnabled(true);
-                    mediaController.show();
+                    mMediaController.setEnabled(true);
+                    mMediaController.show();
                 }
             });
         }
