@@ -942,6 +942,12 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
         playPauseButton.setEnabled(enabled);
         rewindContainer.setEnabled(enabled);
         forwardContainer.setEnabled(enabled);
+
+        // Change the visibility of the buttons so they don't capture click events when they have alpha 0
+        int controlsVisibility = alpha == 0.0f ? INVISIBLE : VISIBLE;
+        playPauseButton.setVisibility(controlsVisibility);
+        rewindContainer.setVisibility(controlsVisibility);
+        forwardContainer.setVisibility(controlsVisibility);
     }
 
     public void setStateProgressBar(final String state) {
