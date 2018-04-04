@@ -156,17 +156,13 @@ class VideoPlayer extends Component {
             }
             progressBarMarginBottom={this.state.fullScreen ? 12 : -12}
             stateOverlay={'ACTIVE'}
-            stateMiddleCoreControls={'INACTIVE'}
-            stateProgressBar={'INACTIVE'}
+            stateMiddleCoreControls={'ACTIVE'}
+            stateProgressBar={'ACTIVE'}
             fullscreen={this.state.fullScreen}
             live={false}
-            forceHideControls={false}
             controlsOpacity={1}
             onBottomRightIconClick={() => {
               this.setState({ fullScreen: !this.state.fullScreen });
-            }}
-            onControlsVisibilityChange={(event) => {
-              /* event.nativeEvent */
             }}
             onTouchActionMove={(event) => {
               /* event.nativeEvent touchSwipeHorizontal */
