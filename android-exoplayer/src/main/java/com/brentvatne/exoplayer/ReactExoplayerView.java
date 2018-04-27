@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
@@ -914,15 +915,17 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
     }
 
     public void setFullscreen(boolean fullscreen) {
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) bottomBarWidgetContainer.getLayoutParams();
         if (fullscreen) {
             playPauseButton.setScaleX(1f);
             playPauseButton.setScaleY(1f);
-            bottomBarWidgetContainer.setScaleX(0.97f);
+            params.setMargins(DensityPixels.dpToPx(16), 0, DensityPixels.dpToPx(16), 0);
         } else {
             playPauseButton.setScaleX(0.8f);
             playPauseButton.setScaleY(0.8f);
-            bottomBarWidgetContainer.setScaleX(1f);
+            params.setMargins(0, 0, 0, 0);
         }
+        bottomBarWidgetContainer.setLayoutParams(params);
     }
 
     public void setStateOverlay(final String state) {
