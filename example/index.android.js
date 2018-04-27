@@ -158,6 +158,7 @@ class VideoPlayer extends Component {
             stateOverlay={'ACTIVE'}
             stateMiddleCoreControls={'ACTIVE'}
             stateProgressBar={'ACTIVE'}
+            controlsVisibilityGestureDisabled={true}
             fullscreen={this.state.fullScreen}
             live={false}
             controlsOpacity={1}

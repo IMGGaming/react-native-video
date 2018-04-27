@@ -41,6 +41,7 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
     private static final String PROP_STATE_OVERLAY = "stateOverlay";
     private static final String PROP_STATE_MIDDLE_CORE_CONTROLS = "stateMiddleCoreControls";
     private static final String PROP_STATE_PROGRESS_BAR = "stateProgressBar";
+    private static final String PROP_CONTROLS_VISIBILITY_GESTURE_DISABLED = "controlsVisibilityGestureDisabled";
 
     @Override
     public String getName() {
@@ -209,6 +210,11 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
     @ReactProp(name = PROP_STATE_PROGRESS_BAR)
     public void setStateProgressBar(final ReactExoplayerView videoView, final String state) {
         videoView.setStateProgressBar(state);
+    }
+
+    @ReactProp(name = PROP_CONTROLS_VISIBILITY_GESTURE_DISABLED)
+    public void setControlsVisibilityGestureDisabled(final ReactExoplayerView videoView, final boolean disabled) {
+        videoView.setControlsVisibilityGestureDisabled(disabled);
     }
 
     private boolean startsWithValidScheme(String uriString) {

@@ -255,6 +255,7 @@ Video.propTypes = {
   stateOverlay: PropTypes.oneOf(['ACTIVE', 'INACTIVE', 'HIDDEN']),
   stateMiddleCoreControls: PropTypes.oneOf(['ACTIVE', 'INACTIVE', 'HIDDEN']),
   stateProgressBar: PropTypes.oneOf(['ACTIVE', 'INACTIVE', 'HIDDEN']),
+  controlsVisibilityGestureDisabled: PropTypes.bool,
   onControlsVisibilityChange: PropTypes.func,
   onBottomRightIconClick: PropTypes.func,
   onTouchActionMove: PropTypes.func,

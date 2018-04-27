@@ -129,6 +129,7 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
     private boolean repeat;
     private boolean disableFocus;
     private boolean live = false;
+    private boolean controlsVisibilityGestureDisabled = false;
     // End props
     private float mProgressUpdateInterval = 250.0f;
     private final float NATIVE_PROGRESS_UPDATE_INTERVAL = 250.0f;
@@ -182,13 +183,15 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
         GestureDetector.SimpleOnGestureListener gestureListener = new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-                eventEmitter.touchActionMove(distanceX, distanceY);
-                float newTranslationY = bottomBarWidget.getTranslationY() + distanceY;
-                if (newTranslationY > 0 && newTranslationY < bottomBarWidget.getHeight()) {
-                    bottomBarWidget.setTranslationY(newTranslationY);
-                    float alpha = 1 - newTranslationY / bottomBarWidget.getHeight();
-                    bottomBarWidgetContainer.setAlpha(alpha);
-                    middleCoreControlsContainer.setAlpha(alpha);
+                if (!controlsVisibilityGestureDisabled) {
+                    eventEmitter.touchActionMove(distanceX, distanceY);
+                    float newTranslationY = bottomBarWidget.getTranslationY() + distanceY;
+                    if (newTranslationY > 0 && newTranslationY < bottomBarWidget.getHeight()) {
+                        bottomBarWidget.setTranslationY(newTranslationY);
+                        float alpha = 1 - newTranslationY / bottomBarWidget.getHeight();
+                        bottomBarWidgetContainer.setAlpha(alpha);
+                        middleCoreControlsContainer.setAlpha(alpha);
+                    }
                 }
                 return true;
             }
@@ -981,6 +984,10 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
         if (progressBar != null) {
             progressBar.setEnabled(enabled);
         }
+    }
+
+    public void setControlsVisibilityGestureDisabled(final boolean disabled) {
+        controlsVisibilityGestureDisabled = disabled;
     }
 
     private void animateControls(final float opacity, final long duration) {
