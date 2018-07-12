@@ -7,6 +7,7 @@
 static NSString *const statusKeyPath = @"status";
 static NSString *const playbackLikelyToKeepUpKeyPath = @"playbackLikelyToKeepUp";
 static NSString *const playbackBufferEmptyKeyPath = @"playbackBufferEmpty";
+static NSString *const playbackBufferFullKeyPath = @"playbackBufferFull";
 static NSString *const readyForDisplayKeyPath = @"readyForDisplay";
 static NSString *const playbackRate = @"rate";
 static NSString *const timedMetadata = @"timedMetadata";
@@ -242,6 +243,7 @@ static NSString *const timedMetadata = @"timedMetadata";
 {
     [_playerItem addObserver:self forKeyPath:statusKeyPath options:0 context:nil];
     [_playerItem addObserver:self forKeyPath:playbackBufferEmptyKeyPath options:0 context:nil];
+    [_playerItem addObserver:self forKeyPath:playbackBufferFullKeyPath options:0 context:nil];
     [_playerItem addObserver:self forKeyPath:playbackLikelyToKeepUpKeyPath options:0 context:nil];
     [_playerItem addObserver:self forKeyPath:timedMetadata options:NSKeyValueObservingOptionNew context:nil];
     _playerItemObserversSet = YES;
@@ -258,6 +260,7 @@ static NSString *const timedMetadata = @"timedMetadata";
     if (_playerItemObserversSet) {
         [_playerItem removeObserver:self forKeyPath:statusKeyPath];
         [_playerItem removeObserver:self forKeyPath:playbackBufferEmptyKeyPath];
+        [_playerItem removeObserver:self forKeyPath:playbackBufferFullKeyPath];
         [_playerItem removeObserver:self forKeyPath:playbackLikelyToKeepUpKeyPath];
         [_playerItem removeObserver:self forKeyPath:timedMetadata];
         _playerItemObserversSet = NO;
@@ -424,13 +427,15 @@ static NSString *const timedMetadata = @"timedMetadata";
         } else if ([keyPath isEqualToString:playbackBufferEmptyKeyPath]) {
             _playerBufferEmpty = YES;
             self.onVideoBuffer(@{@"isBuffering": @(YES), @"target": self.reactTag});
+        }  else if ([keyPath isEqualToString:playbackBufferFullKeyPath]) {
+            self.onVideoBuffer(@{@"isBuffering": @(NO), @"target": self.reactTag});
         } else if ([keyPath isEqualToString:playbackLikelyToKeepUpKeyPath]) {
             // Continue playing (or not if paused) after being paused due to hitting an unbuffered zone.
             if ((!(_controls || _fullscreenPlayerPresented) || _playerBufferEmpty) && _playerItem.playbackLikelyToKeepUp) {
                 [self setPaused:_paused];
             }
             _playerBufferEmpty = NO;
-            self.onVideoBuffer(@{@"isBuffering": @(NO), @"target": self.reactTag});
+            
         }
     } else if (object == _playerLayer) {
         if([keyPath isEqualToString:readyForDisplayKeyPath] && [change objectForKey:NSKeyValueChangeNewKey]) {
