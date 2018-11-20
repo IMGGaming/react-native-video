@@ -387,6 +387,10 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
     public void onHostResume() {
         if (!playInBackground || !isInBackground) {
             setPlayWhenReady(!isPaused);
+            // On live, ignore DVR and seek to the most recent position of the video
+            if(this.live && player != null) {
+                player.seekToDefaultPosition();
+            }
         }
         isInBackground = false;
     }
