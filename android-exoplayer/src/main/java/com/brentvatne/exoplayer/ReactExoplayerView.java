@@ -958,6 +958,16 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
         } else {
             eventEmitter.buffering(false);
         }
+
+        if (buffering) {
+            showOverlay();
+        } else {
+            if (!isPaused) {
+                hideOverlay();
+            } else {
+                showOverlay();
+            }
+        }
     }
 
     @Override
@@ -1267,6 +1277,11 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
             }
         }
 
+        if (isPaused) {
+            showOverlay();
+        } else {
+            hideOverlay();
+        }
     }
 
     public void setMutedModifier(boolean muted) {
@@ -1547,6 +1562,13 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
 
     private Long keyPressTime;
 
+    private Runnable hideRunnable = new Runnable() {
+        @Override
+        public void run() {
+            setStateOverlay(ControlState.HIDDEN.toString());
+        }
+    };
+
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         Log.d("PLAYER", "dispatchKeyEvent() event = " + event);
@@ -1555,6 +1577,8 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
                 case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
                     setPausedModifier(!isPaused);
                     break;
+                case KeyEvent.KEYCODE_DPAD_LEFT:
+                case KeyEvent.KEYCODE_DPAD_RIGHT:
                 case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
                 case KeyEvent.KEYCODE_MEDIA_REWIND:
 
@@ -1563,6 +1587,9 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
                     if (keyPressTime == null) {
                         keyPressTime = currentTime;
                         increment = 1;
+
+                        showOverlay();
+
                     } else if ((currentTime - keyPressTime) / 1000 > 15) {
                         increment = 25;
                     } else if ((currentTime - keyPressTime) / 1000 > 10) {
@@ -1579,12 +1606,28 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
                         ((SeekBar) previewSeekBarLayout.getPreviewView()).setKeyProgressIncrement(increment * 1000);
                     }
                     break;
+                default:
+                    showOverlay();
 
+                    if (!isPaused) {
+                        hideOverlay();
+                    }
+
+                    break;
             }
         } else if (event.getAction() == KeyEvent.ACTION_UP) {
             keyPressTime = null;
         }
 
         return super.dispatchKeyEvent(event);
+    }
+
+    public void showOverlay() {
+        removeCallbacks(hideRunnable);
+        setStateOverlay(ControlState.ACTIVE.toString());
+    }
+
+    public void hideOverlay() {
+        postDelayed(hideRunnable,3000);
     }
 }
