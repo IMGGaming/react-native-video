@@ -17,6 +17,7 @@ import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -26,6 +27,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.brentvatne.react.R;
@@ -233,6 +235,7 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
     //Mux
     private MuxStats muxStats;
     private Map<String, Object> muxData;
+    private PreviewView.OnPreviewChangeListener mPreviewChangeListener;
 
     public ReactExoplayerView(ThemedReactContext context) {
         super(context);
@@ -816,6 +819,8 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
     }
 
     private void updateProgressControl(long currentMillis) {
+        Log.d("PLAYER", "updateProgressControl() currentMillis = " + currentMillis);
+
         ProgressBar progressBar = (ProgressBar) previewSeekBarLayout.getPreviewView();
         if (player == null || progressBar == null) {
             return;
@@ -859,26 +864,29 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
     }
 
     private void setupProgressBarSeekListener() {
-        if (previewSeekBarLayout != null && previewSeekBarLayout.getPreviewView() instanceof ProgressBar) {
-            previewSeekBarLayout.getPreviewView().addOnPreviewChangeListener(new PreviewView.OnPreviewChangeListener() {
-                @Override
-                public void onStartPreview(PreviewView previewView) {
-
-                }
-
-                @Override
-                public void onStopPreview(PreviewView previewView) {
-
-                }
-
-                @Override
-                public void onPreview(PreviewView previewView, int progress, boolean fromUser) {
-                    if (fromUser && player != null) {
-                        player.seekTo(progress);
-                        updateProgressControl(progress);
+        if (previewSeekBarLayout != null
+                && previewSeekBarLayout.checkChilds()
+                && previewSeekBarLayout.getPreviewView() instanceof ProgressBar) {
+            if (mPreviewChangeListener == null) {
+                mPreviewChangeListener = new PreviewView.OnPreviewChangeListener() {
+                    @Override
+                    public void onStartPreview(PreviewView previewView) {
                     }
-                }
-            });
+
+                    @Override
+                    public void onStopPreview(PreviewView previewView) {
+                    }
+
+                    @Override
+                    public void onPreview(PreviewView previewView, int progress, boolean fromUser) {
+                        if (fromUser && player != null) {
+                            player.seekTo(progress);
+                            updateProgressControl(progress);
+                        }
+                    }
+                };
+            }
+            previewSeekBarLayout.getPreviewView().addOnPreviewChangeListener(mPreviewChangeListener);
         }
     }
 
@@ -1535,5 +1543,48 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
         if (muxStats != null) {
             muxStats.setVideoView(exoPlayerView.getVideoSurfaceView());
         }
+    }
+
+    private Long keyPressTime;
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        Log.d("PLAYER", "dispatchKeyEvent() event = " + event);
+        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+            switch (event.getKeyCode()) {
+                case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
+                    setPausedModifier(!isPaused);
+                    break;
+                case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
+                case KeyEvent.KEYCODE_MEDIA_REWIND:
+
+                    final long currentTime = System.currentTimeMillis();
+                    final int increment;
+                    if (keyPressTime == null) {
+                        keyPressTime = currentTime;
+                        increment = 1;
+                    } else if ((currentTime - keyPressTime) / 1000 > 15) {
+                        increment = 25;
+                    } else if ((currentTime - keyPressTime) / 1000 > 10) {
+                        increment = 15;
+                    } else if ((currentTime - keyPressTime) / 1000 > 5) {
+                        increment = 5;
+                    } else {
+                        increment = 1;
+                    }
+
+                    Log.d("PLAYER", "increment = " + increment);
+
+                    if (previewSeekBarLayout.getPreviewView() instanceof SeekBar) {
+                        ((SeekBar) previewSeekBarLayout.getPreviewView()).setKeyProgressIncrement(increment * 1000);
+                    }
+                    break;
+
+            }
+        } else if (event.getAction() == KeyEvent.ACTION_UP) {
+            keyPressTime = null;
+        }
+
+        return super.dispatchKeyEvent(event);
     }
 }
