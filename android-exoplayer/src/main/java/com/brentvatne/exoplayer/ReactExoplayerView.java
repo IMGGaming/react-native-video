@@ -819,7 +819,6 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
     }
 
     private void updateProgressControl(long currentMillis) {
-        Log.d("PLAYER", "updateProgressControl() currentMillis = " + currentMillis);
 
         ProgressBar progressBar = (ProgressBar) previewSeekBarLayout.getPreviewView();
         if (player == null || progressBar == null) {
@@ -1576,12 +1575,18 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
             switch (event.getKeyCode()) {
                 case KeyEvent.KEYCODE_DPAD_CENTER:
                 case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
-                    setPausedModifier(!isPaused);
+                    if (!live) {
+                        setPausedModifier(!isPaused);
+                    }
                     break;
                 case KeyEvent.KEYCODE_DPAD_LEFT:
                 case KeyEvent.KEYCODE_DPAD_RIGHT:
                 case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
                 case KeyEvent.KEYCODE_MEDIA_REWIND:
+
+                    if (live) {
+                        break;
+                    }
 
                     final long currentTime = System.currentTimeMillis();
                     final int increment;
@@ -1591,12 +1596,12 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
 
                         showOverlay();
 
-                    } else if ((currentTime - keyPressTime) / 1000 > 15) {
-                        increment = 25;
                     } else if ((currentTime - keyPressTime) / 1000 > 10) {
-                        increment = 15;
-                    } else if ((currentTime - keyPressTime) / 1000 > 5) {
-                        increment = 5;
+                        increment = 40;
+                    } else if ((currentTime - keyPressTime) / 1000 > 6) {
+                        increment = 25;
+                    } else if ((currentTime - keyPressTime) / 1000 > 3) {
+                        increment = 10;
                     } else {
                         increment = 1;
                     }
