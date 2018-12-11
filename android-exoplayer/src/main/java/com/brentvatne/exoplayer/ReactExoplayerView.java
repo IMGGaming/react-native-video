@@ -1574,6 +1574,7 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
         Log.d("PLAYER", "dispatchKeyEvent() event = " + event);
         if (event.getAction() == KeyEvent.ACTION_DOWN) {
             switch (event.getKeyCode()) {
+                case KeyEvent.KEYCODE_DPAD_CENTER:
                 case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
                     setPausedModifier(!isPaused);
                     break;
