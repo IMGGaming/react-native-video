@@ -1560,6 +1560,7 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
     }
 
     private Long keyPressTime;
+    private boolean keyNotHandled;
 
     private Runnable hideRunnable = new Runnable() {
         @Override
@@ -1570,7 +1571,6 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        Log.d("PLAYER", "dispatchKeyEvent() event = " + event);
         if (event.getAction() == KeyEvent.ACTION_DOWN) {
             switch (event.getKeyCode()) {
                 case KeyEvent.KEYCODE_DPAD_CENTER:
@@ -1588,14 +1588,18 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
                         break;
                     }
 
+                    if (controls.getAlpha() != 1.0f) {
+                        showOverlay();
+                        return true;
+                    }
+
                     final long currentTime = System.currentTimeMillis();
+
                     final int increment;
                     if (keyPressTime == null) {
                         keyPressTime = currentTime;
-                        increment = 1;
-
-                        showOverlay();
-
+                        keyNotHandled = true;
+                        return true;
                     } else if ((currentTime - keyPressTime) / 1000 > 10) {
                         increment = 40;
                     } else if ((currentTime - keyPressTime) / 1000 > 6) {
@@ -1606,23 +1610,44 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
                         increment = 1;
                     }
 
-                    Log.d("PLAYER", "increment = " + increment);
-
                     if (previewSeekBarLayout.getPreviewView() instanceof SeekBar) {
                         ((SeekBar) previewSeekBarLayout.getPreviewView()).setKeyProgressIncrement(increment * 1000);
                     }
+
+                    keyNotHandled = false;
                     break;
                 default:
                     showOverlay();
 
-                    if (!isPaused) {
-                        hideOverlay();
-                    }
-
                     break;
             }
         } else if (event.getAction() == KeyEvent.ACTION_UP) {
+
+            if (keyNotHandled) {
+                switch (event.getKeyCode()) {
+                    case KeyEvent.KEYCODE_DPAD_LEFT:
+                    case KeyEvent.KEYCODE_MEDIA_REWIND: {
+                        long position = player.getCurrentPosition() - 10000;
+                        player.seekTo(position);
+                        updateProgressControl(position);
+                        break;
+                    }
+                    case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
+                    case KeyEvent.KEYCODE_DPAD_RIGHT: {
+                        long position = player.getCurrentPosition() + 10000;
+                        player.seekTo(position);
+                        updateProgressControl(position);
+                        break;
+                    }
+                }
+            }
+
+            if (!isPaused) {
+                hideOverlay();
+            }
+
             keyPressTime = null;
+            keyNotHandled = false;
         }
 
         return super.dispatchKeyEvent(event);
@@ -1634,6 +1659,6 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
     }
 
     public void hideOverlay() {
-        postDelayed(hideRunnable,3000);
+        postDelayed(hideRunnable, 3000);
     }
 }
