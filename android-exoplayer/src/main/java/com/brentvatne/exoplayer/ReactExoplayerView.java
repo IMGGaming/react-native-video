@@ -1562,6 +1562,7 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
     private Long keyPressTime;
     private boolean keyNotHandled;
 
+    private Long controlsAutoHideTimeout;
     private Runnable hideRunnable = new Runnable() {
         @Override
         public void run() {
@@ -1654,11 +1655,21 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
     }
 
     public void showOverlay() {
-        removeCallbacks(hideRunnable);
-        setStateOverlay(ControlState.ACTIVE.toString());
+
+        if (controlsAutoHideTimeout != null) {
+            removeCallbacks(hideRunnable);
+            setStateOverlay(ControlState.ACTIVE.toString());
+        }
     }
 
     public void hideOverlay() {
-        postDelayed(hideRunnable, 3000);
+
+        if (controlsAutoHideTimeout != null) {
+            postDelayed(hideRunnable, controlsAutoHideTimeout);
+        }
+    }
+
+    public void setOverlayAutoHideTimeout(Long hideTimeout) {
+        controlsAutoHideTimeout = hideTimeout;
     }
 }

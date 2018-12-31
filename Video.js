@@ -289,6 +289,7 @@ Video.propTypes = {
   progressBarMarginBottom: PropTypes.number,
   stateOverlay: PropTypes.oneOf(['ACTIVE', 'INACTIVE', 'HIDDEN']),
   stateMiddleCoreControls: PropTypes.oneOf(['ACTIVE', 'INACTIVE', 'HIDDEN']),
+  overlayAutoHideTimeout: PropTypes.string,
   stateProgressBar: PropTypes.oneOf(['ACTIVE', 'INACTIVE', 'HIDDEN']),
   controlsVisibilityGestureDisabled: PropTypes.bool,
   onControlsVisibilityChange: PropTypes.func,
