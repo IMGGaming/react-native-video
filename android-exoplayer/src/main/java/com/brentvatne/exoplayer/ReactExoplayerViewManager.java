@@ -290,8 +290,8 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
     }
 
     @ReactProp(name = PROP_OVERLAY_AUTO_HIDE_TIMEOUT)
-    public void setOverlayAutoHideTimeout(final ReactExoplayerView videoView, final String hideTimeout) {
-        if (!TextUtils.isEmpty(hideTimeout) && TextUtils.isDigitsOnly(hideTimeout)) {
+    public void setOverlayAutoHideTimeout(final ReactExoplayerView videoView, final Integer hideTimeout) {
+        if (hideTimeout != null) {
             videoView.setOverlayAutoHideTimeout(Long.valueOf(hideTimeout));
         } else {
             videoView.setOverlayAutoHideTimeout(null);
