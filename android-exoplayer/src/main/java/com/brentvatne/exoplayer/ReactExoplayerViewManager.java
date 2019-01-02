@@ -61,6 +61,7 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
     private static final String PROP_FULLSCREEN = "fullscreen";
     private static final String PROP_PROGRESS_BAR_MARGIN_BOTTOM = "progressBarMarginBottom";
     private static final String PROP_STATE_OVERLAY = "stateOverlay";
+    private static final String PROP_OVERLAY_AUTO_HIDE_TIMEOUT = "overlayAutoHideTimeout";
     private static final String PROP_STATE_MIDDLE_CORE_CONTROLS = "stateMiddleCoreControls";
     private static final String PROP_STATE_PROGRESS_BAR = "stateProgressBar";
     private static final String PROP_CONTROLS_VISIBILITY_GESTURE_DISABLED = "controlsVisibilityGestureDisabled";
@@ -286,6 +287,15 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
     @ReactProp(name = PROP_STATE_OVERLAY)
     public void setStateOverlay(final ReactExoplayerView videoView, final String state) {
         videoView.setStateOverlay(state);
+    }
+
+    @ReactProp(name = PROP_OVERLAY_AUTO_HIDE_TIMEOUT)
+    public void setOverlayAutoHideTimeout(final ReactExoplayerView videoView, final Integer hideTimeout) {
+        if (hideTimeout != null) {
+            videoView.setOverlayAutoHideTimeout(Long.valueOf(hideTimeout));
+        } else {
+            videoView.setOverlayAutoHideTimeout(null);
+        }
     }
 
     @ReactProp(name = PROP_STATE_MIDDLE_CORE_CONTROLS)
