@@ -262,6 +262,7 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
             }
         };
         gestureDetector = new GestureDetectorCompat(themedReactContext, gestureListener);
+        setPausedModifier(false);
     }
 
 
@@ -794,7 +795,9 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
             case ExoPlayer.STATE_READY:
                 text += "ready";
                 // Show central control buttons when buffering
-                middleCoreControlsContainer.setVisibility(VISIBLE);
+                if (!live) {
+                    middleCoreControlsContainer.setVisibility(VISIBLE);
+                }
                 eventEmitter.ready();
                 onBuffering(false);
                 startProgressHandler();
@@ -1281,6 +1284,8 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
         } else {
             hideOverlay();
         }
+
+        eventEmitter.playbackRateChange(isPaused ? 0.0f : 1.0f);
     }
 
     public void setMutedModifier(boolean muted) {
@@ -1404,6 +1409,8 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
             rewindContainer.setVisibility(controlsVisibility);
             forwardContainer.setVisibility(controlsVisibility);
         }
+
+        middleCoreControlsContainer.setVisibility(live ? INVISIBLE : VISIBLE);
     }
 
     public void setControlsOpacity(final float opacity) {
@@ -1578,6 +1585,7 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
                 case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
                     if (!live) {
                         setPausedModifier(!isPaused);
+                        return true;
                     }
                     break;
                 case KeyEvent.KEYCODE_DPAD_LEFT:
