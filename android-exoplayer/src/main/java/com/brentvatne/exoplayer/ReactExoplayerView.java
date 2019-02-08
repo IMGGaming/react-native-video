@@ -346,12 +346,12 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
             }
         });
         playPauseButton = (ImageButton) controls.findViewById(R.id.playPauseImageView);
-        playPauseButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setPausedModifier(!isPaused);
-            }
-        });
+//        playPauseButton.setOnClickListener(new OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                setPausedModifier(!isPaused);
+//            }
+//        });
         bottomRightIconButton = (ImageButton) findViewById(R.id.bottomRightIconButton);
         bottomRightIconButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -469,6 +469,8 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
             }
             player.prepare(mediaSource, !haveResumePosition, false);
             playerNeedsSource = false;
+
+            showOverlay();
 
             eventEmitter.loadStart();
             loadVideoStarted = true;
@@ -789,14 +791,14 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
             case ExoPlayer.STATE_BUFFERING:
                 text += "buffering";
                 // Hide central control buttons when buffering
-                middleCoreControlsContainer.setVisibility(INVISIBLE);
+                //middleCoreControlsContainer.setVisibility(INVISIBLE);
                 onBuffering(true);
                 break;
             case ExoPlayer.STATE_READY:
                 text += "ready";
                 // Show central control buttons when buffering
-                if (!live) {
-                    middleCoreControlsContainer.setVisibility(VISIBLE);
+                if (!live || isPaused) {
+                //    middleCoreControlsContainer.setVisibility(VISIBLE);
                 }
                 eventEmitter.ready();
                 onBuffering(false);
@@ -1285,6 +1287,7 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
             hideOverlay();
         }
 
+
         eventEmitter.playbackRateChange(isPaused ? 0.0f : 1.0f);
     }
 
@@ -1410,7 +1413,7 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
             forwardContainer.setVisibility(controlsVisibility);
         }
 
-        middleCoreControlsContainer.setVisibility(live ? INVISIBLE : VISIBLE);
+        //middleCoreControlsContainer.setVisibility(live ? INVISIBLE : VISIBLE);
     }
 
     public void setControlsOpacity(final float opacity) {
@@ -1466,7 +1469,8 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
         playPauseButton.setAlpha(alpha);
         rewindContainer.setAlpha(skipButtonsAlpha);
         forwardContainer.setAlpha(skipButtonsAlpha);
-        playPauseButton.setEnabled(enabled);
+        //playPauseButton.setEnabled(enabled);
+        playPauseButton.setFocusable(false);
         rewindContainer.setEnabled(skipButtonsEnabled);
         forwardContainer.setEnabled(skipButtonsEnabled);
 
@@ -1585,6 +1589,13 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
                 case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
                     if (!live) {
                         setPausedModifier(!isPaused);
+                        if (!isPaused) {
+                            middleCoreControlsContainer.setVisibility(INVISIBLE);
+                            controls.setBackground(null);
+                        } else {
+                            middleCoreControlsContainer.setVisibility(VISIBLE);
+                            controls.setBackgroundResource(R.drawable.bg_controls);
+                        }
                         return true;
                     }
                     break;
@@ -1666,14 +1677,27 @@ class ReactExoplayerView extends RelativeLayout implements LifecycleEventListene
 
         if (controlsAutoHideTimeout != null) {
             removeCallbacks(hideRunnable);
-            setStateOverlay(ControlState.ACTIVE.toString());
+        }
+        setStateOverlay(ControlState.ACTIVE.toString());
+
+        int state = player.getPlaybackState();
+
+        Log.d("PLAYER", "showOverlay() state = " + state);
+
+        if (isPaused) {
+            controls.setBackgroundResource(R.drawable.bg_controls);
+            middleCoreControlsContainer.setVisibility(VISIBLE);
+        } else {
+            controls.setBackground(null);
+            middleCoreControlsContainer.setVisibility(INVISIBLE);
         }
     }
 
     public void hideOverlay() {
-
         if (controlsAutoHideTimeout != null) {
             postDelayed(hideRunnable, controlsAutoHideTimeout);
+        } else {
+            setStateOverlay(ControlState.HIDDEN.toString());
         }
     }
 
