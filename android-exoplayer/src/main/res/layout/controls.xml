@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#80000000">
+    android:background="@drawable/bg_controls" >
 
     <RelativeLayout
         android:id="@+id/middleCoreControlsContainer"
@@ -27,7 +27,8 @@
                 android:layout_marginTop="-1dp"
                 android:background="#00000000"
                 android:contentDescription="@string/rewind_video"
-                android:src="@drawable/ic_rewind" />
+                android:src="@drawable/ic_rewind"
+                android:visibility="gone"/>
         </FrameLayout>
 
         <ImageButton
@@ -39,6 +40,7 @@
             android:layout_marginRight="34dp"
             android:background="@drawable/circle_dark"
             android:contentDescription="@string/play_video"
+            android:focusable="false"
             android:src="@drawable/ic_play" />
 
 
@@ -59,7 +61,8 @@
                 android:layout_marginTop="-1dp"
                 android:background="#00000000"
                 android:contentDescription="@string/forward_video"
-                android:src="@drawable/ic_forward" />
+                android:src="@drawable/ic_forward"
+                android:visibility="gone"/>
         </FrameLayout>
 
     </RelativeLayout>
