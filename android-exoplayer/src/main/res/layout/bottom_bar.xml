@@ -8,6 +8,7 @@
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
     android:paddingTop="8dp"
+    android:focusable="true"
     android:background="@drawable/bg_bottom_bar">
 
     <TextView
