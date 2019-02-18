@@ -8,6 +8,7 @@
 #include "DiceUtils.h"
 #include "DiceBeaconRequest.h"
 #include "DiceHTTPRequester.h"
+#include "DicePlayerViewController.h"
 
 #if TARGET_OS_IOS
 #import <dice_shield_ios/dice_shield_ios-Swift.h>
@@ -45,7 +46,8 @@ static int const RCTVideoUnset = -1;
   BOOL _playerBufferEmpty;
   AVPlayerLayer *_playerLayer;
   BOOL _playerLayerObserverSet;
-  AVPlayerViewController *_playerViewController;
+  UIViewController *_playerViewController; // AVPlayerViewController or DicePlayerViewController;
+  NSString *_nativeViewType;
   NSURL *_videoURL;
   
   /* Required to publish events */
@@ -111,6 +113,7 @@ static int const RCTVideoUnset = -1;
     _playWhenInactive = false;
     _ignoreSilentSwitch = @"inherit"; // inherit, ignore, obey
     _diceBeaconRequestOngoing = NO;
+    _nativeViewType = @"dice";
 #if __has_include(<react-native-video/RCTVideoCache.h>)
     _videoCache = [RCTVideoCache sharedInstance];
 #endif
@@ -440,7 +443,12 @@ static int const RCTVideoUnset = -1;
     if (_playerLayer != nil) {
         [MUXSDKStats monitorAVPlayerLayer:_playerLayer withPlayerName:@"dicePlayer" playerData:_playerData videoData:_videoData];
     } else if (_playerViewController != nil) {
-        [MUXSDKStats monitorAVPlayerViewController:_playerViewController withPlayerName:@"dicePlayer" playerData:_playerData videoData:_videoData];
+        if ([_playerViewController isKindOfClass:[AVPlayerViewController class]]) {
+          [MUXSDKStats monitorAVPlayerViewController:(AVPlayerViewController*)_playerViewController withPlayerName:@"dicePlayer" playerData:_playerData videoData:_videoData];
+        } else if ([_playerViewController isKindOfClass:[DicePlayerViewController class]]) {
+          AVPlayerLayer* layer = [((DicePlayerViewController*)_playerViewController) getPlayerLayer];
+          [MUXSDKStats monitorAVPlayerLayer:layer withPlayerName:@"dicePlayer" playerData:_playerData videoData:_videoData];
+        }
     }
 }
 
@@ -1014,7 +1022,10 @@ static void extracted(RCTVideo *object, NSDictionary *source) {
 {
   if( _controls )
   {
-    _playerViewController.videoGravity = mode;
+      if ([_playerViewController isKindOfClass:[AVPlayerViewController class]]) {
+          ((AVPlayerViewController*)_playerViewController).videoGravity = mode;
+      }
+      //fixme: add dice method
   }
   else
   {
@@ -1428,7 +1439,7 @@ static void extracted(RCTVideo *object, NSDictionary *source) {
         self.onVideoFullscreenPlayerWillPresent(@{@"target": self.reactTag});
       }
       [viewController presentViewController:_playerViewController animated:true completion:^{
-        _playerViewController.showsPlaybackControls = YES;
+//        _playerViewController.showsPlaybackControls = YES;
         _fullscreenPlayerPresented = fullscreen;
         if(self.onVideoFullscreenPlayerDidPresent) {
           self.onVideoFullscreenPlayerDidPresent(@{@"target": self.reactTag});
@@ -1443,6 +1454,28 @@ static void extracted(RCTVideo *object, NSDictionary *source) {
       [self videoPlayerViewControllerDidDismiss:_playerViewController];
     }];
   }
+}
+
+- (DicePlayerViewController*)createDicePlayerViewController:(AVPlayer*)player withPlayerItem:(AVPlayerItem*)playerItem {
+    UIStoryboard *sb = [UIStoryboard storyboardWithName:@"DicePlayerViewController" bundle:nil];
+    DicePlayerViewController *vc = [sb instantiateViewControllerWithIdentifier:@"DicePlayerViewController"];
+    vc.view.frame = self.bounds;
+    [vc setPlayer:_player playerItem:playerItem];
+    vc.view.frame = self.bounds;
+    return vc;
+}
+
+- (void)useDicePlayerViewController
+{
+    if( _player )
+    {
+        _playerViewController = [self createDicePlayerViewController:_player withPlayerItem:_playerItem];
+        // to prevent video from being animated when resizeMode is 'cover'
+        // resize mode must be set before subview is added
+        [self setResizeMode:_resizeMode];
+        [self addSubview:_playerViewController.view];
+        [self setupMux];
+    }
 }
 
 - (void)usePlayerViewController
@@ -1486,7 +1519,11 @@ static void extracted(RCTVideo *object, NSDictionary *source) {
     if( _controls )
     {
       [self removePlayerLayer];
-      [self usePlayerViewController];
+        if ([_nativeViewType isEqualToString:@"dice"]) {
+            [self useDicePlayerViewController];
+        } else {
+            [self usePlayerViewController];
+        }
     }
     else
     {
@@ -1519,7 +1556,7 @@ static void extracted(RCTVideo *object, NSDictionary *source) {
 
 #pragma mark - RCTVideoPlayerViewControllerDelegate
 
-- (void)videoPlayerViewControllerWillDismiss:(AVPlayerViewController *)playerViewController
+- (void)videoPlayerViewControllerWillDismiss:(UIViewController *)playerViewController
 {
   if (_playerViewController == playerViewController && _fullscreenPlayerPresented && self.onVideoFullscreenPlayerWillDismiss)
   {
@@ -1527,7 +1564,7 @@ static void extracted(RCTVideo *object, NSDictionary *source) {
   }
 }
 
-- (void)videoPlayerViewControllerDidDismiss:(AVPlayerViewController *)playerViewController
+- (void)videoPlayerViewControllerDidDismiss:(UIViewController *)playerViewController
 {
   if (_playerViewController == playerViewController && _fullscreenPlayerPresented)
   {
@@ -1555,7 +1592,9 @@ static void extracted(RCTVideo *object, NSDictionary *source) {
   if( _controls )
   {
     view.frame = self.bounds;
-    [_playerViewController.contentOverlayView insertSubview:view atIndex:atIndex];
+    if ([_playerViewController isKindOfClass:[AVPlayerViewController class]]) {
+      [((AVPlayerViewController*)_playerViewController).contentOverlayView insertSubview:view atIndex:atIndex];
+    }
   }
   else
   {
@@ -1585,8 +1624,10 @@ static void extracted(RCTVideo *object, NSDictionary *source) {
     _playerViewController.view.frame = self.bounds;
     
     // also adjust all subviews of contentOverlayView
-    for (UIView* subview in _playerViewController.contentOverlayView.subviews) {
-      subview.frame = self.bounds;
+    if ([_playerViewController isKindOfClass:[AVPlayerViewController class]]) {
+      for (UIView* subview in ((AVPlayerViewController*)_playerViewController).contentOverlayView.subviews) {
+        subview.frame = self.bounds;
+      }
     }
   }
   else

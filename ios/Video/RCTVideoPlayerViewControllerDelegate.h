@@ -2,6 +2,6 @@
 #import "AVKit/AVKit.h"
 
 @protocol RCTVideoPlayerViewControllerDelegate <NSObject>
-- (void)videoPlayerViewControllerWillDismiss:(AVPlayerViewController *)playerViewController;
-- (void)videoPlayerViewControllerDidDismiss:(AVPlayerViewController *)playerViewController;
+- (void)videoPlayerViewControllerWillDismiss:(UIViewController *)playerViewController;
+- (void)videoPlayerViewControllerDidDismiss:(UIViewController *)playerViewController;
 @end

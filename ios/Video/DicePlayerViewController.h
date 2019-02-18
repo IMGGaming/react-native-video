@@ -13,7 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface DicePlayerViewController : UIViewController
 
--(void)setPlayer:(AVPlayer*)player;
+-(AVPlayerLayer*)getPlayerLayer;
+-(void)setPlayer:(AVPlayer*)player playerItem:(AVPlayerItem*)playerItem;
 
 @end
 
