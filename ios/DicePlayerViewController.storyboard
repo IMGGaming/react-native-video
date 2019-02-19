@@ -107,22 +107,26 @@
                                     <constraint firstAttribute="bottom" secondItem="Jh0-Y1-8mp" secondAttribute="bottom" id="tfK-Va-HTj"/>
                                 </constraints>
                             </view>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8oq-bE-2XU">
-                                <rect key="frame" x="425" y="192" width="46" height="30"/>
-                                <state key="normal" title="Button"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8oq-bE-2XU">
+                                <rect key="frame" x="408" y="167" width="80" height="80"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="80" id="Yb5-yr-OVl"/>
+                                    <constraint firstAttribute="height" constant="80" id="o6B-1x-VS2"/>
+                                </constraints>
+                                <state key="normal" image="play"/>
                                 <connections>
                                     <action selector="didTapPlayPauseButton:" destination="USZ-XY-Zf7" eventType="touchUpInside" id="Tu0-wq-esf"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="B8a-fi-0ai">
-                                <rect key="frame" x="329" y="192" width="46" height="30"/>
+                                <rect key="frame" x="312" y="192" width="46" height="30"/>
                                 <state key="normal" title="Button"/>
                                 <connections>
                                     <action selector="didTapRewindButton:" destination="USZ-XY-Zf7" eventType="touchUpInside" id="5Ye-pH-CHU"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0Vl-y7-g7l">
-                                <rect key="frame" x="521" y="192" width="46" height="30"/>
+                                <rect key="frame" x="538" y="192" width="46" height="30"/>
                                 <state key="normal" title="Button"/>
                                 <connections>
                                     <action selector="didTapForwardButton:" destination="USZ-XY-Zf7" eventType="touchUpInside" id="rfc-st-b4P"/>
@@ -162,4 +166,7 @@
             <point key="canvasLocation" x="-319.41964285714283" y="159.42028985507247"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="play" width="1024" height="1024"/>
+    </resources>
 </document>

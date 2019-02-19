@@ -25,6 +25,7 @@
 		B2AEE847219B40E00079C074 /* DiceHTTPRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B225D44E2189C36D0016F315 /* DiceHTTPRequest.m */; };
 		B2AEE848219B40E20079C074 /* DiceHTTPRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = B225D44D2189C36D0016F315 /* DiceHTTPRequester.m */; };
 		B2B173E0218082D7002AAC20 /* dice_shield_tvos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2B173DF218082D7002AAC20 /* dice_shield_tvos.framework */; };
+		B2B5F57F221C50A900CD83E0 /* Images.xcassets in CopyFiles */ = {isa = PBXBuildFile; fileRef = B2B5F57E221C4C1100CD83E0 /* Images.xcassets */; };
 		B2FE9B5822032D88006BC9C8 /* DicePlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B2FE9B5722032D88006BC9C8 /* DicePlayerViewController.m */; };
 		B2FE9B5922033073006BC9C8 /* DicePlayerViewController.storyboard in CopyFiles */ = {isa = PBXBuildFile; fileRef = B2FE9B5522031874006BC9C8 /* DicePlayerViewController.storyboard */; };
 		D1107C0A2110259000073188 /* UIView+FindUIViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D1107C032110259000073188 /* UIView+FindUIViewController.m */; };
@@ -44,6 +45,7 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
+				B2B5F57F221C50A900CD83E0 /* Images.xcassets in CopyFiles */,
 				B2FE9B5922033073006BC9C8 /* DicePlayerViewController.storyboard in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -90,6 +92,7 @@
 		B225D4572189C4C50016F315 /* DiceUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DiceUtils.h; sourceTree = "<group>"; };
 		B24E5C8521677B5A00CF0225 /* dice_shield_ios.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = dice_shield_ios.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B2B173DF218082D7002AAC20 /* dice_shield_tvos.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = dice_shield_tvos.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B2B5F57E221C4C1100CD83E0 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		B2FE9B5522031874006BC9C8 /* DicePlayerViewController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = DicePlayerViewController.storyboard; sourceTree = "<group>"; };
 		B2FE9B5622032D88006BC9C8 /* DicePlayerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DicePlayerViewController.h; path = Video/DicePlayerViewController.h; sourceTree = "<group>"; };
 		B2FE9B5722032D88006BC9C8 /* DicePlayerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = DicePlayerViewController.m; path = Video/DicePlayerViewController.m; sourceTree = "<group>"; };
@@ -154,6 +157,7 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				B2B5F57E221C4C1100CD83E0 /* Images.xcassets */,
 				B2FE9B5622032D88006BC9C8 /* DicePlayerViewController.h */,
 				B2FE9B5722032D88006BC9C8 /* DicePlayerViewController.m */,
 				B2FE9B5522031874006BC9C8 /* DicePlayerViewController.storyboard */,

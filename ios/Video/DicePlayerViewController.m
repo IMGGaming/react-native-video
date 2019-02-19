@@ -39,7 +39,10 @@ id _timeObserver;
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    [_seekBar setThumbImage:[self thumbImage] forState:UIControlStateNormal];
 }
+
+#pragma mark - Contruction
 
 - (instancetype)init
 {
@@ -66,9 +69,21 @@ id _timeObserver;
     [self addPlayerItemObservers];
 }
 
+- (void)dealloc
+{
+    [self removePlayerItemObservers];
+    [self removePlayerTimeObserver];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    _playerLayer.player = nil;
+    _playerLayer = nil;
+    
+}
+
 -(AVPlayerLayer*)getPlayerLayer {
     return _playerLayer;
 }
+
+#pragma mark - PlayerItem Observers
 
 - (void)addPlayerItemObservers
 {
@@ -131,12 +146,16 @@ id _timeObserver;
     if (!_playerLayer) {
         return;
     }
+    UIImage* icon;
     if (_playerLayer.player.rate > 0) {
         [_playerLayer.player pause];
+        icon = [UIImage imageNamed:@"play"];
     } else {
         [_playerLayer.player play];
+        icon = [UIImage imageNamed:@"pause"];
     }
-        
+    
+    [_playPauseButton setImage:icon forState:UIControlStateNormal];
 }
 
 - (IBAction)didTapForwardButton:(UIButton *)sender {
@@ -157,6 +176,8 @@ id _timeObserver;
         
     }];
 }
+
+#pragma mark SeekBar
 
 float _playbackRate;
 
@@ -322,6 +343,7 @@ float _playbackRate;
     }
 }
 
+#pragma mark Player Listeners
 
 - (void)attachListeners
 {
@@ -366,6 +388,30 @@ float _playbackRate;
 //    }
 }
 
+-(void)addPlayerTimeObserver
+{
+    const Float64 progressUpdateIntervalMS = 0.25;
+    // @see endScrubbing in AVPlayerDemoPlaybackViewController.m
+    // of https://developer.apple.com/library/ios/samplecode/AVPlayerDemo/Introduction/Intro.html
+    __weak DicePlayerViewController *weakSelf = self;
+    _timeObserver = [_playerLayer.player addPeriodicTimeObserverForInterval:CMTimeMakeWithSeconds(progressUpdateIntervalMS, NSEC_PER_SEC)
+                                                                      queue:NULL
+                                                                 usingBlock:^(CMTime time) { [weakSelf notifyProgressUpdate]; }
+                     ];
+}
+
+/* Cancels the previously registered time observer. */
+-(void)removePlayerTimeObserver
+{
+    if (_timeObserver)
+    {
+        [_playerLayer.player removeTimeObserver:_timeObserver];
+        _timeObserver = nil;
+    }
+}
+
+#pragma mark UI updates
+
 -(void)setDuration:(float)duration {
     [self.totalTime setText: [self getTimeStringWith:duration]];
 }
@@ -382,17 +428,7 @@ float _playbackRate;
     return [NSString stringWithFormat:@"%02d:%02d:%02d", hours, minutes, secs];
 }
 
--(void)addPlayerTimeObserver
-{
-    const Float64 progressUpdateIntervalMS = 0.25;
-    // @see endScrubbing in AVPlayerDemoPlaybackViewController.m
-    // of https://developer.apple.com/library/ios/samplecode/AVPlayerDemo/Introduction/Intro.html
-    __weak DicePlayerViewController *weakSelf = self;
-    _timeObserver = [_playerLayer.player addPeriodicTimeObserverForInterval:CMTimeMakeWithSeconds(progressUpdateIntervalMS, NSEC_PER_SEC)
-                                                          queue:NULL
-                                                     usingBlock:^(CMTime time) { [weakSelf notifyProgressUpdate]; }
-                     ];
-}
+
 
 - (void)notifyProgressUpdate {
     if (isSeekInProgress) {
@@ -405,25 +441,9 @@ float _playbackRate;
     [self updateCurrentTime:currentTime];
 }
 
-/* Cancels the previously registered time observer. */
--(void)removePlayerTimeObserver
-{
-    if (_timeObserver)
-    {
-        [_playerLayer.player removeTimeObserver:_timeObserver];
-        _timeObserver = nil;
-    }
-}
 
-- (void)dealloc
-{
-    [self removePlayerItemObservers];
-    [self removePlayerTimeObserver];
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    _playerLayer.player = nil;
-    _playerLayer = nil;
-    
-}
+
+
 
 #pragma mark - Seekbar
 
@@ -478,6 +498,22 @@ BOOL isSeekInProgress;
             [self trySeekToChaseTime];
         }
     }];
+}
+
+- (UIImage*)thumbImage {
+
+    UIGraphicsBeginImageContextWithOptions(CGSizeMake(10, 10), NO, 0);
+    CGContextRef ctx = UIGraphicsGetCurrentContext();
+    CGContextSaveGState(ctx);
+    
+    CGRect rect = CGRectMake(0, 0, 10, 10);
+    CGContextSetFillColorWithColor(ctx, [UIColor.brownColor CGColor]);
+    CGContextFillEllipseInRect(ctx, rect);
+    
+    CGContextRestoreGState(ctx);
+    UIImage* img = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return img;
 }
 
 @end
