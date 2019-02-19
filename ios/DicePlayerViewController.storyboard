@@ -134,6 +134,7 @@
                             </button>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <gestureRecognizers/>
                         <constraints>
                             <constraint firstItem="8oq-bE-2XU" firstAttribute="leading" secondItem="B8a-fi-0ai" secondAttribute="trailing" constant="50" id="0vo-ab-jLF"/>
                             <constraint firstItem="sR6-Ep-u4t" firstAttribute="bottom" secondItem="RjT-ML-Vlj" secondAttribute="bottom" id="CoG-7z-8TH"/>
@@ -149,19 +150,30 @@
                             <constraint firstItem="0Vl-y7-g7l" firstAttribute="leading" secondItem="8oq-bE-2XU" secondAttribute="trailing" constant="50" id="q42-3t-z83"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="sR6-Ep-u4t"/>
+                        <connections>
+                            <outletCollection property="gestureRecognizers" destination="EPh-bv-G9n" appends="YES" id="Ltk-LA-ncr"/>
+                        </connections>
                     </view>
                     <connections>
                         <outlet property="backButton" destination="alI-02-jnm" id="V4d-Sm-1BG"/>
+                        <outlet property="bottomBar" destination="RjT-ML-Vlj" id="m9c-l8-h4J"/>
                         <outlet property="currentTime" destination="G6S-cC-Ibg" id="jjq-sI-sQ2"/>
                         <outlet property="forwardButton" destination="0Vl-y7-g7l" id="sjs-Jk-pwn"/>
                         <outlet property="playPauseButton" destination="8oq-bE-2XU" id="f1q-Ia-cw5"/>
                         <outlet property="rewindButton" destination="B8a-fi-0ai" id="6Uc-Az-YQd"/>
                         <outlet property="seekBar" destination="3fY-rO-mfW" id="54f-Um-9Wk"/>
+                        <outlet property="tapGestureRecognizer" destination="EPh-bv-G9n" id="PUg-kQ-rs6"/>
                         <outlet property="titleLabel" destination="JHd-kc-g7f" id="c1A-gO-TJd"/>
+                        <outlet property="topBar" destination="K3k-dP-TnS" id="14N-g0-hEc"/>
                         <outlet property="totalTime" destination="jFc-Ij-vSs" id="lGZ-dB-H3O"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="O1L-Ax-0gA" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <tapGestureRecognizer cancelsTouchesInView="NO" id="EPh-bv-G9n">
+                    <connections>
+                        <action selector="didTap:" destination="USZ-XY-Zf7" id="3bI-WT-B2Y"/>
+                    </connections>
+                </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="-319.41964285714283" y="159.42028985507247"/>
         </scene>

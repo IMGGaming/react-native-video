@@ -24,6 +24,9 @@ static NSString *const player_timedMetadata = @"timedMetadata";
 @property (weak, nonatomic) IBOutlet UIButton *backButton;
 @property (weak, nonatomic) IBOutlet UIButton *rewindButton;
 @property (weak, nonatomic) IBOutlet UIButton *forwardButton;
+@property (weak, nonatomic) IBOutlet UIView *bottomBar;
+@property (weak, nonatomic) IBOutlet UIView *topBar;
+@property (weak, nonatomic) IBOutlet UITapGestureRecognizer *tapGestureRecognizer;
 
 @end
 
@@ -35,6 +38,8 @@ BOOL _playerItemObserversSet;
 BOOL _playbackStalled;
 
 id _timeObserver;
+
+BOOL _isPlaying;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -83,14 +88,60 @@ id _timeObserver;
     return _playerLayer;
 }
 
+#pragma mark - Tap gestures
+
+NSTimeInterval lastTouchTime;
+
+- (IBAction)didTap:(UITapGestureRecognizer *)sender {
+    if (_playPauseButton.isHidden) {
+        [self setControlsVisibility:YES];
+    }
+    lastTouchTime = [NSDate timeIntervalSinceReferenceDate];
+    [self updateControls];
+    NSLog(@"didTap");
+}
+
+-(void)updateControls {
+    if (!_isPlaying) {
+        [self setControlsVisibility:YES];
+//        return;
+    }
+    NSTimeInterval now = [NSDate timeIntervalSinceReferenceDate];
+    if (now - lastTouchTime > 2.0 && !_seekBarInUse) {
+        [self setControlsVisibility:NO];
+    } else {
+        __weak DicePlayerViewController* vc = self;
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [vc updateControls];
+        });
+    }
+
+}
+
+//-(void)hideUIWithDelay {
+//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//        NSTimeInterval now = [NSDate timeIntervalSinceReferenceDate];
+//        if (now - lastTouchTime > 2.0) {
+//            [self setControlsVisibility:NO];
+//        } else {
+//            [self hideUIWithDelay];
+//        }
+//    });
+//}
+
+
 #pragma mark - PlayerItem Observers
 
 - (void)addPlayerItemObservers
 {
+    if (_playerItemObserversSet) {
+        return;
+    }
     [_playerItem addObserver:self forKeyPath:player_statusKeyPath options:0 context:nil];
     [_playerItem addObserver:self forKeyPath:player_playbackBufferEmptyKeyPath options:0 context:nil];
     [_playerItem addObserver:self forKeyPath:player_playbackLikelyToKeepUpKeyPath options:0 context:nil];
     [_playerItem addObserver:self forKeyPath:player_timedMetadata options:NSKeyValueObservingOptionNew context:nil];
+    [_playerLayer.player addObserver:self forKeyPath:player_playbackRate options:0 context:nil];
     _playerItemObserversSet = YES;
 }
 
@@ -104,6 +155,7 @@ id _timeObserver;
         [_playerItem removeObserver:self forKeyPath:player_playbackBufferEmptyKeyPath];
         [_playerItem removeObserver:self forKeyPath:player_playbackLikelyToKeepUpKeyPath];
         [_playerItem removeObserver:self forKeyPath:player_timedMetadata];
+        [_playerLayer.player removeObserver:self forKeyPath:player_playbackRate];
         _playerItemObserversSet = NO;
     }
 }
@@ -120,7 +172,12 @@ id _timeObserver;
 
 #pragma mark - Playback controll buttons
 
+BOOL _isSeeking;
+
 - (IBAction)didTapRewindButton:(UIButton *)sender {
+    if (_isSeeking) {
+        return;
+    }
     NSTimeInterval currentTime = CMTimeGetSeconds([_playerLayer.player currentTime]);
     NSTimeInterval newTime = currentTime - 15;
     if (newTime < 0) {
@@ -128,13 +185,14 @@ id _timeObserver;
     }
     
     CMTime seekToTime = CMTimeMake(newTime * 1000, 1000);
-    
-    AVPlayer *player = _playerLayer.player;
+    _isSeeking = YES;
+    __weak AVPlayer *player = _playerLayer.player;
     
     [_playerLayer.player seekToTime:seekToTime completionHandler:^(BOOL finished) {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [player play];
-        });
+//        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//            [player play];
+            _isSeeking = NO;
+//        });
         
     }];
     
@@ -159,7 +217,9 @@ id _timeObserver;
 }
 
 - (IBAction)didTapForwardButton:(UIButton *)sender {
-    
+    if (_isSeeking) {
+        return;
+    }
     NSTimeInterval mediaDuration = CMTimeGetSeconds(_playerLayer.player.currentItem.duration);
     NSTimeInterval currentTime = CMTimeGetSeconds([_playerLayer.player currentTime]);
     NSTimeInterval newTime = currentTime + 15;
@@ -168,11 +228,13 @@ id _timeObserver;
     }
     
     CMTime seekToTime = CMTimeMake(newTime * 1000, 1000);
-    
+    __weak AVPlayer *player = _playerLayer.player;
+    _isSeeking = YES;
     [_playerLayer.player seekToTime:seekToTime completionHandler:^(BOOL finished) {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [_playerLayer.player play];
-        });
+//        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//            [player play];
+            _isSeeking = NO;
+//        });
         
     }];
 }
@@ -180,6 +242,7 @@ id _timeObserver;
 #pragma mark SeekBar
 
 float _playbackRate;
+BOOL _seekBarInUse;
 
 - (IBAction)didChangeSeekBarValue:(UISlider*)sender {
     [self.currentTime setText:[self getTimeStringWith:sender.value]];
@@ -191,18 +254,23 @@ float _playbackRate;
     _playbackRate = _playerLayer.player.rate;
     [_playerLayer.player pause];
     [self removePlayerTimeObserver];
+    _seekBarInUse = YES;
 }
 
 - (IBAction)timeSliderEndedTrackingInside:(UISlider *)sender {
     CMTime time = CMTimeMakeWithSeconds(sender.value, 1);
     [self stopPlayingAndSeekSmoothlyToTime:time];
     [self addPlayerTimeObserver];
+    lastTouchTime = [NSDate timeIntervalSinceReferenceDate];
+    _seekBarInUse = NO;
 }
 
 - (IBAction)timeSliderEndedTrackingOutside:(UISlider *)sender {
     CMTime time = CMTimeMakeWithSeconds(sender.value, 1);
     [self stopPlayingAndSeekSmoothlyToTime:time];
     [self addPlayerTimeObserver];
+    lastTouchTime = [NSDate timeIntervalSinceReferenceDate];
+    _seekBarInUse = NO;
 }
 
 
@@ -303,6 +371,7 @@ float _playbackRate;
 //                                    @"target": self.reactTag});
             }
         } else if ([keyPath isEqualToString:player_playbackBufferEmptyKeyPath]) {
+            _isPlaying = NO;
 //            _playerBufferEmpty = YES;
 //            self.onVideoBuffer(@{@"isBuffering": @(YES), @"target": self.reactTag});
         } else if ([keyPath isEqualToString:player_playbackLikelyToKeepUpKeyPath]) {
@@ -310,6 +379,10 @@ float _playbackRate;
 //            if ((!(_controls || _fullscreenPlayerPresented) || _playerBufferEmpty) && _playerItem.playbackLikelyToKeepUp) {
 //                [self setPaused:_paused];
 //            }
+            if (_playerItem.playbackLikelyToKeepUp) {
+                _isPlaying = YES;
+                [_playerLayer.player play];
+            }
 //            _playerBufferEmpty = NO;
 //            self.onVideoBuffer(@{@"isBuffering": @(NO), @"target": self.reactTag});
         }
@@ -325,10 +398,13 @@ float _playbackRate;
 //                self.onPlaybackRateChange(@{@"playbackRate": [NSNumber numberWithFloat:_player.rate],
 //                                            @"target": self.reactTag});
 //            }
+            NSLog(@"playback rate = %@", [NSNumber numberWithFloat:_playerLayer.player.rate]);
             if(_playerLayer.player.rate > 0) {
 //                [self startDiceBeaconCallsAfter:0];
+                _isPlaying = YES;
             } else {
 //                [_diceBeaconRequst cancel];
+                _isPlaying = NO;
             }
             if(_playbackStalled && _playerLayer.player.rate > 0) {
 //                if(self.onPlaybackResume) {
@@ -337,6 +413,7 @@ float _playbackRate;
 //                }
                 _playbackStalled = NO;
             }
+            [self updateControls];
         }
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
@@ -371,6 +448,7 @@ float _playbackRate;
 //        self.onPlaybackStalled(@{@"target": self.reactTag});
 //    }
     _playbackStalled = YES;
+    _isPlaying = NO;
 }
 
 - (void)playerItemDidReachEnd:(NSNotification *)notification
@@ -386,6 +464,7 @@ float _playbackRate;
 //    } else {
 //        [self removePlayerTimeObserver];
 //    }
+    [self setControlsVisibility:YES];
 }
 
 -(void)addPlayerTimeObserver
@@ -411,6 +490,16 @@ float _playbackRate;
 }
 
 #pragma mark UI updates
+
+-(void)setControlsVisibility:(BOOL)visibility {
+    
+    [_topBar setHidden:!visibility];
+    [_bottomBar setHidden:!visibility];
+    [_playPauseButton setHidden:!visibility];
+    [_rewindButton setHidden:!visibility];
+    [_forwardButton setHidden:!visibility];
+    
+}
 
 -(void)setDuration:(float)duration {
     [self.totalTime setText: [self getTimeStringWith:duration]];
