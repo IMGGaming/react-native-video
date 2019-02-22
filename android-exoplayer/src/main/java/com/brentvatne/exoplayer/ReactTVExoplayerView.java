@@ -12,6 +12,7 @@ import android.os.Message;
 import android.support.annotation.IntegerRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.view.GestureDetectorCompat;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -63,6 +64,7 @@ import com.google.android.exoplayer2.drm.FrameworkMediaCrypto;
 import com.google.android.exoplayer2.drm.FrameworkMediaDrm;
 import com.google.android.exoplayer2.drm.HttpMediaDrmCallback;
 import com.google.android.exoplayer2.drm.UnsupportedDrmException;
+import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.mediacodec.MediaCodecRenderer;
 import com.google.android.exoplayer2.mediacodec.MediaCodecUtil;
@@ -241,6 +243,10 @@ class ReactTVExoplayerView extends RelativeLayout implements LifecycleEventListe
     private Map<String, Object> muxData;
     private PreviewView.OnPreviewChangeListener mPreviewChangeListener;
 
+    //MediaSession
+    private MediaSessionCompat mediaSession;
+    private MediaSessionConnector mediaSessionConnector;
+
     public ReactTVExoplayerView(ThemedReactContext context) {
         super(context);
         this.themedReactContext = context;
@@ -267,6 +273,9 @@ class ReactTVExoplayerView extends RelativeLayout implements LifecycleEventListe
         };
         gestureDetector = new GestureDetectorCompat(themedReactContext, gestureListener);
         setPausedModifier(false);
+
+        mediaSession = new MediaSessionCompat(getContext(), getContext().getPackageName());
+        mediaSessionConnector = new MediaSessionConnector(mediaSession);
     }
 
 
@@ -458,6 +467,8 @@ class ReactTVExoplayerView extends RelativeLayout implements LifecycleEventListe
 
             PlaybackParameters params = new PlaybackParameters(rate, 1f);
             player.setPlaybackParameters(params);
+
+            activateMediaSession();
         }
         if (playerNeedsSource && srcUri != null) {
             ArrayList<MediaSource> mediaSourceList = buildTextSources();
@@ -496,6 +507,24 @@ class ReactTVExoplayerView extends RelativeLayout implements LifecycleEventListe
             }
         }
     }
+
+    // MediaSession related functions.
+    private void activateMediaSession() {
+        Log.d(TAG, "activateMediaSession()");
+        mediaSessionConnector.setPlayer(player, null);
+        mediaSession.setActive(true);
+    }
+
+    private void deactivateMediaSession() {
+        Log.d(TAG, "deactivateMediaSession()");
+        mediaSessionConnector.setPlayer(null, null);
+        mediaSession.setActive(false);
+    }
+
+    private void releaseMediaSession() {
+        mediaSession.release();
+    }
+
 
     @SuppressWarnings("unchecked")
     private MediaSource buildMediaSource(Uri uri, @Nullable String overrideExtension) {
@@ -642,7 +671,12 @@ class ReactTVExoplayerView extends RelativeLayout implements LifecycleEventListe
             muxStats.release();
             muxStats = null;
         }
+
+        deactivateMediaSession();
+        releaseMediaSession();
+
         dismissTracksDialog();
+
         if (player != null) {
             updateResumePosition();
             player.release();
