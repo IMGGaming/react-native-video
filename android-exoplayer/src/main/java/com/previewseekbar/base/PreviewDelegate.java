@@ -13,7 +13,7 @@ class PreviewDelegate implements PreviewView.OnPreviewChangeListener {
     private boolean setup;
     private boolean isEnabled;
     private PreviewLoader loader;
-    private final boolean ANIMATION_DISABLED = true;
+    private final boolean ANIMATION_DISABLED = false;
 
     PreviewDelegate(PreviewLayout previewLayout) {
         this.previewLayout = previewLayout;

@@ -3,12 +3,12 @@ package com.previewseekbar;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
+import android.view.KeyEvent;
 import android.view.View;
 
 import com.brentvatne.react.R;
@@ -28,6 +28,7 @@ public class PreviewSeekbarTV extends PreviewSeekBar {
     private OnFocusChangeListener focusListener;
 
     private int tintColor;
+    private boolean isTracking;
 
     public PreviewSeekbarTV(Context context) {
         super(context);
@@ -82,5 +83,29 @@ public class PreviewSeekbarTV extends PreviewSeekBar {
             progressDrawable.setColorFilter(color, android.graphics.PorterDuff.Mode.SRC_IN);
             setProgressDrawable(progressDrawable);
         }
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(final KeyEvent event) {
+        Log.d("TEST", "dispatchKeyEvent() " + event.getAction() + " isTracking = " + isTracking);
+
+        final boolean handled = super.dispatchKeyEvent(event);
+
+        switch (event.getAction()) {
+            case KeyEvent.ACTION_DOWN:
+                if (handled && !isTracking) {
+                    isTracking = true;
+                    onStartTrackingTouch(this);
+                }
+                break;
+            case KeyEvent.ACTION_UP:
+                if (isTracking) {
+                    isTracking = false;
+                    onStopTrackingTouch(this);
+                }
+                break;
+        }
+
+        return handled;
     }
 }

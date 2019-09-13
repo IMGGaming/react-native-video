@@ -26,6 +26,7 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.accessibility.CaptioningManager;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -1017,22 +1018,34 @@ class ReactTVExoplayerView extends RelativeLayout implements LifecycleEventListe
 
     private void setupProgressBarSeekListener() {
         if (previewSeekBarLayout != null
+                && previewSeekBarLayout.isEnabled()
                 && previewSeekBarLayout.checkChilds()
                 && previewSeekBarLayout.getPreviewView() instanceof ProgressBar) {
             if (mPreviewChangeListener == null) {
                 mPreviewChangeListener = new PreviewView.OnPreviewChangeListener() {
                     @Override
                     public void onStartPreview(PreviewView previewView) {
+                        Log.d(TAG, "onStartPreview()");
+                        previewSeekBarLayout.showPreview();
                     }
 
                     @Override
                     public void onStopPreview(PreviewView previewView) {
+                        Log.d(TAG, "onStopPreview()");
+                        previewSeekBarLayout.hidePreview();
                     }
 
                     @Override
                     public void onPreview(PreviewView previewView, int progress, boolean fromUser) {
+                        Log.d(TAG, "onPreview() fromUSer = " + fromUser + " previewView = " + previewView.getProgress());
+
                         if (fromUser && player != null) {
                             player.seekTo(progress);
+
+                            ImageView image = previewSeekBarLayout.getPreviewFrameLayout().findViewById(R.id.imageView);
+
+                            image.setImageResource(previewView.getProgress() / 1000 % 2 == 0 ? R.drawable.preview_001 : R.drawable.preview_002);
+
                             updateProgressControl(progress);
                         }
                     }
@@ -1633,6 +1646,15 @@ class ReactTVExoplayerView extends RelativeLayout implements LifecycleEventListe
 
         if (muxStats != null) {
             muxStats.setVideoView(exoPlayerView.getVideoSurfaceView());
+        }
+
+        if (previewSeekBarLayout.getPreviewFrameLayout() != null) {
+            int width = getMeasuredWidth() / 6;
+            previewSeekBarLayout.getPreviewFrameLayout().getLayoutParams().width = width;
+            previewSeekBarLayout.getPreviewFrameLayout().getLayoutParams().height = width * 9 / 16;
+            Log.e(TAG, "onLayout() done");
+        } else {
+            Log.e(TAG, "onLayout() null");
         }
     }
 

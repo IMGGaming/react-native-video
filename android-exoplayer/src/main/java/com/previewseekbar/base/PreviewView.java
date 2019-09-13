@@ -25,5 +25,5 @@ public interface PreviewView {
         void onPreview(PreviewView previewView, int progress, boolean fromUser);
     }
 
-    public void setTintColor(@ColorInt int color);
+    void setTintColor(@ColorInt int color);
 }
