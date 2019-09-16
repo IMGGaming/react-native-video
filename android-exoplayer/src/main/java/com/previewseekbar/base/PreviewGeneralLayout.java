@@ -87,9 +87,9 @@ public abstract class PreviewGeneralLayout extends RelativeLayout implements Pre
 
             // Setup morph view
             ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(0, 0);
-            layoutParams.width = getResources()
-                    .getDimensionPixelSize(R.dimen.previewseekbar_indicator_width);
-            layoutParams.height = layoutParams.width;
+            layoutParams.width = /*getResources()
+                    .getDimensionPixelSize(R.dimen.previewseekbar_indicator_width);*/getPreviewFrameLayout().getMeasuredWidth();
+            layoutParams.height =getPreviewFrameLayout().getMeasuredHeight();
             addView(morphView, layoutParams);
 
             // Add frame view to the preview layout

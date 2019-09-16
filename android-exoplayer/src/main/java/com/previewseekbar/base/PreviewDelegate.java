@@ -20,7 +20,7 @@ class PreviewDelegate implements PreviewView.OnPreviewChangeListener {
     }
 
     void setup() {
-        previewLayout.getPreviewFrameLayout().setVisibility(View.INVISIBLE);
+        previewLayout.getPreviewFrameLayout().setVisibility(View.GONE);
         previewLayout.getMorphView().setVisibility(View.INVISIBLE);
         previewLayout.getFrameView().setVisibility(View.INVISIBLE);
         previewLayout.getPreviewView().addOnPreviewChangeListener(this);

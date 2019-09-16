@@ -235,8 +235,8 @@ class ReactTVExoplayerView extends RelativeLayout implements LifecycleEventListe
     private Runnable seekIndicatorRunnable = new Runnable() {
         @Override
         public void run() {
-            animateHideView(seekIndicator, 400);
-            animateShowView(currentTextView, 400);
+            //animateHideView(seekIndicator, 400);
+            //animateShowView(currentTextView, 400);
         }
     };
 
@@ -379,7 +379,7 @@ class ReactTVExoplayerView extends RelativeLayout implements LifecycleEventListe
             }
         });
 
-        setEpg(false); // default value
+        setEpg(true); // default value
 
         setupButton(playPauseButton);
         setupButton(audioSubtitlesButton);
@@ -923,7 +923,7 @@ class ReactTVExoplayerView extends RelativeLayout implements LifecycleEventListe
                 audioSubtitlesButton.setVisibility(View.VISIBLE);
             } else {
                 Log.d(TAG, "setupSubtitlesButton() INVISIBLE");
-                audioSubtitlesButton.setVisibility(View.GONE);
+                audioSubtitlesButton.setVisibility(View.VISIBLE);
             }
         } else {
             Log.d(TAG, "setupSubtitlesButton() media not ready");
@@ -1026,13 +1026,15 @@ class ReactTVExoplayerView extends RelativeLayout implements LifecycleEventListe
                     @Override
                     public void onStartPreview(PreviewView previewView) {
                         Log.d(TAG, "onStartPreview()");
-                        previewSeekBarLayout.showPreview();
+                        //previewSeekBarLayout.showPreview();
+                        previewSeekBarLayout.getPreviewFrameLayout().setVisibility(VISIBLE);
                     }
 
                     @Override
                     public void onStopPreview(PreviewView previewView) {
                         Log.d(TAG, "onStopPreview()");
-                        previewSeekBarLayout.hidePreview();
+                        //previewSeekBarLayout.hidePreview();
+                        previewSeekBarLayout.getPreviewFrameLayout().setVisibility(GONE);
                     }
 
                     @Override
@@ -1650,8 +1652,14 @@ class ReactTVExoplayerView extends RelativeLayout implements LifecycleEventListe
 
         if (previewSeekBarLayout.getPreviewFrameLayout() != null) {
             int width = getMeasuredWidth() / 6;
+
+            ImageView image = previewSeekBarLayout.getPreviewFrameLayout().findViewById(R.id.imageView);
+
             previewSeekBarLayout.getPreviewFrameLayout().getLayoutParams().width = width;
-            previewSeekBarLayout.getPreviewFrameLayout().getLayoutParams().height = width * 9 / 16;
+            previewSeekBarLayout.getPreviewFrameLayout().getLayoutParams().height = width * 9 / 16 + seekIndicator.getHeight();
+            image.getLayoutParams().width = width;
+            image.getLayoutParams().height = width * 9 / 16;
+
             Log.e(TAG, "onLayout() done");
         } else {
             Log.e(TAG, "onLayout() null");
@@ -1719,8 +1727,7 @@ class ReactTVExoplayerView extends RelativeLayout implements LifecycleEventListe
                         if (keyPressTime == null) {
                             keyPressTime = currentTime;
                             keyNotHandled = true;
-                            showOverlay();
-                            return true;
+                            increment = 1;
                         } else if ((currentTime - keyPressTime) / 1000 > 10) {
                             increment = 40;
                         } else if ((currentTime - keyPressTime) / 1000 > 6) {
@@ -1817,8 +1824,8 @@ class ReactTVExoplayerView extends RelativeLayout implements LifecycleEventListe
                 " indicatorWidth=" + indicatorWidth +
                 " indicatorX=" + indicatorX);
 
-        seekIndicator.setX(indicatorX);
-        animateShowView(seekIndicator, 0);
+        //seekIndicator.setX(indicatorX);
+        //animateShowView(seekIndicator, 0);
     }
 
     public void showOverlay() {

@@ -26,28 +26,35 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <com.imggaming.widgets.DceSeekIndicator
-                android:id="@+id/seekIndicator"
-                android:visibility="gone"
-                tools:visibility="visible"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
             <FrameLayout
                 android:id="@+id/previewFrameLayout"
-                android:layout_width="@dimen/video_preview_width"
-                android:layout_height="@dimen/video_preview_height"
-                android:layout_below="@id/seekIndicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 tools:background="#50ff0000"
                 android:visibility="gone"
                 tools:visibility="visible">
 
-                <ImageView
-                    android:id="@+id/imageView"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:src="@drawable/exo_edit_mode_logo"
-                    android:contentDescription="@string/preview_image" />
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:orientation="vertical">
+
+                    <com.imggaming.widgets.DceSeekIndicator
+                        android:id="@+id/seekIndicator"
+                        android:visibility="visible"
+                        android:layout_gravity="center_horizontal"
+                        tools:visibility="visible"
+                        android:layout_width="wrap_content"
+                        android:layout_height="20dp" />
+
+                    <ImageView
+                        android:id="@+id/imageView"
+                        android:layout_width="@dimen/video_preview_width"
+                        android:layout_height="@dimen/video_preview_height"
+                        android:src="@drawable/exo_edit_mode_logo"
+                        android:contentDescription="@string/preview_image" />
+                </LinearLayout>
 
             </FrameLayout>
 

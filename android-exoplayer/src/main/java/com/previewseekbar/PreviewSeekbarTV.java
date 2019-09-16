@@ -10,6 +10,7 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.SeekBar;
 
 import com.brentvatne.react.R;
 
@@ -94,18 +95,28 @@ public class PreviewSeekbarTV extends PreviewSeekBar {
         switch (event.getAction()) {
             case KeyEvent.ACTION_DOWN:
                 if (handled && !isTracking) {
-                    isTracking = true;
                     onStartTrackingTouch(this);
                 }
                 break;
             case KeyEvent.ACTION_UP:
                 if (isTracking) {
-                    isTracking = false;
                     onStopTrackingTouch(this);
                 }
                 break;
         }
 
         return handled;
+    }
+
+    @Override
+    public void onStartTrackingTouch(final SeekBar seekBar) {
+        super.onStartTrackingTouch(seekBar);
+        isTracking = true;
+    }
+
+    @Override
+    public void onStopTrackingTouch(final SeekBar seekBar) {
+        super.onStopTrackingTouch(seekBar);
+        isTracking = false;
     }
 }
