@@ -134,7 +134,10 @@ public class ReactTVExoplayerViewManager extends ViewGroupManager<ReactTVExoplay
             ActionToken actionToken = ActionToken.fromJson(drm);
 
             if (srcUri != null) {
-                videoView.setSrc(srcUri, extension, actionToken, headers, muxData != null ? muxData.toHashMap() : null);
+                videoView.setSrc(srcUri, extension, actionToken, headers, muxData != null ? muxData.toHashMap() : null,
+                        //"https://dve-images.imggaming.com/original/q/2019/06/06/eC7eaaBbisJqtcyVMV2oS12hN8LqaTyT-1559819044330/bif/preview_thumbnails.bif"
+                        "https://dve-images.imggaming.com/original/p/2019/08/10/TPJrvdwQXbsglzn3WCVZ9RWFZdUj1Omf-1565420882772/bif/preview_thumbnails.bif"
+                        );
             }
         } else {
             int identifier = context.getResources().getIdentifier(

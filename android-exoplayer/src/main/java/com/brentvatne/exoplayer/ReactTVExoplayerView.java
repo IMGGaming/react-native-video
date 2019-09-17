@@ -6,6 +6,7 @@ import android.animation.LayoutTransition;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.media.AudioManager;
@@ -100,6 +101,7 @@ import com.imggaming.tracks.DcePlayerModel;
 import com.imggaming.tracks.DceTracksDialog;
 import com.imggaming.translations.DiceLocalizedStrings;
 import com.imggaming.translations.DiceLocalizedStrings.StringId;
+import com.imggaming.utils.BIFReader;
 import com.imggaming.utils.DensityPixels;
 import com.imggaming.widgets.DceSeekIndicator;
 import com.previewseekbar.PreviewSeekBarLayout;
@@ -255,6 +257,10 @@ class ReactTVExoplayerView extends RelativeLayout implements LifecycleEventListe
     //MediaSession
     private MediaSessionCompat mediaSession;
     private MediaSessionConnector mediaSessionConnector;
+
+    // Previews
+    private String previewUrl;
+    private BIFReader previewLoader;
 
     public ReactTVExoplayerView(ThemedReactContext context) {
         super(context);
@@ -532,6 +538,14 @@ class ReactTVExoplayerView extends RelativeLayout implements LifecycleEventListe
                 }
                 muxStats.setVideoView(exoPlayerView.getVideoSurfaceView());
             }
+
+            if (previewLoader != null) {
+                previewLoader.close();
+            }
+
+            if (previewUrl != null) {
+                previewLoader = new BIFReader(previewUrl);
+            }
         }
     }
 
@@ -712,6 +726,12 @@ class ReactTVExoplayerView extends RelativeLayout implements LifecycleEventListe
         if (muxStats != null) {
             muxStats.release();
             muxStats = null;
+        }
+        if (previewLoader != null) {
+//            ImageView imageView = previewSeekBarLayout.getPreviewFrameLayout().findViewById(R.id.imageView);
+//            imageView.setImageBitmap(null);
+            previewLoader.close();
+            previewLoader = null;
         }
 
         deactivateMediaSession();
@@ -1026,15 +1046,15 @@ class ReactTVExoplayerView extends RelativeLayout implements LifecycleEventListe
                     @Override
                     public void onStartPreview(PreviewView previewView) {
                         Log.d(TAG, "onStartPreview()");
-                        //previewSeekBarLayout.showPreview();
-                        previewSeekBarLayout.getPreviewFrameLayout().setVisibility(VISIBLE);
+                        previewSeekBarLayout.showPreview();
+                        //previewSeekBarLayout.getPreviewFrameLayout().setVisibility(VISIBLE);
                     }
 
                     @Override
                     public void onStopPreview(PreviewView previewView) {
                         Log.d(TAG, "onStopPreview()");
-                        //previewSeekBarLayout.hidePreview();
-                        previewSeekBarLayout.getPreviewFrameLayout().setVisibility(GONE);
+                        previewSeekBarLayout.hidePreview();
+                        //previewSeekBarLayout.getPreviewFrameLayout().setVisibility(GONE);
                     }
 
                     @Override
@@ -1046,7 +1066,9 @@ class ReactTVExoplayerView extends RelativeLayout implements LifecycleEventListe
 
                             ImageView image = previewSeekBarLayout.getPreviewFrameLayout().findViewById(R.id.imageView);
 
-                            image.setImageResource(previewView.getProgress() / 1000 % 2 == 0 ? R.drawable.preview_001 : R.drawable.preview_002);
+                            Bitmap bitmap = previewLoader.getImage(previewView.getProgress());
+
+                            image.setImageBitmap(bitmap);
 
                             updateProgressControl(progress);
                         }
@@ -1249,7 +1271,7 @@ class ReactTVExoplayerView extends RelativeLayout implements LifecycleEventListe
     // ReactExoplayerViewManager public api
 
     public void setSrc(@NonNull final Uri uri, @Nullable final String extension, @Nullable final ActionToken actionToken,
-                       @Nullable final Map<String, String> headers,  @Nullable final Map<String, Object> muxData) {
+                       @Nullable final Map<String, String> headers,  @Nullable final Map<String, Object> muxData, @Nullable String previewUrl) {
         if (uri != null) {
             boolean isOriginalSourceNull = srcUri == null;
             boolean isSourceEqual = uri.equals(srcUri);
@@ -1260,6 +1282,7 @@ class ReactTVExoplayerView extends RelativeLayout implements LifecycleEventListe
             this.requestHeaders = headers;
             this.mediaDataSourceFactory = buildDataSourceFactory(true);
             this.muxData = muxData;
+            this.previewUrl = previewUrl;
 
             initializePlayer();
 
@@ -1270,7 +1293,7 @@ class ReactTVExoplayerView extends RelativeLayout implements LifecycleEventListe
     }
 
     public void setSrc(@NonNull final Uri uri, @Nullable final String extension, @Nullable final Map<String, String> headers) {
-        setSrc(uri, extension, null, headers, null);
+        setSrc(uri, extension, null, headers, null, null);
     }
 
     public void setProgressUpdateInterval(final float progressUpdateInterval) {

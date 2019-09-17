@@ -16,7 +16,7 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent">
 
-        <com.previewseekbar.PreviewSeekBarLayout
+        <com.previewseekbar.PreviewSeekBarLayoutTV
             android:id="@+id/previewSeekBarLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -75,7 +75,7 @@
                 <requestFocus/>
             </com.previewseekbar.PreviewSeekbarTV>
 
-        </com.previewseekbar.PreviewSeekBarLayout>
+        </com.previewseekbar.PreviewSeekBarLayoutTV>
 
         <LinearLayout
             android:id="@+id/bottomBarWidget"
