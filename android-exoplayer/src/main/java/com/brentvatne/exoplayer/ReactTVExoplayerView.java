@@ -3,7 +3,6 @@ package com.brentvatne.exoplayer;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.LayoutTransition;
-import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
@@ -1847,21 +1846,15 @@ class ReactTVExoplayerView extends RelativeLayout implements LifecycleEventListe
 
     private void setButtonState(final ImageButton button) {
         if (button.hasFocus()) {
-            ObjectAnimator anim = ObjectAnimator.ofFloat(button,"scaleX",1.1f);
-            anim.setDuration(100);
-            anim.start();
-
-            ObjectAnimator anim2 = ObjectAnimator.ofFloat(button,"scaleY",1.1f);
-            anim2.setDuration(100);
-            anim2.start();
+            button.animate()
+                    .scaleX(1f).scaleY(1f)
+                    .setDuration(100)
+                    .start();
         } else {
-            ObjectAnimator anim = ObjectAnimator.ofFloat(button,"scaleX",1f);
-            anim.setDuration(100);
-            anim.start();
-
-            ObjectAnimator anim2 = ObjectAnimator.ofFloat(button,"scaleY",1f);
-            anim2.setDuration(100);
-            anim2.start();
+            button.animate()
+                    .scaleX(0.9f).scaleY(0.9f)
+                    .setDuration(100)
+                    .start();
         }
     }
 
