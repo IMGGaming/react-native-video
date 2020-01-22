@@ -25,17 +25,17 @@ export default class Video extends Component {
   setNativeProps(nativeProps) {
     this._root.setNativeProps(nativeProps);
   }
-  
+
   toTypeString(x) {
     switch (typeof x) {
       case "object":
-        return x instanceof Date 
-          ? x.toISOString() 
+        return x instanceof Date
+          ? x.toISOString()
           : JSON.stringify(x); // object, null
       case "undefined":
         return "";
       default: // boolean, number, string
-        return x.toString();      
+        return x.toString();
     }
   }
 
@@ -231,6 +231,7 @@ export default class Video extends Component {
         patchVer: source.patchVer || 0,
         requestHeaders: source.headers ? this.stringsOnlyObject(source.headers) : {},
         drm: source.drm,
+        thumbnailsPreview: source.thumbnailsPreview,
         config: source.config
       },
       onVideoLoadStart: this._onLoadStart,
@@ -318,6 +319,9 @@ Video.propTypes = {
   source: PropTypes.oneOfType([
     PropTypes.shape({
       uri: PropTypes.string,
+      config: PropTypes.object,
+      subtitles: PropTypes.array,
+      thumbnailsPreview: PropTypes.string
     }),
     // Opaque type returned by require('./video.mp4')
     PropTypes.number,
