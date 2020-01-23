@@ -10,9 +10,7 @@ import android.util.Log;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,8 +61,6 @@ public class BIFReader {
     }
 
     private void doInit(String url, File file) throws IOException {
-        Reader reader = new FileReader(file);
-
         byte[] data = new byte[4];
 
         FileInputStream fis = new FileInputStream(file);
@@ -124,7 +120,6 @@ public class BIFReader {
         try {
             response = client.newCall(request).execute();
             ResponseBody body = response.body();
-            long contentLength = body.contentLength();
             source = body.source();
 
             sink = Okio.buffer(Okio.sink(destFile));

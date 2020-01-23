@@ -10,7 +10,8 @@
 
     <dimen name="video_preview_width">100dp</dimen>
     <dimen name="video_preview_height">56dp</dimen>
-    
+    <dimen name="video_preview_indicator_height">20dp</dimen>
+
     <dimen name="previewseekbar_indicator_width">10dp</dimen>
     <dimen name="previewseekbar_thumb_offset">10dp</dimen>
     <dimen name="previewseekbar_progress_height">5dp</dimen>

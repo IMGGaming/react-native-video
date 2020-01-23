@@ -24,8 +24,10 @@ import android.view.Choreographer;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.accessibility.CaptioningManager;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -1064,11 +1066,26 @@ class ReactTVExoplayerView extends RelativeLayout implements LifecycleEventListe
                         if (fromUser && player != null) {
                             player.seekTo(progress);
 
-                            ImageView image = previewSeekBarLayout.getPreviewFrameLayout().findViewById(R.id.imageView);
+                            final FrameLayout previewFrameLayout = previewSeekBarLayout.getPreviewFrameLayout();
+                            ImageView image = previewFrameLayout.findViewById(R.id.imageView);
+                            if (previewLoader != null) {
+                                if (image.getVisibility() != View.VISIBLE) {
+                                    image.setVisibility(View.VISIBLE);
+                                    final ViewGroup.LayoutParams lpFrame = previewFrameLayout.getLayoutParams();
+                                    lpFrame.height = image.getHeight() + getResources().getDimensionPixelSize(R.dimen.video_preview_indicator_height);
+                                    previewFrameLayout.requestLayout();
+                                }
 
-                            Bitmap bitmap = previewLoader.getImage(previewView.getProgress());
-
-                            image.setImageBitmap(bitmap);
+                                Bitmap bitmap = previewLoader.getImage(previewView.getProgress());
+                                image.setImageBitmap(bitmap);
+                            } else {
+                                if (image.getVisibility() != View.GONE) {
+                                    image.setVisibility(View.GONE);
+                                    final ViewGroup.LayoutParams lpFrame = previewFrameLayout.getLayoutParams();
+                                    lpFrame.height = getResources().getDimensionPixelSize(R.dimen.video_preview_indicator_height);
+                                    previewFrameLayout.requestLayout();
+                                }
+                            }
 
                             updateProgressControl(progress);
                         }
@@ -1084,7 +1101,6 @@ class ReactTVExoplayerView extends RelativeLayout implements LifecycleEventListe
             loadVideoStarted = false;
             setSelectedAudioTrack(audioTrackType, audioTrackValue);
             setSelectedTextTrack(textTrackType, textTrackValue);
-            seekIndicator.setLabelMaxText(getSeekBarPositionString(0, player.getDuration()));
             Format videoFormat = player.getVideoFormat();
             int width = videoFormat != null ? videoFormat.width : 0;
             int height = videoFormat != null ? videoFormat.height : 0;
@@ -1673,15 +1689,18 @@ class ReactTVExoplayerView extends RelativeLayout implements LifecycleEventListe
             muxStats.setVideoView(exoPlayerView.getVideoSurfaceView());
         }
 
-        if (previewSeekBarLayout.getPreviewFrameLayout() != null) {
+        final FrameLayout previewFrameLayout = previewSeekBarLayout.getPreviewFrameLayout();
+        if (previewFrameLayout != null) {
             int width = getMeasuredWidth() / 6;
 
-            ImageView image = previewSeekBarLayout.getPreviewFrameLayout().findViewById(R.id.imageView);
+            View preview = previewFrameLayout.findViewById(R.id.imageView);
+            final ViewGroup.LayoutParams lpPreview = preview.getLayoutParams();
+            lpPreview.width = width;
+            lpPreview.height = width * 9 / 16;
 
-            previewSeekBarLayout.getPreviewFrameLayout().getLayoutParams().width = width;
-            previewSeekBarLayout.getPreviewFrameLayout().getLayoutParams().height = width * 9 / 16 + seekIndicator.getHeight();
-            image.getLayoutParams().width = width;
-            image.getLayoutParams().height = width * 9 / 16;
+            final ViewGroup.LayoutParams lpFrame = previewFrameLayout.getLayoutParams();
+            lpFrame.width = width;
+            lpFrame.height = lpPreview.height + getResources().getDimensionPixelSize(R.dimen.video_preview_indicator_height);
 
             Log.e(TAG, "onLayout() done");
         } else {
@@ -1825,10 +1844,7 @@ class ReactTVExoplayerView extends RelativeLayout implements LifecycleEventListe
         Rect bounds = seekbar.getThumb().getBounds();
         int thumbPos = (int) seekbar.getX() + bounds.centerX() + seekbar.getPaddingLeft();
 
-        //int indicatorX = thumbPos - (indicatorWidth / 2);
-        int indicatorX = !isRew ?
-                    thumbPos - ((indicatorWidth - seekIndicator.getForwardImageWidth()) / 2)
-                : thumbPos - ((indicatorWidth - seekIndicator.getRewImageWidth()) / 2) - seekIndicator.getRewImageWidth();
+        int indicatorX = thumbPos - (indicatorWidth / 2);
 
         if (indicatorX < paddingLeft) {
             indicatorX = paddingLeft;

@@ -35,6 +35,7 @@ public class ReactTVExoplayerViewManager extends ViewGroupManager<ReactTVExoplay
     private static final String PROP_SRC_HEADERS = "requestHeaders";
     private static final String PROP_SRC_CONFIG = "config";
     private static final String PROP_SRC_MUX_DATA = "muxData";
+    private static final String PROP_SRC_THUMBNAILS_PREVIEW_URL = "thumbnailsPreview";
     private static final String PROP_RESIZE_MODE = "resizeMode";
     private static final String PROP_REPEAT = "repeat";
     private static final String PROP_SELECTED_AUDIO_TRACK = "selectedAudioTrack";
@@ -121,6 +122,7 @@ public class ReactTVExoplayerViewManager extends ViewGroupManager<ReactTVExoplay
         String extension = src.hasKey(PROP_SRC_TYPE) ? src.getString(PROP_SRC_TYPE) : null;
         String drm = src.hasKey(PROP_SRC_DRM) ? src.getString(PROP_SRC_DRM) : null;
         Map<String, String> headers = src.hasKey(PROP_SRC_HEADERS) ? toStringMap(src.getMap(PROP_SRC_HEADERS)) : null;
+        String thumbnailPreviewUrl = src.hasKey(PROP_SRC_THUMBNAILS_PREVIEW_URL) ? src.getString(PROP_SRC_THUMBNAILS_PREVIEW_URL) : null;
 
         ReadableMap config = src.hasKey(PROP_SRC_CONFIG) ? src.getMap(PROP_SRC_CONFIG) : null;
         ReadableMap muxData = (config != null && config.hasKey(PROP_SRC_MUX_DATA)) ? config.getMap(PROP_SRC_MUX_DATA) : null;
@@ -134,10 +136,7 @@ public class ReactTVExoplayerViewManager extends ViewGroupManager<ReactTVExoplay
             ActionToken actionToken = ActionToken.fromJson(drm);
 
             if (srcUri != null) {
-                videoView.setSrc(srcUri, extension, actionToken, headers, muxData != null ? muxData.toHashMap() : null,
-                        //"https://dve-images.imggaming.com/original/q/2019/06/06/eC7eaaBbisJqtcyVMV2oS12hN8LqaTyT-1559819044330/bif/preview_thumbnails.bif"
-                        "https://dve-images.imggaming.com/original/p/2019/08/10/TPJrvdwQXbsglzn3WCVZ9RWFZdUj1Omf-1565420882772/bif/preview_thumbnails.bif"
-                        );
+                videoView.setSrc(srcUri, extension, actionToken, headers, muxData != null ? muxData.toHashMap() : null, thumbnailPreviewUrl);
             }
         } else {
             int identifier = context.getResources().getIdentifier(
