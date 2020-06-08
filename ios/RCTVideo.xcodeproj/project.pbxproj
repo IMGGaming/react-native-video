@@ -7,6 +7,24 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B20B994621945477007D1184 /* MuxCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B20B994521945477007D1184 /* MuxCore.framework */; };
+		B20B994821945488007D1184 /* MuxCoreTv.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B20B994721945488007D1184 /* MuxCoreTv.framework */; };
+		B20B994A219454A8007D1184 /* MUXSDKStats.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B20B9949219454A8007D1184 /* MUXSDKStats.framework */; };
+		B20B994C219454B6007D1184 /* MUXSDKStatsTv.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B20B994B219454B6007D1184 /* MUXSDKStatsTv.framework */; };
+		B20B99862194703C007D1184 /* MUXSDKStats.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = B20B9949219454A8007D1184 /* MUXSDKStats.framework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		B20B99872194703C007D1184 /* MuxCore.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = B20B994521945477007D1184 /* MuxCore.framework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		B20B998921947490007D1184 /* GoogleInteractiveMediaAds.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B20B998821947490007D1184 /* GoogleInteractiveMediaAds.framework */; };
+		B20B998A2194749D007D1184 /* GoogleInteractiveMediaAds.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = B20B998821947490007D1184 /* GoogleInteractiveMediaAds.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B225D44F2189C36D0016F315 /* DiceHTTPRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = B225D44D2189C36D0016F315 /* DiceHTTPRequester.m */; };
+		B225D4502189C36D0016F315 /* DiceHTTPRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B225D44E2189C36D0016F315 /* DiceHTTPRequest.m */; };
+		B225D4552189C3C10016F315 /* DiceBeaconRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B225D4532189C3C10016F315 /* DiceBeaconRequest.m */; };
+		B225D4562189C3C10016F315 /* DiceBeaconResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = B225D4542189C3C10016F315 /* DiceBeaconResponse.m */; };
+		B24E5C8621677B5A00CF0225 /* dice_shield_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B24E5C8521677B5A00CF0225 /* dice_shield_ios.framework */; };
+		B2AEE7E6219B275C0079C074 /* DiceBeaconRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B225D4532189C3C10016F315 /* DiceBeaconRequest.m */; };
+		B2AEE7E7219B275F0079C074 /* DiceBeaconResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = B225D4542189C3C10016F315 /* DiceBeaconResponse.m */; };
+		B2AEE847219B40E00079C074 /* DiceHTTPRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B225D44E2189C36D0016F315 /* DiceHTTPRequest.m */; };
+		B2AEE848219B40E20079C074 /* DiceHTTPRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = B225D44D2189C36D0016F315 /* DiceHTTPRequester.m */; };
+		B2B173E0218082D7002AAC20 /* dice_shield_tvos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2B173DF218082D7002AAC20 /* dice_shield_tvos.framework */; };
 		D1107C0A2110259000073188 /* UIView+FindUIViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D1107C032110259000073188 /* UIView+FindUIViewController.m */; };
 		D1107C0B2110259000073188 /* UIView+FindUIViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D1107C032110259000073188 /* UIView+FindUIViewController.m */; };
 		D1107C0C2110259000073188 /* RCTVideo.m in Sources */ = {isa = PBXBuildFile; fileRef = D1107C052110259000073188 /* RCTVideo.m */; };
@@ -16,6 +34,37 @@
 		D1107C102110259000073188 /* RCTVideoPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D1107C082110259000073188 /* RCTVideoPlayerViewController.m */; };
 		D1107C112110259000073188 /* RCTVideoPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D1107C082110259000073188 /* RCTVideoPlayerViewController.m */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		6193CE8622C3AD34002F303B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B2CBB6322270C00600EC2F4B /* ReactVideoSubtitleSideloader.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 61EFA1FD22C38706003B84A2;
+			remoteInfo = "ReactVideoSubtitleSideloader-tvOS";
+		};
+		6193CE8822C3AD37002F303B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B2CBB6322270C00600EC2F4B /* ReactVideoSubtitleSideloader.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 61EFA1FC22C38706003B84A2;
+			remoteInfo = "ReactVideoSubtitleSideloader-tvOS";
+		};
+		B2CBB6362270C00600EC2F4B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B2CBB6322270C00600EC2F4B /* ReactVideoSubtitleSideloader.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = B2CBB6052270BEA300EC2F4B;
+			remoteInfo = ReactVideoSubtitleSideloader;
+		};
+		B2CBB65E2270C01900EC2F4B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B2CBB6322270C00600EC2F4B /* ReactVideoSubtitleSideloader.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = B2CBB6042270BEA300EC2F4B;
+			remoteInfo = ReactVideoSubtitleSideloader;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		58B511D91A9E6C8500147676 /* CopyFiles */ = {
@@ -36,11 +85,40 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B20B99852194701C007D1184 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 11;
+			files = (
+				B20B998A2194749D007D1184 /* GoogleInteractiveMediaAds.framework in CopyFiles */,
+				B20B99862194703C007D1184 /* MUXSDKStats.framework in CopyFiles */,
+				B20B99872194703C007D1184 /* MuxCore.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libRCTVideo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTVideo.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		641E28441F0EEC8500443AF6 /* libRCTVideo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTVideo.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		B20B994521945477007D1184 /* MuxCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MuxCore.framework; path = "../native_dependency/stats-sdk-objc/Frameworks/iOS/fat/MuxCore.framework"; sourceTree = "<group>"; };
+		B20B994721945488007D1184 /* MuxCoreTv.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MuxCoreTv.framework; path = "../native_dependency/stats-sdk-objc/Frameworks/tvOS/fat/MuxCoreTv.framework"; sourceTree = "<group>"; };
+		B20B9949219454A8007D1184 /* MUXSDKStats.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MUXSDKStats.framework; path = "../native_dependency/mux-stats-sdk-avplayer/Frameworks/iOS/fat/MUXSDKStats.framework"; sourceTree = "<group>"; };
+		B20B994B219454B6007D1184 /* MUXSDKStatsTv.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MUXSDKStatsTv.framework; path = "../native_dependency/mux-stats-sdk-avplayer/Frameworks/tvOS/fat/MUXSDKStatsTv.framework"; sourceTree = "<group>"; };
+		B20B998821947490007D1184 /* GoogleInteractiveMediaAds.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleInteractiveMediaAds.framework; path = ../native_dependency/GoogleInteractiveMediaAds.framework; sourceTree = "<group>"; };
+		B225D44B2189C36C0016F315 /* DiceHTTPRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiceHTTPRequest.h; sourceTree = "<group>"; };
+		B225D44C2189C36D0016F315 /* DiceHTTPRequester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiceHTTPRequester.h; sourceTree = "<group>"; };
+		B225D44D2189C36D0016F315 /* DiceHTTPRequester.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiceHTTPRequester.m; sourceTree = "<group>"; };
+		B225D44E2189C36D0016F315 /* DiceHTTPRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiceHTTPRequest.m; sourceTree = "<group>"; };
+		B225D4512189C3C00016F315 /* DiceBeaconRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiceBeaconRequest.h; sourceTree = "<group>"; };
+		B225D4522189C3C00016F315 /* DiceBeaconResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiceBeaconResponse.h; sourceTree = "<group>"; };
+		B225D4532189C3C10016F315 /* DiceBeaconRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiceBeaconRequest.m; sourceTree = "<group>"; };
+		B225D4542189C3C10016F315 /* DiceBeaconResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiceBeaconResponse.m; sourceTree = "<group>"; };
+		B225D4572189C4C50016F315 /* DiceUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DiceUtils.h; sourceTree = "<group>"; };
+		B24E5C8521677B5A00CF0225 /* dice_shield_ios.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = dice_shield_ios.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B2B173DF218082D7002AAC20 /* dice_shield_tvos.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = dice_shield_tvos.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B2CBB6322270C00600EC2F4B /* ReactVideoSubtitleSideloader.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ReactVideoSubtitleSideloader.xcodeproj; path = ReactVideoSubtitleSideloader/ReactVideoSubtitleSideloader.xcodeproj; sourceTree = "<group>"; };
 		D1107C012110259000073188 /* RCTVideoPlayerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RCTVideoPlayerViewController.h; path = Video/RCTVideoPlayerViewController.h; sourceTree = "<group>"; };
 		D1107C022110259000073188 /* RCTVideoPlayerViewControllerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RCTVideoPlayerViewControllerDelegate.h; path = Video/RCTVideoPlayerViewControllerDelegate.h; sourceTree = "<group>"; };
 		D1107C032110259000073188 /* UIView+FindUIViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIView+FindUIViewController.m"; path = "Video/UIView+FindUIViewController.m"; sourceTree = "<group>"; };
@@ -57,6 +135,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B20B994621945477007D1184 /* MuxCore.framework in Frameworks */,
+				B20B994A219454A8007D1184 /* MUXSDKStats.framework in Frameworks */,
+				B20B998921947490007D1184 /* GoogleInteractiveMediaAds.framework in Frameworks */,
+				B24E5C8621677B5A00CF0225 /* dice_shield_ios.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -64,6 +146,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B20B994C219454B6007D1184 /* MUXSDKStatsTv.framework in Frameworks */,
+				B20B994821945488007D1184 /* MuxCoreTv.framework in Frameworks */,
+				B2B173E0218082D7002AAC20 /* dice_shield_tvos.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -81,6 +166,13 @@
 		49E995712048B4CE00EA7890 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B20B998821947490007D1184 /* GoogleInteractiveMediaAds.framework */,
+				B20B994B219454B6007D1184 /* MUXSDKStatsTv.framework */,
+				B20B9949219454A8007D1184 /* MUXSDKStats.framework */,
+				B20B994521945477007D1184 /* MuxCore.framework */,
+				B20B994721945488007D1184 /* MuxCoreTv.framework */,
+				B2B173DF218082D7002AAC20 /* dice_shield_tvos.framework */,
+				B24E5C8521677B5A00CF0225 /* dice_shield_ios.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -88,6 +180,8 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				B2CBB6322270C00600EC2F4B /* ReactVideoSubtitleSideloader.xcodeproj */,
+				B225D4492189C3030016F315 /* Beacon */,
 				D1107C072110259000073188 /* RCTVideo.h */,
 				D1107C052110259000073188 /* RCTVideo.m */,
 				D1107C092110259000073188 /* RCTVideoManager.h */,
@@ -103,6 +197,39 @@
 			);
 			sourceTree = "<group>";
 		};
+		B225D4492189C3030016F315 /* Beacon */ = {
+			isa = PBXGroup;
+			children = (
+				B225D44A2189C3500016F315 /* HTTP */,
+				B225D4512189C3C00016F315 /* DiceBeaconRequest.h */,
+				B225D4532189C3C10016F315 /* DiceBeaconRequest.m */,
+				B225D4522189C3C00016F315 /* DiceBeaconResponse.h */,
+				B225D4542189C3C10016F315 /* DiceBeaconResponse.m */,
+				B225D4572189C4C50016F315 /* DiceUtils.h */,
+			);
+			path = Beacon;
+			sourceTree = "<group>";
+		};
+		B225D44A2189C3500016F315 /* HTTP */ = {
+			isa = PBXGroup;
+			children = (
+				B225D44B2189C36C0016F315 /* DiceHTTPRequest.h */,
+				B225D44E2189C36D0016F315 /* DiceHTTPRequest.m */,
+				B225D44C2189C36D0016F315 /* DiceHTTPRequester.h */,
+				B225D44D2189C36D0016F315 /* DiceHTTPRequester.m */,
+			);
+			path = HTTP;
+			sourceTree = "<group>";
+		};
+		B2CBB6332270C00600EC2F4B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B2CBB6372270C00600EC2F4B /* ReactVideoSubtitleSideloader.framework */,
+				6193CE8722C3AD34002F303B /* ReactVideoSubtitleSideloader_tvOS.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -113,10 +240,12 @@
 				58B511D71A9E6C8500147676 /* Sources */,
 				58B511D81A9E6C8500147676 /* Frameworks */,
 				58B511D91A9E6C8500147676 /* CopyFiles */,
+				B20B99852194701C007D1184 /* CopyFiles */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				B2CBB65F2270C01900EC2F4B /* PBXTargetDependency */,
 			);
 			name = RCTVideo;
 			productName = RCTDataManager;
@@ -134,6 +263,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				6193CE8922C3AD37002F303B /* PBXTargetDependency */,
 			);
 			name = "RCTVideo-tvOS";
 			productName = "RCTVideo-tvOS";
@@ -163,11 +293,18 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 58B511D21A9E6C8500147676;
 			productRefGroup = 58B511D21A9E6C8500147676;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = B2CBB6332270C00600EC2F4B /* Products */;
+					ProjectRef = B2CBB6322270C00600EC2F4B /* ReactVideoSubtitleSideloader.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				58B511DA1A9E6C8500147676 /* RCTVideo */,
@@ -175,6 +312,23 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		6193CE8722C3AD34002F303B /* ReactVideoSubtitleSideloader_tvOS.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = ReactVideoSubtitleSideloader_tvOS.framework;
+			remoteRef = 6193CE8622C3AD34002F303B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		B2CBB6372270C00600EC2F4B /* ReactVideoSubtitleSideloader.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = ReactVideoSubtitleSideloader.framework;
+			remoteRef = B2CBB6362270C00600EC2F4B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXSourcesBuildPhase section */
 		58B511D71A9E6C8500147676 /* Sources */ = {
@@ -185,6 +339,10 @@
 				D1107C102110259000073188 /* RCTVideoPlayerViewController.m in Sources */,
 				D1107C0E2110259000073188 /* RCTVideoManager.m in Sources */,
 				D1107C0C2110259000073188 /* RCTVideo.m in Sources */,
+				B225D44F2189C36D0016F315 /* DiceHTTPRequester.m in Sources */,
+				B225D4502189C36D0016F315 /* DiceHTTPRequest.m in Sources */,
+				B225D4562189C3C10016F315 /* DiceBeaconResponse.m in Sources */,
+				B225D4552189C3C10016F315 /* DiceBeaconRequest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -193,13 +351,30 @@
 			buildActionMask = 2147483647;
 			files = (
 				D1107C0B2110259000073188 /* UIView+FindUIViewController.m in Sources */,
+				B2AEE7E7219B275F0079C074 /* DiceBeaconResponse.m in Sources */,
+				B2AEE847219B40E00079C074 /* DiceHTTPRequest.m in Sources */,
+				B2AEE848219B40E20079C074 /* DiceHTTPRequester.m in Sources */,
 				D1107C112110259000073188 /* RCTVideoPlayerViewController.m in Sources */,
+				B2AEE7E6219B275C0079C074 /* DiceBeaconRequest.m in Sources */,
 				D1107C0F2110259000073188 /* RCTVideoManager.m in Sources */,
 				D1107C0D2110259000073188 /* RCTVideo.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		6193CE8922C3AD37002F303B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "ReactVideoSubtitleSideloader-tvOS";
+			targetProxy = 6193CE8822C3AD37002F303B /* PBXContainerItemProxy */;
+		};
+		B2CBB65F2270C01900EC2F4B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ReactVideoSubtitleSideloader;
+			targetProxy = B2CBB65E2270C01900EC2F4B /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		58B511ED1A9E6C8500147676 /* Debug */ = {
@@ -222,6 +397,10 @@
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../native_dependency/**",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -236,7 +415,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -263,6 +442,10 @@
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../native_dependency/**",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -270,7 +453,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
@@ -317,6 +500,7 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				GCC_NO_COMMON_BLOCKS = YES;
+				HEADER_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RCTVideo;
 				SDKROOT = appletvos;
@@ -336,6 +520,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_NO_COMMON_BLOCKS = YES;
+				HEADER_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RCTVideo;
 				SDKROOT = appletvos;

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import com.dice.shield.drm.entity.ActionToken;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -26,7 +27,10 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
     private static final String PROP_SRC = "src";
     private static final String PROP_SRC_URI = "uri";
     private static final String PROP_SRC_TYPE = "type";
+    private static final String PROP_SRC_DRM = "drm";
     private static final String PROP_SRC_HEADERS = "requestHeaders";
+    private static final String PROP_SRC_CONFIG = "config";
+    private static final String PROP_SRC_MUX_DATA = "muxData";
     private static final String PROP_RESIZE_MODE = "resizeMode";
     private static final String PROP_REPEAT = "repeat";
     private static final String PROP_SELECTED_AUDIO_TRACK = "selectedAudioTrack";
@@ -49,8 +53,20 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
     private static final String PROP_RATE = "rate";
     private static final String PROP_PLAY_IN_BACKGROUND = "playInBackground";
     private static final String PROP_DISABLE_FOCUS = "disableFocus";
-    private static final String PROP_FULLSCREEN = "fullscreen";
     private static final String PROP_USE_TEXTURE_VIEW = "useTextureView";
+    private static final String PROP_COLOR_PROGRESS_BAR = "colorProgressBar";
+    private static final String PROP_ICON_BOTTOM_RIGHT = "iconBottomRight";
+    private static final String PROP_LIVE = "live";
+    private static final String PROP_EPG = "hasEpg";
+    private static final String PROP_STATS = "hasStats";
+    private static final String PROP_CONTROLS_OPACITY = "controlsOpacity";
+    private static final String PROP_FULLSCREEN = "fullscreen";
+    private static final String PROP_PROGRESS_BAR_MARGIN_BOTTOM = "progressBarMarginBottom";
+    private static final String PROP_STATE_OVERLAY = "stateOverlay";
+    private static final String PROP_OVERLAY_AUTO_HIDE_TIMEOUT = "overlayAutoHideTimeout";
+    private static final String PROP_STATE_MIDDLE_CORE_CONTROLS = "stateMiddleCoreControls";
+    private static final String PROP_STATE_PROGRESS_BAR = "stateProgressBar";
+    private static final String PROP_CONTROLS_VISIBILITY_GESTURE_DISABLED = "controlsVisibilityGestureDisabled";
 
     @Override
     public String getName() {
@@ -68,7 +84,8 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
     }
 
     @Override
-    public @Nullable Map<String, Object> getExportedCustomDirectEventTypeConstants() {
+    public @Nullable
+    Map<String, Object> getExportedCustomDirectEventTypeConstants() {
         MapBuilder.Builder<String, Object> builder = MapBuilder.builder();
         for (String event : VideoEventEmitter.Events) {
             builder.put(event, MapBuilder.of("registrationName", event));
@@ -77,7 +94,8 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
     }
 
     @Override
-    public @Nullable Map<String, Object> getExportedViewConstants() {
+    public @Nullable
+    Map<String, Object> getExportedViewConstants() {
         return MapBuilder.<String, Object>of(
                 "ScaleNone", Integer.toString(ResizeMode.RESIZE_MODE_FIT),
                 "ScaleAspectFit", Integer.toString(ResizeMode.RESIZE_MODE_FIT),
@@ -91,8 +109,11 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
         Context context = videoView.getContext().getApplicationContext();
         String uriString = src.hasKey(PROP_SRC_URI) ? src.getString(PROP_SRC_URI) : null;
         String extension = src.hasKey(PROP_SRC_TYPE) ? src.getString(PROP_SRC_TYPE) : null;
+        String drm = src.hasKey(PROP_SRC_DRM) ? src.getString(PROP_SRC_DRM) : null;
         Map<String, String> headers = src.hasKey(PROP_SRC_HEADERS) ? toStringMap(src.getMap(PROP_SRC_HEADERS)) : null;
 
+        ReadableMap config = src.hasKey(PROP_SRC_CONFIG) ? src.getMap(PROP_SRC_CONFIG) : null;
+        ReadableMap muxData = (config != null && config.hasKey(PROP_SRC_MUX_DATA)) ? config.getMap(PROP_SRC_MUX_DATA) : null;
 
         if (TextUtils.isEmpty(uriString)) {
             return;
@@ -100,21 +121,22 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
 
         if (startsWithValidScheme(uriString)) {
             Uri srcUri = Uri.parse(uriString);
+            ActionToken actionToken = ActionToken.fromJson(drm);
 
             if (srcUri != null) {
-                videoView.setSrc(srcUri, extension, headers);
+                videoView.setSrc(srcUri, extension, actionToken, headers, muxData != null ? muxData.toHashMap() : null);
             }
         } else {
             int identifier = context.getResources().getIdentifier(
-                uriString,
-                "drawable",
-                context.getPackageName()
+                    uriString,
+                    "drawable",
+                    context.getPackageName()
             );
             if (identifier == 0) {
                 identifier = context.getResources().getIdentifier(
-                    uriString,
-                    "raw",
-                    context.getPackageName()
+                        uriString,
+                        "raw",
+                        context.getPackageName()
                 );
             }
             if (identifier > 0) {
@@ -210,6 +232,36 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
         videoView.setDisableFocus(disableFocus);
     }
 
+    @ReactProp(name = PROP_COLOR_PROGRESS_BAR)
+    public void setColorProgressBar(final ReactExoplayerView videoView, final String color) {
+        videoView.setColorProgressBar(color);
+    }
+
+    @ReactProp(name = PROP_ICON_BOTTOM_RIGHT)
+    public void setIconBottomRight(final ReactExoplayerView videoView, final String icon) {
+        videoView.setIconBottomRight(icon);
+    }
+
+    @ReactProp(name = PROP_LIVE, defaultBoolean = false)
+    public void setLive(final ReactExoplayerView videoView, final boolean live) {
+        videoView.setLive(live);
+    }
+
+    @ReactProp(name = PROP_EPG, defaultBoolean = false)
+    public void setEpg(final ReactExoplayerView videoView, final boolean hasEpg) {
+        // ToDo: Implement
+    }
+
+    @ReactProp(name = PROP_STATS, defaultBoolean = false)
+    public void setStats(final ReactExoplayerView videoView, final boolean hasStats) {
+        // ToDo: Implement
+    }
+
+    @ReactProp(name = PROP_CONTROLS_OPACITY)
+    public void setControlsOpacity(final ReactExoplayerView videoView, final float opacity) {
+        videoView.setControlsOpacity(opacity);
+    }
+
     @ReactProp(name = PROP_FULLSCREEN, defaultBoolean = false)
     public void setFullscreen(final ReactExoplayerView videoView, final boolean fullscreen) {
         videoView.setFullscreen(fullscreen);
@@ -239,6 +291,40 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
         }
     }
 
+    @ReactProp(name = PROP_PROGRESS_BAR_MARGIN_BOTTOM, defaultInt = 0)
+    public void setProgressBarMarginBottom(final ReactExoplayerView videoView, final int margin) {
+        videoView.setProgressBarMarginBottom(margin);
+    }
+
+    @ReactProp(name = PROP_STATE_OVERLAY)
+    public void setStateOverlay(final ReactExoplayerView videoView, final String state) {
+        videoView.setStateOverlay(state);
+    }
+
+    @ReactProp(name = PROP_OVERLAY_AUTO_HIDE_TIMEOUT)
+    public void setOverlayAutoHideTimeout(final ReactExoplayerView videoView, final Integer hideTimeout) {
+        if (hideTimeout != null) {
+            videoView.setOverlayAutoHideTimeout(Long.valueOf(hideTimeout));
+        } else {
+            videoView.setOverlayAutoHideTimeout(null);
+        }
+    }
+
+    @ReactProp(name = PROP_STATE_MIDDLE_CORE_CONTROLS)
+    public void setStateMiddleCoreControls(final ReactExoplayerView videoView, final String state) {
+        videoView.setStateMiddleCoreControls(state);
+    }
+
+    @ReactProp(name = PROP_STATE_PROGRESS_BAR)
+    public void setStateProgressBar(final ReactExoplayerView videoView, final String state) {
+        videoView.setStateProgressBar(state);
+    }
+
+    @ReactProp(name = PROP_CONTROLS_VISIBILITY_GESTURE_DISABLED)
+    public void setControlsVisibilityGestureDisabled(final ReactExoplayerView videoView, final boolean disabled) {
+        videoView.setControlsVisibilityGestureDisabled(disabled);
+    }
+
     private boolean startsWithValidScheme(String uriString) {
         return uriString.startsWith("http://")
                 || uriString.startsWith("https://")
@@ -247,7 +333,8 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
                 || uriString.startsWith("asset://");
     }
 
-    private @ResizeMode.Mode int convertToIntDef(String resizeModeOrdinalString) {
+    private @ResizeMode.Mode
+    int convertToIntDef(String resizeModeOrdinalString) {
         if (!TextUtils.isEmpty(resizeModeOrdinalString)) {
             int resizeModeOrdinal = Integer.parseInt(resizeModeOrdinalString);
             return ResizeMode.toResizeMode(resizeModeOrdinal);

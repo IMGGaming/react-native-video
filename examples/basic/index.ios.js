@@ -128,7 +128,52 @@ class VideoPlayer extends Component {
       <View style={styles.container}>
         <TouchableOpacity style={styles.fullScreen} onPress={() => {this.setState({paused: !this.state.paused})}}>
           <Video
-            source={require('./broadchurch.mp4')}
+            // source={require('./broadchurch.mp4')}
+            // source={{
+            //     uri: 'https://public_seriously.s3.amazonaws.com/shaka_encrypted/hls_encrypted/HLSBigBuckBunny_video/main.m3u8',
+            //     type: 'hls',
+            //     drm: '{\"id\":"15", ' +
+            //         '\"drmScheme\": \"fairplay\", ' +
+            //         '\"licensingServerUrl\": \"https://qa-shield-drm.sd-ngp.net/api/v2/license\",' +
+            //         '\"croToken\": \"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJjb20uZGljZS50ZXN0X2NsaWVudCIsImNpZCI6ImRpY2VfdGVzdF9jbGllbnQiLCJwbGMiOnRydWUsImp0aSI6IjUzYzY5MDAzLTIwNTAtNGQxMS1iOGMxLWRlNjMyMmVmNjZlOCIsImVpZCI6ImZlMzk2YmU5LTlkNDYtNGRlMC04MDdhLTk4M2Q0NGE0N2JhMSIsImV4cCI6MTUzNzQ2NTQ1MywiaWF0IjoxNTM3NDU4MTUzLCJkZWYiOiJzZCJ9.rP9tsDBPH3SEMpE3FxEcrbXwP19fU_QJ66OReRzVxSo\",' +
+            //         '\"persistentLicense\": false}'
+            //     /* drm: '{\"drmScheme\": \"widevine\", \"offlineLicense\": \"a3NpZDVFRUI2QkM1\"}' */ //offline playback action token
+            // }}
+
+            source={{
+                olduri: 'https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_16x9/bipbop_16x9_variant.m3u8',
+                uri: 'https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_adv_example_hevc/master.m3u8',
+                subtitles : [
+                      { "isoCode": "el_GR", "url": "https://dve-subtitles.imggaming.com/12904/50839/vtt/subtitle-el-GR-4-1533811840460.vtt" },
+                      { "isoCode": "fr_FR", "url": "https://dve-subtitles.imggaming.com/12904/50839/vtt/subtitle-fr-FR-5-1533812234086.vtt" },
+                      { "isoCode": "en_US", "url": "https://dve-subtitles.imggaming.com/12904/50839/vtt/subtitle-en-US-6-1533813449932.vtt"}
+                    ],
+                type: 'hls',
+                config: {
+                    muxData: {
+                        envKey: "4004c26186c29919e27fa9f6c",
+                        viewerUserId: "fake_exid",
+                        experimentName: "A/B test one",
+                        subPropertyId: "realmInformation",
+                        videoId: "fake_id",
+                        videoTitle: "Big Buck Bunny",
+                        videoSeries: "Test Show",
+                        //videoDuration: 48000, 
+                        videoIsLive: false,
+                        videoStreamType: "on-demand",
+                        videoCdn: "standard"
+                    },
+                    disable_beacon: {
+                        url: 'http://localhost:8000/testBeaconResponse.json',
+                        headers: {
+                            'X-Custom-Header': 'Custom header contents',
+                            'Authorization': 'Bearer asdasdsdfgfdadsfgg'
+                        },
+                        body: {id: '123', video: 12345}
+                    }
+                }
+                /* drm: '{\"drmScheme\": \"widevine\", \"offlineLicense\": \"a3NpZDVFRUI2QkM1\"}' */ //offline playback action token
+            }}
             style={styles.fullScreen}
             rate={this.state.rate}
             paused={this.state.paused}
@@ -141,6 +186,7 @@ class VideoPlayer extends Component {
             onProgress={this.onProgress}
             onEnd={() => { AlertIOS.alert('Done!') }}
             repeat={true}
+            onPlaybackRateChange={(args)=>console.log("onPlaybackRateChange", args)}
           />
         </TouchableOpacity>
 
@@ -198,7 +244,34 @@ class VideoPlayer extends Component {
       <View style={styles.container}>
         <View style={styles.fullScreen}>
           <Video
-            source={require('./broadchurch.mp4')}
+              source={{
+                  uri: 'https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_16x9/bipbop_16x9_variant.m3u8',
+                  type: 'hls',
+                  config: {
+                      muxData: {
+                        envKey: "4004c26186c29919e27fa9f6c",
+                        viewerUserId: "fake_exid",
+                        experimentName: "A/B test one",
+                        subPropertyId: "realmInformation",
+                        videoId: "fake_id",
+                        videoTitle: "Big Buck Bunny",
+                        videoSeries: "Test Show",
+                        //videoDuration: 48000, 
+                        videoIsLive: false,
+                        videoStreamType: "on-demand",
+                        videoCdn: "standard"
+                      },
+                      beacon: {
+                          url: 'http://localhost:8000/testBeaconResponse.json',
+                          headers: {
+                              'X-Custom-Header': 'Custom header contents',
+                              'Authorization': 'Bearer asdasdsdfgfdadsfgg'
+                          },
+                          body: {id: '123', video: 12345}
+                      }
+                  }
+                  /* drm: '{\"drmScheme\": \"widevine\", \"offlineLicense\": \"a3NpZDVFRUI2QkM1\"}' */ //offline playback action token
+              }}
             style={videoStyle}
             rate={this.state.rate}
             paused={this.state.paused}
@@ -212,45 +285,46 @@ class VideoPlayer extends Component {
             onEnd={() => { AlertIOS.alert('Done!') }}
             repeat={true}
             controls={this.state.controls}
+            onPlaybackRateChange={(args)=>console.log("onPlaybackRateChange", args)}
           />
         </View>
-        <View style={styles.controls}>
-          <View style={styles.generalControls}>
-            <View style={styles.skinControl}>
-              {this.renderSkinControl('custom')}
-              {this.renderSkinControl('native')}
-              {this.renderSkinControl('embed')}
-            </View>
-          </View>
-          <View style={styles.generalControls}>
-            <View style={styles.rateControl}>
-              {this.renderRateControl(0.5)}
-              {this.renderRateControl(1.0)}
-              {this.renderRateControl(2.0)}
-            </View>
+        {/*<View style={styles.controls}>*/}
+          {/*<View style={styles.generalControls}>*/}
+            {/*<View style={styles.skinControl}>*/}
+              {/*{this.renderSkinControl('custom')}*/}
+              {/*{this.renderSkinControl('native')}*/}
+              {/*{this.renderSkinControl('embed')}*/}
+            {/*</View>*/}
+          {/*</View>*/}
+          {/*<View style={styles.generalControls}>*/}
+            {/*<View style={styles.rateControl}>*/}
+              {/*{this.renderRateControl(0.5)}*/}
+              {/*{this.renderRateControl(1.0)}*/}
+              {/*{this.renderRateControl(2.0)}*/}
+            {/*</View>*/}
 
-            <View style={styles.volumeControl}>
-              {this.renderVolumeControl(0.5)}
-              {this.renderVolumeControl(1)}
-              {this.renderVolumeControl(1.5)}
-            </View>
+            {/*<View style={styles.volumeControl}>*/}
+              {/*{this.renderVolumeControl(0.5)}*/}
+              {/*{this.renderVolumeControl(1)}*/}
+              {/*{this.renderVolumeControl(1.5)}*/}
+            {/*</View>*/}
 
-            <View style={styles.resizeModeControl}>
-              {this.renderResizeModeControl('cover')}
-              {this.renderResizeModeControl('contain')}
-              {this.renderResizeModeControl('stretch')}
-            </View>
-          </View>
-          <View style={styles.generalControls}>
-            {
-              (Platform.OS === 'ios') ?
-                <View style={styles.ignoreSilentSwitchControl}>
-                  {this.renderIgnoreSilentSwitchControl('ignore')}
-                  {this.renderIgnoreSilentSwitchControl('obey')}
-                </View> : null
-            }
-          </View>
-        </View>
+            {/*<View style={styles.resizeModeControl}>*/}
+              {/*{this.renderResizeModeControl('cover')}*/}
+              {/*{this.renderResizeModeControl('contain')}*/}
+              {/*{this.renderResizeModeControl('stretch')}*/}
+            {/*</View>*/}
+          {/*</View>*/}
+          {/*<View style={styles.generalControls}>*/}
+            {/*{*/}
+              {/*(Platform.OS === 'ios') ?*/}
+                {/*<View style={styles.ignoreSilentSwitchControl}>*/}
+                  {/*{this.renderIgnoreSilentSwitchControl('ignore')}*/}
+                  {/*{this.renderIgnoreSilentSwitchControl('obey')}*/}
+                {/*</View> : null*/}
+            {/*}*/}
+          {/*</View>*/}
+        {/*</View>*/}
 
       </View>
     );

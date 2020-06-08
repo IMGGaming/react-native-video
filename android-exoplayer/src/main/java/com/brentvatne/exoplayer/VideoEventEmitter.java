@@ -1,6 +1,5 @@
 package com.brentvatne.exoplayer;
 
-import android.support.annotation.StringDef;
 import android.view.View;
 
 import com.facebook.react.bridge.Arguments;
@@ -14,6 +13,8 @@ import com.google.android.exoplayer2.metadata.id3.TextInformationFrame;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+
+import androidx.annotation.StringDef;
 
 class VideoEventEmitter {
 
@@ -45,6 +46,12 @@ class VideoEventEmitter {
     private static final String EVENT_AUDIO_BECOMING_NOISY = "onVideoAudioBecomingNoisy";
     private static final String EVENT_AUDIO_FOCUS_CHANGE = "onAudioFocusChanged";
     private static final String EVENT_PLAYBACK_RATE_CHANGE = "onPlaybackRateChange";
+    private static final String EVENT_BOTTOM_RIGHT_ICON_CLICK = "onBottomRightIconClick";
+    private static final String EVENT_CONTROLS_VISIBILITY_CHANGE = "onControlsVisibilityChange";
+    private static final String EVENT_TOUCH_ACTION_MOVE = "onTouchActionMove";
+    private static final String EVENT_TOUCH_ACTION_UP = "onTouchActionUp";
+    private static final String EVENT_EPG_ICON_CLICK = "onEpgIconClick";
+    private static final String EVENT_STATS_ICON_CLICK = "onStatsIconClick";
 
     static final String[] Events = {
             EVENT_LOAD_START,
@@ -66,6 +73,12 @@ class VideoEventEmitter {
             EVENT_AUDIO_BECOMING_NOISY,
             EVENT_AUDIO_FOCUS_CHANGE,
             EVENT_PLAYBACK_RATE_CHANGE,
+            EVENT_BOTTOM_RIGHT_ICON_CLICK,
+            EVENT_CONTROLS_VISIBILITY_CHANGE,
+            EVENT_TOUCH_ACTION_MOVE,
+            EVENT_TOUCH_ACTION_UP,
+            EVENT_EPG_ICON_CLICK,
+            EVENT_STATS_ICON_CLICK
     };
 
     @Retention(RetentionPolicy.SOURCE)
@@ -89,6 +102,12 @@ class VideoEventEmitter {
             EVENT_AUDIO_BECOMING_NOISY,
             EVENT_AUDIO_FOCUS_CHANGE,
             EVENT_PLAYBACK_RATE_CHANGE,
+            EVENT_BOTTOM_RIGHT_ICON_CLICK,
+            EVENT_CONTROLS_VISIBILITY_CHANGE,
+            EVENT_TOUCH_ACTION_MOVE,
+            EVENT_TOUCH_ACTION_UP,
+            EVENT_EPG_ICON_CLICK,
+            EVENT_STATS_ICON_CLICK
     })
     @interface VideoEvents {
     }
@@ -114,10 +133,13 @@ class VideoEventEmitter {
     private static final String EVENT_PROP_HAS_AUDIO_FOCUS = "hasAudioFocus";
     private static final String EVENT_PROP_IS_BUFFERING = "isBuffering";
     private static final String EVENT_PROP_PLAYBACK_RATE = "playbackRate";
+    private static final String EVENT_PROP_CONTROLS_VISIBLE = "controlsVisible";
+    private static final String EVENT_PROP_TOUCH_ACTION_MOVE_DX = "dx";
+    private static final String EVENT_PROP_TOUCH_ACTION_MOVE_DY = "dy";
 
     private static final String EVENT_PROP_ERROR = "error";
     private static final String EVENT_PROP_ERROR_STRING = "errorString";
-    private static final String EVENT_PROP_ERROR_EXCEPTION = "";
+    private static final String EVENT_PROP_ERROR_EXCEPTION = "errorException";
 
     private static final String EVENT_PROP_TIMED_METADATA = "metadata";
 
@@ -223,6 +245,35 @@ class VideoEventEmitter {
         WritableMap map = Arguments.createMap();
         map.putDouble(EVENT_PROP_PLAYBACK_RATE, (double)rate);
         receiveEvent(EVENT_PLAYBACK_RATE_CHANGE, map);
+    }
+
+    void bottomRightIconClick() {
+        receiveEvent(EVENT_BOTTOM_RIGHT_ICON_CLICK, null);
+    }
+
+    void epgIconClick() {
+        receiveEvent(EVENT_EPG_ICON_CLICK, null);
+    }
+
+    public void statsIconClick() {
+        receiveEvent(EVENT_STATS_ICON_CLICK, null);
+    }
+
+    void controlsVisibilityChange(boolean visible) {
+        WritableMap map = Arguments.createMap();
+        map.putBoolean(EVENT_PROP_CONTROLS_VISIBLE, visible);
+        receiveEvent(EVENT_CONTROLS_VISIBILITY_CHANGE, map);
+    }
+
+    void touchActionMove(double dx, double dy) {
+        WritableMap map = Arguments.createMap();
+        map.putDouble(EVENT_PROP_TOUCH_ACTION_MOVE_DX, dx);
+        map.putDouble(EVENT_PROP_TOUCH_ACTION_MOVE_DY, dy);
+        receiveEvent(EVENT_TOUCH_ACTION_MOVE, map);
+    }
+
+    void touchActionUp() {
+        receiveEvent(EVENT_TOUCH_ACTION_UP, null);
     }
 
     void timedMetadata(Metadata metadata) {

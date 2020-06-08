@@ -25,6 +25,14 @@
 		5E9157361DD0AC6A00FF2AA8 /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E9157331DD0AC6500FF2AA8 /* libRCTAnimation.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		8C2A0F841E2560A100E31596 /* libRCTVideo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C2A0F791E25608300E31596 /* libRCTVideo.a */; };
+		B283A7172153DD630069C818 /* dice_shield_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B283A68A2153B2FC0069C818 /* dice_shield_ios.framework */; };
+		B283A7182153DD630069C818 /* dice_shield_ios.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B283A68A2153B2FC0069C818 /* dice_shield_ios.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B2A555D421A2D3A8001C6E2E /* GoogleInteractiveMediaAds.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B2A555AD21A2D3A7001C6E2E /* GoogleInteractiveMediaAds.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B2A555D621A2D3C5001C6E2E /* MUXSDKStats.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B2A555D521A2D3C5001C6E2E /* MUXSDKStats.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B2A555D821A2D421001C6E2E /* MuxCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B2A555D721A2D421001C6E2E /* MuxCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B2A555D921A2D542001C6E2E /* RxSwift.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B2AEE6A12199A2600079C074 /* RxSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B2CBB6632270CD8400EC2F4B /* ReactVideoSubtitleSideloader.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2CBB6622270CD8400EC2F4B /* ReactVideoSubtitleSideloader.framework */; };
+		B2CBB6642270CD8400EC2F4B /* ReactVideoSubtitleSideloader.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B2CBB6622270CD8400EC2F4B /* ReactVideoSubtitleSideloader.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -217,6 +225,34 @@
 			remoteGlobalIDString = 134814201AA4EA6300B7C361;
 			remoteInfo = RCTVideo;
 		};
+		B20B995D21945D9B007D1184 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B283A6822153B2FB0069C818 /* dice-shield-ios.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = B24F30612176456300203BE9;
+			remoteInfo = "dice-shield-tvos";
+		};
+		B283A6892153B2FC0069C818 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B283A6822153B2FB0069C818 /* dice-shield-ios.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = B283A5012152AE870069C818;
+			remoteInfo = "dice-shield-ios";
+		};
+		B283A6E02153B67B0069C818 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B283A6822153B2FB0069C818 /* dice-shield-ios.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = B283A5002152AE870069C818;
+			remoteInfo = "dice-shield-ios";
+		};
+		B283A7192153DD630069C818 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B283A6822153B2FB0069C818 /* dice-shield-ios.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = B283A5002152AE870069C818;
+			remoteInfo = "dice-shield-ios";
+		};
 		D1107C532111145500073188 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 8C2A0F651E25608300E31596 /* RCTVideo.xcodeproj */;
@@ -296,6 +332,25 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		B283A71B2153DD630069C818 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				B2A555D921A2D542001C6E2E /* RxSwift.framework in Embed Frameworks */,
+				B2A555D821A2D421001C6E2E /* MuxCore.framework in Embed Frameworks */,
+				B2A555D621A2D3C5001C6E2E /* MUXSDKStats.framework in Embed Frameworks */,
+				B2A555D421A2D3A8001C6E2E /* GoogleInteractiveMediaAds.framework in Embed Frameworks */,
+				B2CBB6642270CD8400EC2F4B /* ReactVideoSubtitleSideloader.framework in Embed Frameworks */,
+				B283A7182153DD630069C818 /* dice_shield_ios.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
 		00C302A71ABCB8CE00DB3ED1 /* RCTActionSheet.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTActionSheet.xcodeproj; path = "../node_modules/react-native/Libraries/ActionSheetIOS/RCTActionSheet.xcodeproj"; sourceTree = "<group>"; };
@@ -320,6 +375,14 @@
 		78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
 		8C2A0F651E25608300E31596 /* RCTVideo.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTVideo.xcodeproj; path = "../node_modules/react-native-video/ios/RCTVideo.xcodeproj"; sourceTree = "<group>"; };
+		B283A6822153B2FB0069C818 /* dice-shield-ios.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "dice-shield-ios.xcodeproj"; path = "../node_modules/@imggaming/dice-shield-ios/dice-shield-ios/dice-shield-ios.xcodeproj"; sourceTree = "<group>"; };
+		B2A555AD21A2D3A7001C6E2E /* GoogleInteractiveMediaAds.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleInteractiveMediaAds.framework; path = "../node_modules/react-native-video/native_dependency/GoogleInteractiveMediaAds.framework"; sourceTree = "<group>"; };
+		B2A555D521A2D3C5001C6E2E /* MUXSDKStats.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MUXSDKStats.framework; path = "../node_modules/react-native-video/native_dependency/mux-stats-sdk-avplayer/Frameworks/iOS/fat/MUXSDKStats.framework"; sourceTree = "<group>"; };
+		B2A555D721A2D421001C6E2E /* MuxCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MuxCore.framework; path = "../node_modules/react-native-video/native_dependency/stats-sdk-objc/Frameworks/iOS/fat/MuxCore.framework"; sourceTree = "<group>"; };
+		B2AEE69D2199A25F0079C074 /* ObjcExceptionBridging.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ObjcExceptionBridging.framework; path = "../../../../../../Library/Developer/Xcode/DerivedData/VideoPlayer-fppcqzkwzanotifuvqdjjtmlbzdf/Build/Products/Debug-iphoneos/ObjcExceptionBridging.framework"; sourceTree = "<group>"; };
+		B2AEE69F2199A2600079C074 /* XCGLogger.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCGLogger.framework; path = "../../../../../../Library/Developer/Xcode/DerivedData/VideoPlayer-fppcqzkwzanotifuvqdjjtmlbzdf/Build/Products/Debug-iphoneos/XCGLogger.framework"; sourceTree = "<group>"; };
+		B2AEE6A12199A2600079C074 /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = "../../../../../../Library/Developer/Xcode/DerivedData/VideoPlayer-fppcqzkwzanotifuvqdjjtmlbzdf/Build/Products/Debug-iphoneos/RxSwift.framework"; sourceTree = "<group>"; };
+		B2CBB6622270CD8400EC2F4B /* ReactVideoSubtitleSideloader.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = ReactVideoSubtitleSideloader.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -335,6 +398,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B2CBB6632270CD8400EC2F4B /* ReactVideoSubtitleSideloader.framework in Frameworks */,
 				8C2A0F841E2560A100E31596 /* libRCTVideo.a in Frameworks */,
 				5E9157361DD0AC6A00FF2AA8 /* libRCTAnimation.a in Frameworks */,
 				146834051AC3E58100842450 /* libReact.a in Frameworks */,
@@ -346,6 +410,7 @@
 				139105C61AF99C1200B5F7CC /* libRCTSettings.a in Frameworks */,
 				832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */,
 				00C302EA1ABCBA2D00DB3ED1 /* libRCTVibration.a in Frameworks */,
+				B283A7172153DD630069C818 /* dice_shield_ios.framework in Frameworks */,
 				139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -473,7 +538,7 @@
 			isa = PBXGroup;
 			children = (
 				5E9157331DD0AC6500FF2AA8 /* libRCTAnimation.a */,
-				5E9157351DD0AC6500FF2AA8 /* libRCTAnimation-tvOS.a */,
+				5E9157351DD0AC6500FF2AA8 /* libRCTAnimation.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -490,6 +555,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				B283A6822153B2FB0069C818 /* dice-shield-ios.xcodeproj */,
 				8C2A0F651E25608300E31596 /* RCTVideo.xcodeproj */,
 				5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */,
 				146833FF1AC3E56700842450 /* React.xcodeproj */,
@@ -518,10 +584,15 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				B2CBB6622270CD8400EC2F4B /* ReactVideoSubtitleSideloader.framework */,
+				B2A555D721A2D421001C6E2E /* MuxCore.framework */,
+				B2A555D521A2D3C5001C6E2E /* MUXSDKStats.framework */,
+				B2A555AD21A2D3A7001C6E2E /* GoogleInteractiveMediaAds.framework */,
 				13B07FAE1A68108700A75B9A /* VideoPlayer */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* VideoPlayerTests */,
 				83CBBA001A601CBA00E9B192 /* Products */,
+				B283A6B02153B4E40069C818 /* Frameworks */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -543,6 +614,25 @@
 				D1107C542111145500073188 /* libRCTVideo.a */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		B283A6832153B2FB0069C818 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B283A68A2153B2FC0069C818 /* dice_shield_ios.framework */,
+				B20B995E21945D9B007D1184 /* dice_shield_tvos.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B283A6B02153B4E40069C818 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B2AEE69D2199A25F0079C074 /* ObjcExceptionBridging.framework */,
+				B2AEE69F2199A2600079C074 /* XCGLogger.framework */,
+				B2AEE6A12199A2600079C074 /* RxSwift.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -574,10 +664,13 @@
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
+				B283A71B2153DD630069C818 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				B283A6E12153B67B0069C818 /* PBXTargetDependency */,
+				B283A71A2153DD630069C818 /* PBXTargetDependency */,
 			);
 			name = VideoPlayer;
 			productName = "Hello World";
@@ -595,7 +688,18 @@
 				TargetAttributes = {
 					00E356ED1AD99517003FC87E = {
 						CreatedOnToolsVersion = 6.2;
+						DevelopmentTeam = E8R798XV3B;
+						ProvisioningStyle = Manual;
 						TestTargetID = 13B07F861A680F5B00A75B9A;
+					};
+					13B07F861A680F5B00A75B9A = {
+						DevelopmentTeam = E8R798XV3B;
+						ProvisioningStyle = Manual;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -604,6 +708,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -611,6 +716,10 @@
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
 			projectDirPath = "";
 			projectReferences = (
+				{
+					ProductGroup = B283A6832153B2FB0069C818 /* Products */;
+					ProjectRef = B283A6822153B2FB0069C818 /* dice-shield-ios.xcodeproj */;
+				},
 				{
 					ProductGroup = 00C302A81ABCB8CE00DB3ED1 /* Products */;
 					ProjectRef = 00C302A71ABCB8CE00DB3ED1 /* RCTActionSheet.xcodeproj */;
@@ -823,7 +932,7 @@
 			remoteRef = 5E9157321DD0AC6500FF2AA8 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		5E9157351DD0AC6500FF2AA8 /* libRCTAnimation-tvOS.a */ = {
+		5E9157351DD0AC6500FF2AA8 /* libRCTAnimation.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libRCTAnimation.a;
@@ -849,6 +958,20 @@
 			fileType = archive.ar;
 			path = libRCTVideo.a;
 			remoteRef = 8C2A0F781E25608300E31596 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		B20B995E21945D9B007D1184 /* dice_shield_tvos.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = dice_shield_tvos.framework;
+			remoteRef = B20B995D21945D9B007D1184 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		B283A68A2153B2FC0069C818 /* dice_shield_ios.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = dice_shield_ios.framework;
+			remoteRef = B283A6892153B2FC0069C818 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		D1107C542111145500073188 /* libRCTVideo.a */ = {
@@ -962,7 +1085,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh";
+			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -992,6 +1115,16 @@
 			target = 13B07F861A680F5B00A75B9A /* VideoPlayer */;
 			targetProxy = 00E356F41AD99517003FC87E /* PBXContainerItemProxy */;
 		};
+		B283A6E12153B67B0069C818 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "dice-shield-ios";
+			targetProxy = B283A6E02153B67B0069C818 /* PBXContainerItemProxy */;
+		};
+		B283A71A2153DD630069C818 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "dice-shield-ios";
+			targetProxy = B283A7192153DD630069C818 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
@@ -1011,14 +1144,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = E8R798XV3B;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = VideoPlayerTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/VideoPlayer.app/VideoPlayer";
 			};
 			name = Debug;
@@ -1027,11 +1163,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
+				DEVELOPMENT_TEAM = E8R798XV3B;
 				INFOPLIST_FILE = VideoPlayerTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/VideoPlayer.app/VideoPlayer";
 			};
 			name = Release;
@@ -1039,9 +1178,12 @@
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
+				DEVELOPMENT_TEAM = E8R798XV3B;
 				INFOPLIST_FILE = VideoPlayer/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
@@ -1050,6 +1192,7 @@
 					"-lc++",
 				);
 				PRODUCT_NAME = VideoPlayer;
+				PROVISIONING_PROFILE_SPECIFIER = "SD Dev Wildcard";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -1057,8 +1200,11 @@
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = E8R798XV3B;
 				INFOPLIST_FILE = VideoPlayer/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
@@ -1067,6 +1213,7 @@
 					"-lc++",
 				);
 				PRODUCT_NAME = VideoPlayer;
+				PROVISIONING_PROFILE_SPECIFIER = "SD Dev Wildcard";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
@@ -1091,6 +1238,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -1105,7 +1253,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -1133,6 +1281,7 @@
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -1140,7 +1289,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;

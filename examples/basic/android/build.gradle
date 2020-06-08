@@ -3,12 +3,21 @@
 buildscript {
     repositories {
         jcenter()
+        maven {
+            url 'https://maven.google.com/'
+            name 'Google'
+        }
+        maven {
+            url 'http://oss.jfrog.org/artifactory/oss-snapshot-local'
+        }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.0'
+        classpath 'com.android.tools.build:gradle:3.5.3'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
+
+        classpath "io.realm:realm-gradle-plugin:5.4.0-SNAPSHOT"
     }
 }
 
@@ -20,5 +29,23 @@ allprojects {
             // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
             url "$rootDir/../node_modules/react-native/android"
         }
+        maven {
+            url 'https://maven.google.com/'
+            name 'Google'
+        }
+        maven {
+            url 'http://oss.jfrog.org/artifactory/oss-snapshot-local'
+        }
     }
+}
+
+ext {
+    buildToolsVersion = "28.0.3"
+    minSdkVersion = 19
+    compileSdkVersion = 28
+    targetSdkVersion = 28
+    // exoplayer_version - used in react-native-video and dice-shield-android
+    exoplayerVersion = '2.9.6'
+    // shield_ep_api - used in react-native-video, dice-shield-android
+    shield_ep_api = "ep${exoplayerVersion.replaceAll(/\./, "_")}"
 }

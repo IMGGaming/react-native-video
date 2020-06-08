@@ -2,9 +2,7 @@ package com.brentvatne.exoplayer;
 
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.SurfaceView;
 import android.view.TextureView;
@@ -25,6 +23,8 @@ import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.ui.SubtitleView;
 
 import java.util.List;
+
+import androidx.core.content.ContextCompat;
 
 @TargetApi(16)
 public final class ExoPlayerView extends FrameLayout {
@@ -108,12 +108,12 @@ public final class ExoPlayerView extends FrameLayout {
 
     /**
      * Set the {@link SimpleExoPlayer} to use. The {@link SimpleExoPlayer#setTextOutput} and
-     * {@link SimpleExoPlayer#setVideoListener} method of the player will be called and previous
+     * {@link SimpleExoPlayer#setVideoListener} method of the controls will be called and previous
      * assignments are overridden.
      *
      * @param player The {@link SimpleExoPlayer} to use.
      */
-    public void setPlayer(SimpleExoPlayer player) {
+    public void setPlayer(SimpleExoPlayer player, boolean subtitlesEnabled) {
         if (this.player == player) {
             return;
         }
@@ -130,6 +130,9 @@ public final class ExoPlayerView extends FrameLayout {
             player.setVideoListener(componentListener);
             player.addListener(componentListener);
             player.setTextOutput(componentListener);
+            if (subtitlesEnabled) {
+                player.setTextOutput(componentListener);
+            }
         }
     }
 
