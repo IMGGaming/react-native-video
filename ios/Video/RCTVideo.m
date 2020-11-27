@@ -151,9 +151,9 @@ static int const RCTVideoUnset = -1;
     RCTVideoPlayerViewController* playerLayer= [[RCTVideoPlayerViewController alloc] init];
     playerLayer.showsPlaybackControls = _controls;
     playerLayer.rctDelegate = self;
-    playerLayer.view.frame = self.bounds;
+//    playerLayer.view.frame = self.bounds;
     playerLayer.player = player;
-    playerLayer.view.frame = self.bounds;
+//    playerLayer.view.frame = self.bounds;
     return playerLayer;
 }
 
@@ -654,8 +654,8 @@ static void extracted(RCTVideo *object, NSDictionary *source) {
 - (void)setupPlaybackWithAds:(NSDictionary *)imaDict playerItem:(AVPlayerItem *)playerItem {
   [self usePlayerViewController];
   
-  self.avdoris.delegate = _playerViewController;
-  _playerViewController.avdoris = self.avdoris;
+//  self.avdoris.delegate = _playerViewController;
+//  _playerViewController.avdoris = self.avdoris;
   
   id assetKey = [imaDict objectForKey:@"assetKey"];
   id contentSourceId = [imaDict objectForKey:@"contentSourceId"];
@@ -665,8 +665,8 @@ static void extracted(RCTVideo *object, NSDictionary *source) {
     if ([assetKey isKindOfClass:NSString.class]) {
       AVDorisIMALiveStreamRequest *liveRequest = [[AVDorisIMALiveStreamRequest alloc]
                                                   initWithAssetKey:assetKey
-                                                  adContainerView:self->_playerViewController.adView
-                                                  adContainerViewController:self->_playerViewController];
+                                                  adContainerView:_dorisUI.viewable.view
+                                                  adContainerViewController:_dorisUI.viewController];
       
       NSDictionary *customParams = @{@"neighborhood": @"drama",
                                      @"mcp_id": @"3751768",
@@ -702,8 +702,8 @@ static void extracted(RCTVideo *object, NSDictionary *source) {
       AVDorisIMAVODStreamRequest *vodRequest = [[AVDorisIMAVODStreamRequest alloc]
                                                 initWithContentSourceId:contentSourceId
                                                 videoId:videoId
-                                                adContainerView:self->_playerViewController.adView
-                                                adContainerViewController:self->_playerViewController];
+                                                adContainerView:_dorisUI.viewable.view
+                                                adContainerViewController:_dorisUI.viewController];
       
       NSDictionary *customParams = @{@"row": @"indienovelas",
                                      @"mcp_id": @"9999999",
@@ -1081,8 +1081,8 @@ dispatch_queue_t delegateQueue;
   } else if (object == self.player) {
     if([keyPath isEqualToString:playbackRate]) {
       if(self.onPlaybackRateChange) {
-        self.onPlaybackRateChange(@{@"playbackRate": [NSNumber numberWithFloat:self.player.rate],
-                                    @"target": self.reactTag});
+//        self.onPlaybackRateChange(@{@"playbackRate": [NSNumber numberWithFloat:self.player.rate],
+//                                    @"target": self.reactTag});
       }
       if(self.player.rate > 0) {
           [self startDiceBeaconCallsAfter:0];
@@ -1098,6 +1098,14 @@ dispatch_queue_t delegateQueue;
       }
     } else if([keyPath isEqualToString:currentItem]) {
       _playerItem = self.player.currentItem;
+        bool isLive;
+        if ([_videoData.videoIsLive isEqualToNumber: [NSNumber numberWithInt:0]]) {
+            isLive = NO;
+        } else {
+            isLive = YES;
+        }
+        [_dorisUI.input loadWithItem:_playerItem title:_videoData.videoTitle isLive:isLive];
+
       [self addPlayerItemObservers];
     }
   } else {
@@ -1128,7 +1136,7 @@ dispatch_queue_t delegateQueue;
 - (void)playbackStalled:(NSNotification *)notification
 {
   if(self.onPlaybackStalled) {
-    self.onPlaybackStalled(@{@"target": self.reactTag});
+//    self.onPlaybackStalled(@{@"target": self.reactTag});
   }
   _playbackStalled = YES;
 }
@@ -1594,17 +1602,27 @@ dispatch_queue_t delegateQueue;
   }
 }
 
+DorisUIModule *_dorisUI;
+
+- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {
+  [super didUpdateFocusInContext:context withAnimationCoordinator:coordinator];
+}
+
 - (void)usePlayerViewController
 {
-  if( self.player )
+  if( self.player && !_dorisUI )
   {
-    _playerViewController = [self createPlayerViewController:self.player];
-    // to prevent video from being animated when resizeMode is 'cover'
-    // resize mode must be set before subview is added
-    [self.player addObserver:self->_playerViewController forKeyPath:currentItem options:0 context:nil];
-
+    _dorisUI = [DorisUIModuleFactory createCustomUIWithAvDoris: self.avdoris];
     [self setResizeMode:_resizeMode];
-    [self addSubview:_playerViewController.view];
+    [self addSubview:_dorisUI.viewable.view];
+    _dorisUI.viewable.view.frame = self.bounds;
+//    _playerViewController = [self createPlayerViewController:self.player];
+//    // to prevent video from being animated when resizeMode is 'cover'
+//    // resize mode must be set before subview is added
+//    [self.player addObserver:self->_playerViewController forKeyPath:currentItem options:0 context:nil];
+//
+//    [self setResizeMode:_resizeMode];
+//    [self addSubview:_playerViewController.view];
     [self setupMux];
   }
 }
@@ -1656,6 +1674,11 @@ dispatch_queue_t delegateQueue;
       _controls = controls;
       _playerViewController.view.userInteractionEnabled = _controls;
       _playerViewController.showsPlaybackControls = _controls;
+        if (_controls) {
+            [_dorisUI.input didHideExternalOverlay];
+        } else {
+            [_dorisUI.input didShowExternalOverlay];
+        }
     }
   #endif
 }
@@ -1707,7 +1730,7 @@ dispatch_queue_t delegateQueue;
 - (void)didRequestAdTagParametersUpdate:(NSTimeInterval)timeIntervalSince1970 {
   if(self.onRequireAdParameters) {
     NSNumber* _timeIntervalSince1970 = [[NSNumber alloc] initWithDouble:timeIntervalSince1970];
-    self.onPlaybackRateChange(@{@"date": _timeIntervalSince1970});
+//    self.onPlaybackRateChange(@{@"date": _timeIntervalSince1970});
   }
 }
 
@@ -1763,7 +1786,7 @@ dispatch_queue_t delegateQueue;
   if( _controls )
   {
     _playerViewController.view.frame = self.bounds;
-    
+    _dorisUI.viewable.view.frame = self.bounds;
     // also adjust all subviews of contentOverlayView
     for (UIView* subview in _playerViewController.contentOverlayView.subviews) {
       subview.frame = self.bounds;
@@ -1792,7 +1815,8 @@ dispatch_queue_t delegateQueue;
     _currentItemObserverRegistered = NO;
   }
   self.player = nil;
-  
+  _dorisUI = nil;
+
   [self removePlayerLayer];
   
   [_playerViewController.view removeFromSuperview];
