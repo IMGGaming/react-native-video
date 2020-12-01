@@ -9,24 +9,11 @@
 #include "DiceBeaconRequest.h"
 #include "DiceHTTPRequester.h"
 
-//@import ReactVideoSubtitleSideloader;
-#if TARGET_OS_IOS
-#import <ReactVideoSubtitleSideloader/ReactVideoSubtitleSideloader-Swift.h>
-#elif TARGET_OS_TV
 #import <ReactVideoSubtitleSideloader_tvOS/ReactVideoSubtitleSideloader_tvOS-Swift.h>
-#endif
-
-#if TARGET_OS_IOS
 #import <dice_shield_ios/dice_shield_ios-Swift.h>
-@import MuxCore;
-@import MUXSDKStats;
-#elif TARGET_OS_TV
-#import <dice_shield_ios/dice_shield_ios-Swift.h>
-//#import <dice_shield_tvos/dice_shield_tvos-Swift.h>
 @import MuxCoreTv;
 @import MUXSDKStatsTv;
 @import AVDoris;
-#endif
 
 
 static NSString *const statusKeyPath = @"status";
@@ -36,7 +23,6 @@ static NSString *const readyForDisplayKeyPath = @"readyForDisplay";
 static NSString *const playbackRate = @"rate";
 static NSString *const timedMetadata = @"timedMetadata";
 static NSString *const currentItem = @"currentItem";
-
 static NSString *const playerVersion = @"react-native-video/3.3.1";
 
 static int const RCTVideoUnset = -1;
@@ -49,12 +35,12 @@ static int const RCTVideoUnset = -1;
 
 @implementation RCTVideo
 {
+    DorisUIModule *_dorisUI;
   AVPlayerItem *_playerItem;
   BOOL _playerItemObserversSet;
   BOOL _playerBufferEmpty;
   AVPlayerLayer *_playerLayer;
   BOOL _playerLayerObserverSet;
-  RCTVideoPlayerViewController *_playerViewController;
   NSURL *_videoURL;
   
   /* Required to publish events */
@@ -145,16 +131,6 @@ static int const RCTVideoUnset = -1;
   }
   
   return self;
-}
-
-- (AVPlayerViewController*)createPlayerViewController:(AVDorisPlayer*)player {
-    RCTVideoPlayerViewController* playerLayer= [[RCTVideoPlayerViewController alloc] init];
-    playerLayer.showsPlaybackControls = _controls;
-    playerLayer.rctDelegate = self;
-//    playerLayer.view.frame = self.bounds;
-    playerLayer.player = player;
-//    playerLayer.view.frame = self.bounds;
-    return playerLayer;
 }
 
 /* ---------------------------------------------------------
@@ -448,9 +424,11 @@ static int const RCTVideoUnset = -1;
     }
     if (_playerLayer != nil) {
         [MUXSDKStats monitorAVPlayerLayer:_playerLayer withPlayerName:@"dicePlayer" playerData:_playerData videoData:_videoData];
-    } else if (_playerViewController != nil) {
-        [MUXSDKStats monitorAVPlayerViewController:_playerViewController withPlayerName:@"dicePlayer" playerData:_playerData videoData:_videoData];
     }
+    //FIXME: hmmm
+//    else if (_playerViewController != nil) {
+//        [MUXSDKStats monitorAVPlayerViewController:_playerViewController withPlayerName:@"dicePlayer" playerData:_playerData videoData:_videoData];
+//    }
 }
 
 
@@ -524,6 +502,7 @@ static int const RCTVideoUnset = -1;
   }
   
   CMTime currentTime = self.player.currentTime;
+    NSLog(@"zzz %f", CMTimeGetSeconds(self.player.currentTime));
   const Float64 duration = CMTimeGetSeconds(playerDuration);
   const Float64 currentTimeSecs = CMTimeGetSeconds(currentTime);
   
@@ -605,8 +584,8 @@ static void extracted(RCTVideo *object, NSDictionary *source) {
   
   [object playerItemForSource:source withCallback:^(AVPlayerItem * playerItem) {
     [object.player pause];
-    [object->_playerViewController.view removeFromSuperview];
-    object->_playerViewController = nil;
+    [object->_dorisUI.viewable.view removeFromSuperview];
+    object->_dorisUI = nil;
     
     if (object->_playbackRateObserverRegistered) {
       [object.player removeObserver:object forKeyPath:playbackRate context:nil];
@@ -1162,7 +1141,8 @@ dispatch_queue_t delegateQueue;
 {
   if( _controls )
   {
-    _playerViewController.videoGravity = mode;
+      //FIXME: hmmm
+//    _playerViewController.videoGravity = mode;
   }
   else
   {
@@ -1557,62 +1537,57 @@ dispatch_queue_t delegateQueue;
 
 - (void)setFullscreen:(BOOL)fullscreen
 {
-  if( fullscreen && !_fullscreenPlayerPresented )
-  {
-    // Ensure player view controller is not null
-    if( !_playerViewController )
-    {
-      [self usePlayerViewController];
-    }
-    // Set presentation style to fullscreen
-    [_playerViewController setModalPresentationStyle:UIModalPresentationFullScreen];
-    
-    // Find the nearest view controller
-    UIViewController *viewController = [self firstAvailableUIViewController];
-    if( !viewController )
-    {
-      UIWindow *keyWindow = [[UIApplication sharedApplication] keyWindow];
-      viewController = keyWindow.rootViewController;
-      if( viewController.childViewControllers.count > 0 )
-      {
-        viewController = viewController.childViewControllers.lastObject;
-      }
-    }
-    if( viewController )
-    {
-      _presentingViewController = viewController;
-      if(self.onVideoFullscreenPlayerWillPresent) {
-        self.onVideoFullscreenPlayerWillPresent(@{@"target": self.reactTag});
-      }
-      [viewController presentViewController:_playerViewController animated:true completion:^{
-        _playerViewController.showsPlaybackControls = YES;
-        _fullscreenPlayerPresented = fullscreen;
-        if(self.onVideoFullscreenPlayerDidPresent) {
-          self.onVideoFullscreenPlayerDidPresent(@{@"target": self.reactTag});
-        }
-      }];
-    }
-  }
-  else if ( !fullscreen && _fullscreenPlayerPresented )
-  {
-    [self videoPlayerViewControllerWillDismiss:_playerViewController];
-    [_presentingViewController dismissViewControllerAnimated:true completion:^{
-      [self videoPlayerViewControllerDidDismiss:_playerViewController];
-    }];
-  }
+//  if( fullscreen && !_fullscreenPlayerPresented )
+//  {
+//    // Ensure player view controller is not null
+//    if( !_playerViewController )
+//    {
+//      [self usePlayerViewController];
+//    }
+//    // Set presentation style to fullscreen
+//    [_playerViewController setModalPresentationStyle:UIModalPresentationFullScreen];
+//
+//    // Find the nearest view controller
+//    UIViewController *viewController = [self firstAvailableUIViewController];
+//    if( !viewController )
+//    {
+//      UIWindow *keyWindow = [[UIApplication sharedApplication] keyWindow];
+//      viewController = keyWindow.rootViewController;
+//      if( viewController.childViewControllers.count > 0 )
+//      {
+//        viewController = viewController.childViewControllers.lastObject;
+//      }
+//    }
+//    if( viewController )
+//    {
+//      _presentingViewController = viewController;
+//      if(self.onVideoFullscreenPlayerWillPresent) {
+//        self.onVideoFullscreenPlayerWillPresent(@{@"target": self.reactTag});
+//      }
+//      [viewController presentViewController:_playerViewController animated:true completion:^{
+//        _playerViewController.showsPlaybackControls = YES;
+//        _fullscreenPlayerPresented = fullscreen;
+//        if(self.onVideoFullscreenPlayerDidPresent) {
+//          self.onVideoFullscreenPlayerDidPresent(@{@"target": self.reactTag});
+//        }
+//      }];
+//    }
+//  }
+//  else if ( !fullscreen && _fullscreenPlayerPresented )
+//  {
+//    [self videoPlayerViewControllerWillDismiss:_playerViewController];
+//    [_presentingViewController dismissViewControllerAnimated:true completion:^{
+//      [self videoPlayerViewControllerDidDismiss:_playerViewController];
+//    }];
+//  }
 }
 
-DorisUIModule *_dorisUI;
-
-- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator {
-  [super didUpdateFocusInContext:context withAnimationCoordinator:coordinator];
-}
 
 - (void)usePlayerViewController
 {
   if( self.player && !_dorisUI )
   {
-    _dorisUI = [DorisUIModuleFactory createCustomUIWithAvDoris: self.avdoris];
+    _dorisUI = [DorisUIModuleFactory createNativeUIWithAvDoris: self.avdoris];
     [self setResizeMode:_resizeMode];
     [self addSubview:_dorisUI.viewable.view];
     _dorisUI.viewable.view.frame = self.bounds;
@@ -1649,38 +1624,20 @@ DorisUIModule *_dorisUI;
 
 - (void)setControls:(BOOL)controls
 {
-  #if TARGET_OS_IOS
-    if( _controls != controls || (!_playerLayer && !_playerViewController) )
+    if( _controls != controls || !_dorisUI )
     {
-      _controls = controls;
-      if( _controls )
-      {
-        [self removePlayerLayer];
-        [self usePlayerViewController];
-      }
-      else
-      {
-        [_playerViewController.view removeFromSuperview];
-        _playerViewController = nil;
-        [self usePlayerLayer];
-      }
-    }
-  #elif TARGET_OS_TV
-    if( _controls != controls || !_playerViewController )
-    {
-      if(!_playerViewController) {
+      if(!_dorisUI) {
         [self usePlayerViewController];
       }
       _controls = controls;
-      _playerViewController.view.userInteractionEnabled = _controls;
-      _playerViewController.showsPlaybackControls = _controls;
+//      _playerViewController.view.userInteractionEnabled = _controls;
+//      _playerViewController.showsPlaybackControls = _controls;
         if (_controls) {
             [_dorisUI.input didHideExternalOverlay];
         } else {
             [_dorisUI.input didShowExternalOverlay];
         }
     }
-  #endif
 }
 
 - (void)setProgressUpdateInterval:(float)progressUpdateInterval
@@ -1705,28 +1662,6 @@ DorisUIModule *_dorisUI;
 
 #pragma mark - RCTVideoPlayerViewControllerDelegate
 
-- (void)videoPlayerViewControllerWillDismiss:(AVPlayerViewController *)playerViewController
-{
-  if (_playerViewController == playerViewController && _fullscreenPlayerPresented && self.onVideoFullscreenPlayerWillDismiss)
-  {
-    self.onVideoFullscreenPlayerWillDismiss(@{@"target": self.reactTag});
-  }
-}
-
-- (void)videoPlayerViewControllerDidDismiss:(AVPlayerViewController *)playerViewController
-{
-  if (_playerViewController == playerViewController && _fullscreenPlayerPresented)
-  {
-    _fullscreenPlayerPresented = false;
-    _presentingViewController = nil;
-    _playerViewController = nil;
-    [self applyModifiers];
-    if(self.onVideoFullscreenPlayerDidDismiss) {
-      self.onVideoFullscreenPlayerDidDismiss(@{@"target": self.reactTag});
-    }
-  }
-}
-
 - (void)didRequestAdTagParametersUpdate:(NSTimeInterval)timeIntervalSince1970 {
   if(self.onRequireAdParameters) {
     NSNumber* _timeIntervalSince1970 = [[NSNumber alloc] initWithDouble:timeIntervalSince1970];
@@ -1750,7 +1685,7 @@ DorisUIModule *_dorisUI;
 {
   // We are early in the game and somebody wants to set a subview.
   // That can only be in the context of playerViewController.
-  if( !_controls && !_playerLayer && !_playerViewController )
+  if( !_controls && !_playerLayer && !_dorisUI )
   {
     [self setControls:true];
   }
@@ -1758,7 +1693,7 @@ DorisUIModule *_dorisUI;
   if( _controls )
   {
     view.frame = self.bounds;
-    [_playerViewController.contentOverlayView insertSubview:view atIndex:atIndex];
+    [_dorisUI.viewable.view insertSubview:view atIndex:atIndex];
   }
   else
   {
@@ -1785,12 +1720,7 @@ DorisUIModule *_dorisUI;
   [super layoutSubviews];
   if( _controls )
   {
-    _playerViewController.view.frame = self.bounds;
     _dorisUI.viewable.view.frame = self.bounds;
-    // also adjust all subviews of contentOverlayView
-    for (UIView* subview in _playerViewController.contentOverlayView.subviews) {
-      subview.frame = self.bounds;
-    }
   }
   else
   {
@@ -1815,13 +1745,11 @@ DorisUIModule *_dorisUI;
     _currentItemObserverRegistered = NO;
   }
   self.player = nil;
+    [_dorisUI.viewable.view removeFromSuperview];
   _dorisUI = nil;
 
   [self removePlayerLayer];
-  
-  [_playerViewController.view removeFromSuperview];
-  _playerViewController = nil;
-  
+    
   [self removePlayerTimeObserver];
   [self removePlayerItemObservers];
   
