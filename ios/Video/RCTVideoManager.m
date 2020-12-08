@@ -24,7 +24,7 @@ RCT_EXPORT_VIEW_PROPERTY(src, NSDictionary);
 RCT_EXPORT_VIEW_PROPERTY(resizeMode, NSString);
 RCT_EXPORT_VIEW_PROPERTY(repeat, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(allowsExternalPlayback, BOOL);
-RCT_EXPORT_VIEW_PROPERTY(textTracks, NSArray);
+//RCT_EXPORT_VIEW_PROPERTY(textTracks, NSArray);
 RCT_EXPORT_VIEW_PROPERTY(selectedTextTrack, NSDictionary);
 RCT_EXPORT_VIEW_PROPERTY(selectedAudioTrack, NSDictionary);
 RCT_EXPORT_VIEW_PROPERTY(paused, BOOL);
@@ -74,11 +74,7 @@ RCT_EXPORT_METHOD(seekToTimestamp:(nonnull NSNumber *)node isoDate:(NSString *)i
                 CGFloat seekableDuration = CMTimeGetSeconds(seekableRange.duration);
                 CGFloat livePosition = seekableStart + seekableDuration;
                 
-                NSDictionary *info = @{
-                    @"time": [NSNumber numberWithFloat:livePosition - timeIntervalFromLive],
-                    @"tolerance": [NSNumber numberWithInt:100]
-                };
-                [view setSeek:info];
+                [view.dorisUI.input seekTo:livePosition - timeIntervalFromLive];
             }
         }
     }];
@@ -94,11 +90,7 @@ RCT_EXPORT_METHOD(seekToNow:(nonnull NSNumber *)node) {
                 CGFloat seekableDuration = CMTimeGetSeconds(seekableRange.duration);
                 CGFloat livePosition = seekableStart + seekableDuration;
                 
-                NSDictionary *info = @{
-                    @"time": [NSNumber numberWithFloat:livePosition],
-                    @"tolerance": [NSNumber numberWithInt:100]
-                };
-                [view setSeek:info];
+                [view.dorisUI.input seekTo:livePosition];
             }
         }
     }];
@@ -144,9 +136,9 @@ RCT_EXPORT_METHOD(replaceAdTagParameters:(nonnull NSNumber *)node payload:(NSDic
         _endDate = [[NSDate alloc] initWithTimeIntervalSince1970:[endDate doubleValue]];
       }
       
-      [view.avdoris replaceAdTagParametersWithAdTagParameters:_adTagParameters
-                                                    validFrom: _startDate
-                                                   validUntil:_endDate];
+//      [view.avdoris replaceAdTagParametersWithAdTagParameters:_adTagParameters
+//                                                    validFrom: _startDate
+//                                                   validUntil:_endDate];
     }
   }];
 };

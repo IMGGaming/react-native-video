@@ -9,11 +9,8 @@
 @import AVDoris;
 
 @class RCTEventDispatcher;
-#if __has_include(<react-native-video/RCTVideoCache.h>)
-@interface RCTVideo : UIView <DVAssetLoaderDelegatesDelegate>
-#else
-@interface RCTVideo : UIView
-#endif
+
+@interface RCTVideo : UIView <DorisExternalOutputProtocol>
 
 @property (nonatomic, copy) RCTBubblingEventBlock onVideoLoadStart;
 @property (nonatomic, copy) RCTBubblingEventBlock onVideoLoad;
@@ -33,12 +30,10 @@
 @property (nonatomic, copy) RCTBubblingEventBlock onPlaybackResume;
 @property (nonatomic, copy) RCTBubblingEventBlock onPlaybackRateChange;
 @property (nonatomic, copy) RCTBubblingEventBlock onRequireAdParameters;
-@property (nonatomic, strong) AVDorisPlayer *player;
-@property (nonatomic, strong) AVDoris *avdoris;
+@property (nonatomic, strong) IMAPlayer *player;
+@property (nonatomic, strong) DorisUIModule *dorisUI;
 
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher NS_DESIGNATED_INITIALIZER;
-
-- (AVPlayerViewController*)createPlayerViewController:(AVPlayer*)player;
 - (void)setSeek:(NSDictionary *)info;
 
 @end
