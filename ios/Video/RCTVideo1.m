@@ -251,9 +251,10 @@ static NSString *const playerVersion = @"react-native-video/3.3.1";
 			if (_shouldRequestTrackingAuthorization) {
 				[ATTrackingManager requestTrackingAuthorizationWithCompletionHandler:^(ATTrackingManagerAuthorizationStatus status) {
 					if (status == ATTrackingManagerAuthorizationStatusAuthorized) {
-						[adTagParameters setValue:@"1" forKey:@"is_lat"];
-					} else {
 						[adTagParameters setValue:@"0" forKey:@"is_lat"];
+                        [adTagParameters setValue:UIDevice.currentDevice.identifierForVendor.UUIDString forKey:@"rdid"];
+					} else {
+						[adTagParameters setValue:@"1" forKey:@"is_lat"];
 					}
 					
 					[self fetchAppIdWithCompletion:^(NSNumber * _Nullable appId) {
@@ -269,6 +270,7 @@ static NSString *const playerVersion = @"react-native-video/3.3.1";
 				}];
 			} else {
 				[adTagParameters setValue:@"0" forKey:@"is_lat"];
+                [adTagParameters setValue:UIDevice.currentDevice.identifierForVendor.UUIDString forKey:@"rdid"];
 				[self fetchAppIdWithCompletion:^(NSNumber * _Nullable appId) {
 					if (appId) {
 						self->_appId = appId;
@@ -282,6 +284,7 @@ static NSString *const playerVersion = @"react-native-video/3.3.1";
 			}
         } else {
             [adTagParameters setValue:@"0" forKey:@"is_lat"];
+            [adTagParameters setValue:UIDevice.currentDevice.identifierForVendor.UUIDString forKey:@"rdid"];
             [self fetchAppIdWithCompletion:^(NSNumber * _Nullable appId) {
                 if (appId) {
                     self->_appId = appId;
