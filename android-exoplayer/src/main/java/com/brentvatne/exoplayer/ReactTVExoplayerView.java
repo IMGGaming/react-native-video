@@ -54,6 +54,7 @@ import com.diceplatform.doris.ext.ima.ExoDorisImaWrapper;
 import com.diceplatform.doris.ext.ima.ExoDorisImaWrapperListener;
 import com.diceplatform.doris.ext.ima.entity.AdInfo;
 import com.diceplatform.doris.ext.ima.entity.AdTagParameters;
+import com.diceplatform.doris.ext.ima.entity.AdTagParametersBuilder;
 import com.diceplatform.doris.ext.ima.entity.ImaLanguage;
 import com.diceplatform.doris.ext.ima.entity.ImaSource;
 import com.diceplatform.doris.ext.ima.entity.ImaSourceBuilder;
@@ -541,31 +542,33 @@ class ReactTVExoplayerView extends FrameLayout implements LifecycleEventListener
     private void loadImaStream() {
         isImaStreamLoaded = true;
 
-        adTagParameters = AdTagParametersHelper.createAdTagParameters(getContext(),
-                imaSrc.getAdTagParametersMap());
-        adTagParameters.setCustParams(adTagParameters.getCustParams() + "&pw=" + viewWidth + "&ph="
-                + viewHeight);
+//        adTagParameters = AdTagParametersHelper.createAdTagParameters(getContext(),
+//                imaSrc.getAdTagParametersMap());
+//        adTagParameters.setCustParams(adTagParameters.getCustParams() + "&pw=" + viewWidth + "&ph="
+//                + viewHeight);
 
-        if (isAmazonFireTv) {
-            AmazonFireTVAdRequest amazonFireTVAdRequest = createApsBidRequest();
-            if (amazonFireTVAdRequest != null) {
-                amazonFireTVAdRequest.executeRequest();
-                return;
-            }
-        }
+        adTagParameters = new AdTagParametersBuilder().setIu("/6881/prendetv/vod/firetv/browse").build();
+
+//        if (isAmazonFireTv) {
+//            AmazonFireTVAdRequest amazonFireTVAdRequest = createApsBidRequest();
+//            if (amazonFireTVAdRequest != null) {
+//                amazonFireTVAdRequest.executeRequest();
+//                return;
+//            }
+//        }
 
         playImaStream();
     }
 
     private void playImaStream() {
         ImaSource imaSource = new ImaSourceBuilder(source)
-                .setAssetKey(imaSrc.getAssetKey())
-                .setContentSourceId(imaSrc.getContentSourceId())
-                .setVideoId(imaSrc.getVideoId())
-                .setAuthToken(imaSrc.getAuthToken())
+//                .setAssetKey(imaSrc.getAssetKey())
+                .setContentSourceId("2555791")
+                .setVideoId("ES_3127935")
+                .setAuthToken("cmsid=2555791~exp=1616156293~vid=ES_3127935~hmac=1a85174fe0303fd957db6341ccb9fb7caf26c1fe2dee9ec7c1e0abf62d4c8609")
                 .setAdTagParameters(adTagParameters)
-                .setAdTagParametersValidFrom((long) imaSrc.getStartDate())
-                .setAdTagParametersValidUntil((long) imaSrc.getEndDate())
+//                .setAdTagParametersValidFrom((long) imaSrc.getStartDate())
+//                .setAdTagParametersValidUntil((long) imaSrc.getEndDate())
                 .build();
 
         exoDorisImaPlayer.enableControls(true);
@@ -1243,7 +1246,7 @@ class ReactTVExoplayerView extends FrameLayout implements LifecycleEventListener
                 this.isImaStream = true;
                 this.imaSrc = new RNImaSource(ima);
             } else {
-                this.isImaStream = false;
+                this.isImaStream = true;
             }
 
             this.src = new RNSource(
