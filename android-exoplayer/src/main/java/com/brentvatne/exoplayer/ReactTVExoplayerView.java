@@ -418,26 +418,26 @@ class ReactTVExoplayerView extends FrameLayout implements LifecycleEventListener
     public void onHostResume() {
         if (isInBackground && player != null) {
             Log.d(TAG, "onHostResume() isPaused: " + isPaused + " live: " + isLive);
-            isInBackground = false; // reset to false first
-            if (isLive) {
-                // always seek to live edge when returning from background to a live event
-                canSeekToLiveEdge = true;
-                player.seekToDefaultPosition();
-            }
-            setPlayWhenReady(true);
-            fromBackground = true;
+//            isInBackground = false; // reset to false first
+//            if (isLive) {
+//                // always seek to live edge when returning from background to a live event
+//                canSeekToLiveEdge = true;
+//                player.seekToDefaultPosition();
+//            }
+//            setPlayWhenReady(true);
+//            fromBackground = true;
         }
     }
 
     @Override
     public void onHostPause() {
         Log.d(TAG, "onHostPause()");
-        setPlayInBackground(false);
-        setPlayWhenReady(false);
-        player.pause();
-        updateResumePosition();
-        onStopPlayback();
-        isInBackground = isInteractive();
+//        setPlayInBackground(false);
+//        setPlayWhenReady(false);
+//        player.pause();
+//        updateResumePosition();
+//        onStopPlayback();
+//        isInBackground = isInteractive();
     }
 
     @Override
