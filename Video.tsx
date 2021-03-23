@@ -46,6 +46,14 @@ export default class Video extends React.PureComponent<IVideoPlayer, IState> {
     this.setNativeProps({ paused: true });
   }
 
+  mute = () => {
+    this.setNativeProps({ muted: true });
+  }
+
+  unmute = () => {
+    this.setNativeProps({ muted: false });
+  }
+
   seek = (time, tolerance = 100) => {
     if (Platform.OS === 'ios') {
       this.setNativeProps({
