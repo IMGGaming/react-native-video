@@ -73,6 +73,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.google.ads.interactivemedia.v3.api.AdError;
 import com.google.ads.interactivemedia.v3.api.AdErrorEvent;
 import com.google.ads.interactivemedia.v3.api.AdEvent;
+import com.google.android.exoplayer2.audio.AudioAttributes;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ControlDispatcher;
 import com.google.android.exoplayer2.DefaultControlDispatcher;
@@ -416,8 +417,8 @@ class ReactTVExoplayerView extends FrameLayout implements LifecycleEventListener
 
     @Override
     public void onHostResume() {
+        Log.d("Marcel", "onHostResume() - isInBackground: " + isInBackground);
         if (isInBackground && player != null) {
-            Log.d(TAG, "onHostResume() isPaused: " + isPaused + " live: " + isLive);
             isInBackground = false; // reset to false first
             if (isLive) {
                 // always seek to live edge when returning from background to a live event
@@ -427,15 +428,16 @@ class ReactTVExoplayerView extends FrameLayout implements LifecycleEventListener
             activateMediaSession();
             setPlayWhenReady(true);
             fromBackground = true;
+            player.play();
         }
     }
 
     @Override
     public void onHostPause() {
-        Log.d(TAG, "onHostPause()");
+        Log.d("Marcel", "onHostPause() - isInteractive: " + isInteractive());
         setPlayInBackground(false);
         setPlayWhenReady(false);
-        player.pause();
+//        player.pause();
         updateResumePosition();
         onStopPlayback();
         isInBackground = isInteractive();
@@ -486,6 +488,12 @@ class ReactTVExoplayerView extends FrameLayout implements LifecycleEventListener
                 trackSelector = player.getTrackSelector();
             }
 
+            AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                    .setUsage(C.USAGE_MEDIA)
+                    .setContentType(C.CONTENT_TYPE_MOVIE)
+                    .build();
+
+            player.setAudioAttributes(audioAttributes, false);
             player.addListener(this);
             player.addMetadataOutput(this);
             exoDorisPlayerView.setPlayer(player);
@@ -771,17 +779,27 @@ class ReactTVExoplayerView extends FrameLayout implements LifecycleEventListener
     }
 
     private void setPlayWhenReady(boolean playWhenReady) {
+        Log.d("Marcel", "setPlayWhenReady() - playWhenReady: " + playWhenReady);
+        Log.d("Marcel", "setPlayWhenReady() - isInBackground: " + isInBackground);
+        Log.d("Marcel", "setPlayWhenReady() - isInteractive: " + isInteractive());
         if (player == null || isInBackground || !isInteractive()) {
             return;
         }
 
         if (playWhenReady) {
             boolean hasAudioFocus = requestAudioFocus();
+            Log.d("Marcel", "setPlayWhenReady() - hasAudioFocus: " + hasAudioFocus);
             if (hasAudioFocus) {
-                player.play();
+                Log.d("Marcel", "PLAY");
+                if (!player.getPlayWhenReady()) {
+                    player.play();
+                }
             }
         } else {
-            player.pause();
+            Log.d("Marcel", "PAUSE");
+            if (player.getPlayWhenReady()) {
+                player.pause();
+            }
         }
 
         updateControlsState();
@@ -889,13 +907,30 @@ class ReactTVExoplayerView extends FrameLayout implements LifecycleEventListener
     }
 
     @Override
-    public void onLoadingChanged(boolean isLoading) {
-
+    public void onPlayWhenReadyChanged(boolean playWhenReady, int reason) {
+        switch (reason) {
+            case Player.PLAY_WHEN_READY_CHANGE_REASON_USER_REQUEST:
+                Log.d("Marcel1", "onPlayWhenReadyChanged - Reason: User Request; PlayWhenReady: " + playWhenReady);
+                break;
+            case Player.PLAY_WHEN_READY_CHANGE_REASON_AUDIO_FOCUS_LOSS:
+                Log.d("Marcel1", "onPlayWhenReadyChanged - Reason: Audio Focus Loss; PlayWhenReady: " + playWhenReady);
+                break;
+            case Player.PLAY_WHEN_READY_CHANGE_REASON_AUDIO_BECOMING_NOISY:
+                Log.d("Marcel1", "onPlayWhenReadyChanged - Reason: Audio Becoming Noisy; PlayWhenReady: " + playWhenReady);
+                break;
+            case Player.PLAY_WHEN_READY_CHANGE_REASON_REMOTE:
+                Log.d("Marcel1", "onPlayWhenReadyChanged - Reason: Remote; PlayWhenReady: " + playWhenReady);
+                break;
+            case Player.PLAY_WHEN_READY_CHANGE_REASON_END_OF_MEDIA_ITEM:
+                Log.d("Marcel1", "onPlayWhenReadyChanged - Reason: End of Media Item; PlayWhenReady: " + playWhenReady);
+                break;
+        }
     }
 
     @Override
     public void onPlaybackStateChanged(int state) {
         String text = "onStateChanged: playbackState = " + state;
+//        Log.d("Marcel1", "onStateChanged: playbackState = " + state);
         switch (state) {
             case Player.STATE_IDLE:
                 text += "idle";
