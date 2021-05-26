@@ -11,12 +11,14 @@ Pod::Spec.new do |s|
   s.author         = package['author']
   s.homepage       = 'https://github.com/brentvatne/react-native-video'
   s.source       = { :git => "https://github.com/brentvatne/react-native-video.git", :tag => "#{s.version}" }
-  s.swift_version = "4.2"
+  s.swift_version = "5.0"
 
-  s.ios.deployment_target = "8.0"
-  s.tvos.deployment_target = "9.0"
+  s.ios.deployment_target = "11.2"
+  s.tvos.deployment_target = "11.2"
 
   s.static_framework = true
+
+  s.source_files = "ios/Video/*", "ios/JSProps/*"
   
   s.dependency 'dice-shield-ios'
   s.dependency 'ReactVideoSubtitleSideloader_tvOS'
