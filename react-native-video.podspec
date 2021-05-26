@@ -17,8 +17,6 @@ Pod::Spec.new do |s|
   s.tvos.deployment_target = "9.0"
 
   s.static_framework = true
-
-  s.source_files = "ios/Beacon/HTTP/*.{h,m}", "ios/Video/*.{h,m}", "ios/Beacon/*.{h,m}"
   
   s.dependency 'dice-shield-ios'
   s.dependency 'ReactVideoSubtitleSideloader_tvOS'

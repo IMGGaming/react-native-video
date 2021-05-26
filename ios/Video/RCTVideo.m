@@ -5,9 +5,6 @@
 #import <React/UIView+React.h>
 #include <MediaAccessibility/MediaAccessibility.h>
 #include <AVFoundation/AVFoundation.h>
-#include "DiceUtils.h"
-#include "DiceBeaconRequest.h"
-#include "DiceHTTPRequester.h"
 
 #import <AppTrackingTransparency/AppTrackingTransparency.h>
 #import <AdSupport/AdSupport.h>
@@ -33,7 +30,6 @@ static NSString *const playerVersion = @"react-native-video/3.3.1";
     dispatch_queue_t delegateQueue;
 
     ActionToken * _actionToken;
-    DiceBeaconRequest * _diceBeaconRequst;
     BOOL _diceBeaconRequestOngoing;
 }
 
@@ -319,10 +315,6 @@ static NSString *const playerVersion = @"react-native-video/3.3.1";
         
     [self setupMuxDataFromSource:source];
     
-    if (isNetwork) {
-        [self setupBeaconFromSource:source];
-    }
-    
     id drmObject = [source objectForKey:@"drm"];
     if (drmObject) {
         ActionToken* ac = nil;
@@ -431,11 +423,9 @@ static NSString *const playerVersion = @"react-native-video/3.3.1";
     if (isPlaying) {
         self.onPlaybackRateChange(@{@"playbackRate": [NSNumber numberWithFloat:1.0],
                                     @"target": self.reactTag});
-        [self startDiceBeaconCallsAfter:0];
     } else {
         self.onPlaybackRateChange(@{@"playbackRate": [NSNumber numberWithFloat:0.0],
                                     @"target": self.reactTag});
-        [_diceBeaconRequst cancel];
     }
 }
 
@@ -487,137 +477,6 @@ static NSString *const playerVersion = @"react-native-video/3.3.1";
     }
 }
 
-
-#pragma mark - Lifecycle
-- (void)dealloc {
-    [_diceBeaconRequst cancel];
-    _diceBeaconRequst = nil;
-}
-
-
-
-
-
-
-
-
-
-
-#pragma mark - DICE Beacon
-
-- (void)startDiceBeaconCallsAfter:(long)seconds {
-    [self startDiceBeaconCallsAfter:seconds ongoing:NO];
-}
-
-- (void)startDiceBeaconCallsAfter:(long)seconds ongoing:(BOOL)ongoing {
-    if (_diceBeaconRequst == nil) {
-        return;
-    }
-    if (_diceBeaconRequestOngoing && !ongoing) {
-        DICELog(@"startDiceBeaconCallsAfter ONGOING request. INGNORING.");
-        return;
-    }
-    _diceBeaconRequestOngoing = YES;
-    DICELog(@"startDiceBeaconCallsAfter %ld", seconds);
-    __weak RCTVideo *weakSelf = self;
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(seconds * NSEC_PER_SEC)), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        // in case there is ongoing request
-        [_diceBeaconRequst cancel];
-        [_diceBeaconRequst makeRequestWithCompletionHandler:^(DiceBeaconResponse *response, NSError *error) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [weakSelf handleBeaconResponse:response error:error];
-            });
-        }];
-    });
-}
-
--(void)handleBeaconResponse:(DiceBeaconResponse *)response error:(NSError *)error {
-    DICELog(@"handleBeaconResponse error=%@", error);
-    if (self.player.timeControlStatus == AVPlayerTimeControlStatusPaused) {
-        // video is not playing back, so no point
-        DICELog(@"handleBeaconResponse player is paused. STOP beacons.");
-        _diceBeaconRequestOngoing = NO;
-        return;
-    }
-    
-    if (error != nil) {
-        DICELog(@"handleBeaconResponse error on call. STOP beacons.");
-        // raise an error and stop playback
-        NSNumber *code = [[NSNumber alloc] initWithInt:-1];
-        self.onVideoError(@{@"error": @{@"code": code,
-                                        @"domain": @"DiceBeacon",
-                                        @"messages": @[@"Failed to make beacon request", error.localizedDescription]
-        },
-                            @"rawError": RCTJSErrorFromNSError(error),
-                            @"target": self.reactTag});
-        _diceBeaconRequestOngoing = NO;
-        return;
-    }
-    
-    if (response == nil || !response.OK) {
-        // raise an error and stop playback
-        NSNumber *code = [[NSNumber alloc] initWithInt:-2];
-        NSString *rawResponse = @"";
-        NSArray<NSString *> *errorMessages = @[];
-        if (response != nil) {
-            if (response.rawResponse != nil && response.rawResponse.length > 0) {
-                rawResponse = [NSString stringWithUTF8String:[response.rawResponse bytes]];
-            }
-            if (rawResponse == nil) {
-                rawResponse = @"";
-            }
-            if (response.errorMessages != nil) {
-                errorMessages = response.errorMessages;
-            }
-        }
-        self.onVideoError(@{@"error": @{@"code": code,
-                                        @"domain": @"DiceBeacon",
-                                        @"messages": errorMessages
-        },
-                            @"rawResponse": rawResponse,
-                            @"target": self.reactTag});
-        [self setPaused:YES];
-        _diceBeaconRequestOngoing = NO;
-        return;
-    }
-    [self startDiceBeaconCallsAfter:response.frequency ongoing:YES];
-}
-
-- (void)setupBeaconFromSource:(NSDictionary *)source {
-    id configObject = [source objectForKey:@"config"];
-    id beaconObject = nil;
-    if (configObject != nil && [configObject isKindOfClass:NSDictionary.class]) {
-        beaconObject = [((NSDictionary *)configObject) objectForKey:@"beacon"];
-    }
-    
-    if (beaconObject != nil) {
-        if ([beaconObject isKindOfClass:NSString.class]) {
-            NSString * beaconString = beaconObject;
-            NSError *error = nil;
-            beaconObject = [NSJSONSerialization JSONObjectWithData:[beaconString dataUsingEncoding:kCFStringEncodingUTF8]  options:0 error:&error];
-            if (error != nil) {
-                DICELog(@"Failed to create JSON object from provided beacon: %@", beaconString);
-            }
-        }
-        if ([beaconObject isKindOfClass:NSDictionary.class]) {
-            NSDictionary *beacon = beaconObject;
-            NSString* url = [beacon objectForKey:@"url"];
-            NSDictionary<NSString *, NSString *> *headers = [beacon objectForKey:@"headers"];
-            NSDictionary* body = [beacon objectForKey:@"body"];
-            _diceBeaconRequst = [DiceBeaconRequest requestWithURLString:url headers:headers body:body];
-            [self startDiceBeaconCallsAfter:0];
-        } else {
-            DICELog(@"Failed to read dictionary object provided beacon: %@", beaconObject);
-        }
-    }
-}
-
-
-
-
-
-
-
 #pragma mark - Mux Data
 - (NSString * _Nullable)stringFromDict:(NSDictionary *)dict forKey:(id _Nonnull)key {
     id obj = [dict objectForKey:key];
@@ -640,7 +499,7 @@ static NSString *const playerVersion = @"react-native-video/3.3.1";
             NSError *error = nil;
             muxData = [NSJSONSerialization JSONObjectWithData:[muxDataString dataUsingEncoding:kCFStringEncodingUTF8]  options:0 error:&error];
             if (error != nil) {
-                DICELog(@"Failed to create JSON object from provided playbackData: %@", muxDataString);
+//                DICELog(@"Failed to create JSON object from provided playbackData: %@", muxDataString);
             }
         }
         
@@ -651,7 +510,7 @@ static NSString *const playerVersion = @"react-native-video/3.3.1";
             NSString * _Nullable playerName = [self stringFromDict:muxDict forKey:@"playerName"];
 
             if (envKey == nil) {
-                DICELog(@"envKey is not present. Mux will not be available.");
+//                DICELog(@"envKey is not present. Mux will not be available.");
                 return;
             }
             
@@ -686,7 +545,7 @@ static NSString *const playerVersion = @"react-native-video/3.3.1";
                         
             [self.dorisUI.input configureMuxWithPlayerData:playerData videoData:videoData];
         } else {
-            DICELog(@"Failed to read dictionary object provided playbackData: %@", muxData);
+//            DICELog(@"Failed to read dictionary object provided playbackData: %@", muxData);
         }
     }
 }
