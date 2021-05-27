@@ -1,5 +1,5 @@
 //
-//  PlayerView.swift
+//  RNPlayerView.swift
 //  RNDReactNativeDiceVideo
 //
 //  Created by Yaroslav Lvov on 05.03.2021.
@@ -9,6 +9,8 @@ import AVDoris
 import AVKit
 
 class PlayerView: UIView {
+    private var controller: PlayerViewController
+    
     //Events
     @objc var onBackButton: RCTBubblingEventBlock?
     @objc var onFavouriteButton: RCTBubblingEventBlock?
@@ -36,21 +38,20 @@ class PlayerView: UIView {
     @objc var onRelatedVideosIconClicked: RCTBubblingEventBlock?
     @objc var onStatsIconClick: RCTBubblingEventBlock?
     @objc var onEpgIconClick: RCTBubblingEventBlock?
-    @objc var playNextSource: NSDictionary?
-    @objc var playlist: NSDictionary?
     
     //Props
-    @objc var src: NSDictionary? { didSet { _source = try? Source(dict: src) } }
-    @objc var partialVideoInformation: NSDictionary? { didSet { _partialVideoInformation = try? PartialVideoInformation(dict: partialVideoInformation) } }
-    @objc var translations: NSDictionary? { didSet { _translations = try? Translations(dict: translations) } }
-    @objc var buttons: NSDictionary? { didSet { _buttons = try? Buttons(dict: buttons) } }
-    @objc var theme: NSDictionary? { didSet { _theme = try? Theme(dict: theme) } }
+    @objc var src: NSDictionary? { didSet { controller.source = try? Source(dict: src) } }
+    @objc var partialVideoInformation: NSDictionary? { didSet { controller.partialVideoInformation = try? PartialVideoInformation(dict: partialVideoInformation) } }
+    @objc var translations: NSDictionary? { didSet { controller.translations = translations } }
+    @objc var buttons: NSDictionary? { didSet { controller.buttons = try? Buttons(dict: buttons) } }
+    @objc var theme: NSDictionary? { didSet { controller.theme = try? Theme(dict: theme) } }
     @objc var selectedTextTrack: NSDictionary?
     @objc var selectedAudioTrack: NSDictionary?
     @objc var seek: NSDictionary?
-    @objc var relatedVideos: NSDictionary?
-    @objc var metadata: NSDictionary?
-    
+    @objc var relatedVideos: NSDictionary? { didSet { controller.relatedVideos = try? RelatedVideos(dict: relatedVideos) } }
+    @objc var metadata: NSDictionary?  { didSet { controller.metadata = DorisUIMetadataConfiguration.create(from: metadata ?? [:]) } }
+    @objc var playNextSource: NSDictionary?
+    @objc var playlist: NSDictionary?
     @objc var annotations: NSArray?
     @objc var playNextSourceTimeoutMillis: NSNumber?
     @objc var resizeMode: NSString?
@@ -61,7 +62,7 @@ class PlayerView: UIView {
     @objc var currentTime: NSNumber?
     @objc var progressUpdateInterval: NSNumber?
 
-    @objc var isFavourite: Bool = false { didSet { dorisUI?.input?.setIsFavourite(isFavourite) } }
+    @objc var isFavourite: Bool = false { didSet { controller.isFavourite = isFavourite } }
     @objc var isFullScreen: Bool = false
     @objc var allowAirplay: Bool = false
     @objc var isAnnotationsOn: Bool = false
@@ -72,103 +73,24 @@ class PlayerView: UIView {
     @objc var allowsExternalPlayback: Bool = false
     @objc var paused: Bool = false
     @objc var muted: Bool = false
-    @objc var controls: Bool = false
+    @objc var controls: Bool = false { didSet { controller.controls = controls } }
     @objc var playInBackground: Bool = true
     @objc var playWhenInactive: Bool = true
     @objc var fullscreen: Bool = false
     @objc var `repeat`: Bool = false
     
-    //Mapped
-    var _source: Source?
-    var _partialVideoInformation: PartialVideoInformation?
-    var _translations: Translations?
-    var _buttons: Buttons?
-    var _theme: Theme?
-        
-    private var dorisUI: DorisUIModule?
-    private var shouldRequestTrackingAuthorization = false
+    init(controller: PlayerViewController) {
+        self.controller = controller
+        super.init(frame: .zero)                
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func didMoveToWindow() {
         super.didMoveToWindow()
-        setup()
-        loadSource()
-    }
-    
-    private func setup() {
-        guard let theme = _theme,
-              let translationsDict = translations else { return }
-        
-        let player = AVPlayer()
-        let dorisTranslations = DorisUITranslations.create(from: translationsDict)
-        let dorisStyle = DorisUIStyle(colors: .init(primary: theme.colors.primary, secondary: theme.colors.secondary),
-                                      fonts: .init(primary: theme.fonts.primary, secondary: theme.fonts.secondary))
-        
-        let dorisUI = DorisUIModuleFactory.createCustomUI(player: player,
-                                                          style: dorisStyle,
-                                                          translations: dorisTranslations,
-                                                          output: self)
-        
-        addSubview(dorisUI.view)
-        dorisUI.fillSuperView()
-
-        self.dorisUI = dorisUI
-    }
-    
-    private func loadSource() {
-        guard let dorisUI = dorisUI else { return }
-        guard let source = _source else { return }
-
-        configureUI()
-        
-        if let ima = source.ima {
-            AdTagParametersModifier.prepareAdTagParameters(adTagParameters: ima.adTagParameters,
-                                                           info: AdTagParametersModifierInfo(viewWidth: bounds.width,
-                                                                                             viewHeight: bounds.height)) { newAdTagParameters in
-                let dorisIMASource = DAISource(assetKey: ima.assetKey,
-                                               contentSourceId: ima.contentSourceId,
-                                               videoId: ima.videoId,
-                                               authToken: ima.authToken,
-                                               adTagParameters: newAdTagParameters,
-                                               adTagParametersValidFrom: ima.startDate,
-                                               adTagParametersValidUntil: ima.endDate)
-                
-                dorisUI.input?.load(imaSource: dorisIMASource, startPlayingAt: nil)
-            }
-        } else {
-            let playerItemSource = PlayerItemSource(playerItem: AVPlayerItem(url: source.uri))
-            dorisUI.input?.load(playerItemSource: playerItemSource, startPlayingAt: nil)
-        }
-    }
-    
-    func configureUI() {
-        guard let dorisUI = dorisUI else { return }
-        guard let source = _source else { return }
-        guard let buttons = _buttons else { return }
-        
-        let dorisButtonsConfig = DorisUIButtonsConfiguration(watchlist: buttons.watchlist ?? false,
-                                                             favourite: buttons.favourite,
-                                                             epg: buttons.epg ?? false,
-                                                             stats: buttons.stats)
-        
-        let dorisUIConfig = DorisUIMetadataConfiguration(title: source.title,
-                                                         infoDescription: nil,
-                                                         type: source.type,
-                                                         thumbnailUrl: "",
-                                                         channelLogoUrl: nil)
-        
-        dorisUI.input?.setUIButtonsConfiguration(dorisButtonsConfig)
-        dorisUI.input?.setUIMetadataConfiguration(dorisUIConfig)
-        dorisUI.input?.setIsFavourite(isFavourite)
+        controller.didMoveToWindow()
     }
 }
-
-
-extension PlayerView: DorisUIModuleOutputProtocol {
-    func didTapBackButton() {
-        onBackButton?(nil)
-    }
     
-    func didTapFavouriteButton() {
-        onFavouriteButton?(nil)
-    }
-}

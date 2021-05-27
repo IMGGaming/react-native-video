@@ -13,11 +13,13 @@ struct Theme: SuperCodable {
 }
 
 extension Theme {
+    //MARK: Differs
     struct Fonts: SuperCodable {
         let secondary: String
         let primary: String
     }
     
+    //MARK: Differs
     struct Colors: SuperCodable {
         let secondary: String
         let primary: String

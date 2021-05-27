@@ -38,6 +38,8 @@ extension Source {
     struct Drm: SuperCodable {
         let contentUrl: URL
         let drmScheme: String
+        let croToken: String
+        let licensingServerUrl: String
         let id: String
     }
     

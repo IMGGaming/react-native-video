@@ -12,7 +12,10 @@ import AVKit
 @objc(RNVideoManager)
 class RNVideoManager: RCTViewManager {
     override func view() -> UIView! {
-        return PlayerView()
+        let controller = PlayerViewController()
+        let view = PlayerView(controller: controller)
+        controller.view = view
+        return view
     }
     
     @objc public func seekToNow(_ node: NSNumber) {
@@ -64,7 +67,6 @@ class RNVideoManager: RCTViewManager {
         }
     }
     
-    // this is required since RN 0.49+
     override static func requiresMainQueueSetup() -> Bool {
         return true
     }

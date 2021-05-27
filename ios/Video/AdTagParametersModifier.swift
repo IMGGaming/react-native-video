@@ -14,7 +14,7 @@ struct AdTagParametersModifierInfo {
 }
 
 class AdTagParametersModifier {
-    static func prepareAdTagParameters(adTagParameters: [String : Any]?, info: AdTagParametersModifierInfo, completion: @escaping ([String : Any]?) -> Void) {
+    func prepareAdTagParameters(adTagParameters: [String : Any]?, info: AdTagParametersModifierInfo, completion: @escaping ([String : Any]?) -> Void) {
         var newAdTagParameters = adTagParameters
         
         AppIdFetcher.shared.fetchAppId { appID in
