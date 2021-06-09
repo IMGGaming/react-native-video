@@ -20,8 +20,6 @@ Pod::Spec.new do |s|
 
   s.source_files = "ios/Video/*", "ios/JSProps/*", "ios/Helpers/*", "ios/DorisTypesMappers/*"
   
-  s.dependency 'dice-shield-ios'
-  s.dependency 'ReactVideoSubtitleSideloader_tvOS'
   s.dependency 'React'
   s.dependency 'AVDoris'
 end
