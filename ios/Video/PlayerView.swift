@@ -6,7 +6,6 @@
 //
 
 import AVDoris
-import AVKit
 
 class PlayerView: UIView {
     private var controller: PlayerViewController
@@ -40,16 +39,21 @@ class PlayerView: UIView {
     @objc var onEpgIconClick: RCTBubblingEventBlock?
     
     //Props
+    //MARK: Differs (source)
     @objc var src: NSDictionary? { didSet { controller.source = try? Source(dict: src) } }
     @objc var partialVideoInformation: NSDictionary? { didSet { controller.partialVideoInformation = try? PartialVideoInformation(dict: partialVideoInformation) } }
     @objc var translations: NSDictionary? { didSet { controller.translations = translations } }
     @objc var buttons: NSDictionary? { didSet { controller.buttons = try? Buttons(dict: buttons) } }
     @objc var theme: NSDictionary? { didSet { controller.theme = try? Theme(dict: theme) } }
+    @objc var relatedVideos: NSDictionary? { didSet { controller.relatedVideos = try? RelatedVideos(dict: relatedVideos) } }
+    @objc var metadata: NSDictionary?  { didSet { controller.metadata = DorisUIMetadataConfiguration.create(from: metadata ?? [:]) } }
+    @objc var isFavourite: Bool = false { didSet { controller.isFavourite = isFavourite } }
+    @objc var controls: Bool = false { didSet { controller.controls = controls } }
+
+    //FIXME: review unused variables
     @objc var selectedTextTrack: NSDictionary?
     @objc var selectedAudioTrack: NSDictionary?
     @objc var seek: NSDictionary?
-    @objc var relatedVideos: NSDictionary? { didSet { controller.relatedVideos = try? RelatedVideos(dict: relatedVideos) } }
-    @objc var metadata: NSDictionary?  { didSet { controller.metadata = DorisUIMetadataConfiguration.create(from: metadata ?? [:]) } }
     @objc var playNextSource: NSDictionary?
     @objc var playlist: NSDictionary?
     @objc var annotations: NSArray?
@@ -62,7 +66,6 @@ class PlayerView: UIView {
     @objc var currentTime: NSNumber?
     @objc var progressUpdateInterval: NSNumber?
 
-    @objc var isFavourite: Bool = false { didSet { controller.isFavourite = isFavourite } }
     @objc var isFullScreen: Bool = false
     @objc var allowAirplay: Bool = false
     @objc var isAnnotationsOn: Bool = false
@@ -73,7 +76,6 @@ class PlayerView: UIView {
     @objc var allowsExternalPlayback: Bool = false
     @objc var paused: Bool = false
     @objc var muted: Bool = false
-    @objc var controls: Bool = false { didSet { controller.controls = controls } }
     @objc var playInBackground: Bool = true
     @objc var playWhenInactive: Bool = true
     @objc var fullscreen: Bool = false
@@ -88,9 +90,24 @@ class PlayerView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    func seekToNow() {
+        //TODO
+    }
+    
+    func seekToTimestamp(isoDate: String) {
+        //TODO
+    }
+    
+    func seekToPosition(position: Double) {
+        controller.startAt = position
+    }
+    
+    func replaceAdTagParameters(payload: NSDictionary) {
+        controller.replaceAdTagParameters(parameters: AdTagParameters(payload: payload))
+    }
+    
     override func didMoveToWindow() {
         super.didMoveToWindow()
         controller.didMoveToWindow()
     }
 }
-    

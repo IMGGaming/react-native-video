@@ -9,13 +9,17 @@ import Foundation
 
 //MARK: Differs
 struct Buttons: SuperCodable {
-    let watchlist: Bool?//tvOS
-    let epg: Bool?//tvOS
+    //tvOS only
+    let watchlist: Bool?
+    let epg: Bool?
+    //both
     let fullscreen: Bool?
-    let stats: Bool//tvOS/ios
-    let favourite: Bool//tvOS/ios
+    let stats: Bool
+    let favourite: Bool
+    let info: Bool?
+    //ios only
     let zoom: Bool?//ios
     let back: Bool?//ios
     let settings: Bool?//ios
-    let info: Bool?//tvos/ios
+    
 }

@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
 
   s.static_framework = true
 
-  s.source_files = "ios/Video/*", "ios/JSProps/*"
+  s.source_files = "ios/Video/*", "ios/JSProps/*", "ios/Helpers/*", "ios/DorisTypesMappers/*"
   
   s.dependency 'dice-shield-ios'
   s.dependency 'ReactVideoSubtitleSideloader_tvOS'

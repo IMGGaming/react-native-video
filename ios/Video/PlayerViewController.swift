@@ -20,12 +20,27 @@ class PlayerViewController {
     var buttons: Buttons?
     var theme: Theme?
     var relatedVideos: RelatedVideos?
-    var metadata: DorisUIMetadataConfiguration?    
+    var metadata: DorisUIMetadataConfiguration?
+    var startAt: Double?
     
+    private var dorisUI: DorisUIModule?
     private let sourceMapper: AVDorisSourceMapper = AVDorisSourceMapper()
     private let muxDataMapper: AVDorisMuxDataMapper = AVDorisMuxDataMapper()
-    private var dorisUI: DorisUIModule?
     private var currentPlayingItemDuration: Double?
+    private var adTagParametersModifier = AdTagParametersModifier()
+    
+    func replaceAdTagParameters(parameters: AdTagParameters) {
+        let extraInfo = AdTagParametersModifierInfo(viewWidth: view?.bounds.width ?? 0.0,
+                                                    viewHeight: view?.bounds.height ?? 0.0)
+        
+        adTagParametersModifier.prepareAdTagParameters(adTagParameters: parameters.adTagParameters,
+                                                       info: extraInfo) { [weak self] newAdTagParameters in
+            guard let newAdTagParameters = newAdTagParameters else { return }
+            self?.dorisUI?.input?.replaceAdTagParameters(adTagParameters: newAdTagParameters,
+                                                         validFrom: parameters.startDate,
+                                                         validUntil: parameters.endDate)
+        }
+    }
     
     func didMoveToWindow() {
         setup()
@@ -63,7 +78,6 @@ class PlayerViewController {
     
     private func configureUI() {
         guard let dorisUI = dorisUI else { return }
-        guard let source = source else { return }
         guard let buttons = buttons else { return }
         
         let dorisButtonsConfig = DorisUIButtonsConfiguration(watchlist: buttons.watchlist ?? false,
@@ -71,14 +85,10 @@ class PlayerViewController {
                                                              epg: buttons.epg ?? false,
                                                              stats: buttons.stats)
         
-        let dorisUIConfig = DorisUIMetadataConfiguration(title: source.title,
-                                                         infoDescription: nil,
-                                                         type: source.type,
-                                                         thumbnailUrl: "",
-                                                         channelLogoUrl: nil)
-        
         dorisUI.input?.setUIButtonsConfiguration(dorisButtonsConfig)
-        dorisUI.input?.setUIMetadataConfiguration(dorisUIConfig)
+        if let metadata = metadata {
+            dorisUI.input?.setUIMetadataConfiguration(metadata)
+        }
         dorisUI.input?.setIsFavourite(isFavourite)
         controls ? dorisUI.input?.enableUI() : dorisUI.input?.disableUI()
     }
@@ -94,8 +104,8 @@ class PlayerViewController {
             guard let self = self else { return }
             
             switch avDorisSource {
-            case .ima(let source): self.dorisUI?.input?.load(imaSource: source, startPlayingAt: nil)
-            case .regular(let source): self.dorisUI?.input?.load(playerItemSource: source, startPlayingAt: nil)
+            case .ima(let source): self.dorisUI?.input?.load(imaSource: source, startPlayingAt: self.startAt as NSNumber?)
+            case .regular(let source): self.dorisUI?.input?.load(playerItemSource: source, startPlayingAt: self.startAt as NSNumber?)
             case .unknown:
                 return
             }

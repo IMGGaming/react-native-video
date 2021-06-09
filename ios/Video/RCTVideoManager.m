@@ -1,7 +1,7 @@
 #import <React/RCTViewManager.h>
 #import <AVFoundation/AVFoundation.h>
 
-@interface RCT_EXTERN_MODULE(RNVideoManager, RCTViewManager)
+@interface RCT_EXTERN_MODULE(RCTVideoManager, RCTViewManager)
 
 RCT_EXPORT_VIEW_PROPERTY(src, NSDictionary);
 RCT_EXPORT_VIEW_PROPERTY(resizeMode, NSString);

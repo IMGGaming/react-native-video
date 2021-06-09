@@ -163,25 +163,25 @@ export default class Video extends React.PureComponent<IVideoPlayer, IState> {
     }
   };
 
-  getNativeResizeMode = () => {
-    const { resizeMode } = this.props;
-    let nativeResizeMode;
-    if (resizeMode === 'stretch') {
-      nativeResizeMode = NativeModules.UIManager.RCTVideo.Constants.ScaleToFill;
-    } else if (resizeMode === 'contain') {
-      nativeResizeMode = NativeModules.UIManager.RCTVideo.Constants.ScaleAspectFit;
-    } else if (resizeMode === 'cover') {
-      nativeResizeMode = NativeModules.UIManager.RCTVideo.Constants.ScaleAspectFill;
-    } else {
-      nativeResizeMode = NativeModules.UIManager.RCTVideo.Constants.ScaleNone;
-    }
-    return nativeResizeMode;
-  };
+  // getNativeResizeMode = () => {
+  //   const { resizeMode } = this.props;
+  //   let nativeResizeMode;
+  //   if (resizeMode === 'stretch') {
+  //     nativeResizeMode = NativeModules.UIManager.RCTVideo.Constants.ScaleToFill;
+  //   } else if (resizeMode === 'contain') {
+  //     nativeResizeMode = NativeModules.UIManager.RCTVideo.Constants.ScaleAspectFit;
+  //   } else if (resizeMode === 'cover') {
+  //     nativeResizeMode = NativeModules.UIManager.RCTVideo.Constants.ScaleAspectFill;
+  //   } else {
+  //     nativeResizeMode = NativeModules.UIManager.RCTVideo.Constants.ScaleNone;
+  //   }
+  //   return nativeResizeMode;
+  // };
 
   getVideoPlayerProps = () => {
     return {
       ...this.props,
-      resizeMode: this.getNativeResizeMode(),
+      // resizeMode: this.getNativeResizeMode(),
       onVideoLoadStart: this.onLoadStart,
       onVideoLoad: this.onLoad,
       onVideoError: this.onError,
@@ -224,7 +224,7 @@ export default class Video extends React.PureComponent<IVideoPlayer, IState> {
         {...this.getVideoPlayerProps()}
         ref={this.refPlayer}
         style={[styles.base, this.props.style]}
-        resizeMode={this.getNativeResizeMode()}
+        // resizeMode={this.getNativeResizeMode()}
         src={{
           isNetwork,
           isAsset,
