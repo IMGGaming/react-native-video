@@ -42,11 +42,11 @@ class PlayerView: UIView {
     //MARK: Differs (source)
     @objc var src: NSDictionary? { didSet { controller.source = try? Source(dict: src) } }
     @objc var partialVideoInformation: NSDictionary? { didSet { controller.partialVideoInformation = try? PartialVideoInformation(dict: partialVideoInformation) } }
-    @objc var translations: NSDictionary? { didSet { controller.translations = translations } }
+    @objc var translations: NSDictionary? { didSet { controller.translations = try? Translations(dict: translations) } }
     @objc var buttons: NSDictionary? { didSet { controller.buttons = try? Buttons(dict: buttons) } }
     @objc var theme: NSDictionary? { didSet { controller.theme = try? Theme(dict: theme) } }
     @objc var relatedVideos: NSDictionary? { didSet { controller.relatedVideos = try? RelatedVideos(dict: relatedVideos) } }
-    @objc var metadata: NSDictionary?  { didSet { controller.metadata = DorisUIMetadataConfiguration.create(from: metadata ?? [:]) } }
+    @objc var metadata: NSDictionary?  { didSet { controller.metadata = try? Metadata(dict: metadata) } }
     @objc var isFavourite: Bool = false { didSet { controller.isFavourite = isFavourite } }
     @objc var controls: Bool = false { didSet { controller.controls = controls } }
 
@@ -108,6 +108,6 @@ class PlayerView: UIView {
     
     override func didMoveToWindow() {
         super.didMoveToWindow()
-        controller.didMoveToWindow()
+        controller.viewDidMoveToWindow()
     }
 }

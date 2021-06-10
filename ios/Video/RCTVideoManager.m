@@ -15,7 +15,7 @@ RCT_EXPORT_VIEW_PROPERTY(muted, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(controls, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(volume, float);
 RCT_EXPORT_VIEW_PROPERTY(playInBackground, BOOL);
-RCT_EXPORT_VgIEW_PROPERTY(playWhenInactive, BOOL);
+RCT_EXPORT_VIEW_PROPERTY(playWhenInactive, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(ignoreSilentSwitch, NSString);
 RCT_EXPORT_VIEW_PROPERTY(rate, float);
 RCT_EXPORT_VIEW_PROPERTY(seek, NSDictionary);
@@ -61,106 +61,3 @@ RCT_EXTERN_METHOD(seekToPosition:(nonnull NSNumber *)node position:(double)posit
 RCT_EXTERN_METHOD(replaceAdTagParameters:(nonnull NSNumber *)node payload:(NSDictionary)payload)
 
 @end
-//RCT_EXPORT_METHOD(seekToTimestamp:(nonnull NSNumber *)node isoDate:(NSString *)isoDate) {
-//    [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *,UIView *> *viewRegistry) {
-//        if ([viewRegistry[node] isKindOfClass:[RCTVideo class]]) {
-//            RCTVideo *view = (RCTVideo *)viewRegistry[node];
-//            NSDateFormatter* dateFormatter = [NSDateFormatter new];
-//            dateFormatter.locale = [NSLocale currentLocale];
-//            dateFormatter.dateFormat = @"yyyy-MM-dd'T'HH:mm:ssZ";
-//
-//            if (view.player.currentItem && view.player.currentItem.seekableTimeRanges.lastObject) {
-//                NSTimeInterval timeIntervalFromLive = [[dateFormatter dateFromString:isoDate] timeIntervalSinceDate:[NSDate new]];
-//                CMTimeRange seekableRange = [view.player.currentItem.seekableTimeRanges.lastObject CMTimeRangeValue];
-//                CGFloat seekableStart = CMTimeGetSeconds(seekableRange.start);
-//                CGFloat seekableDuration = CMTimeGetSeconds(seekableRange.duration);
-//                CGFloat livePosition = seekableStart + seekableDuration;
-//
-//                [view.dorisUI.input seekTo:livePosition - timeIntervalFromLive];
-//            }
-//        }
-//    }];
-//}
-//
-//RCT_EXPORT_METHOD(seekToNow:(nonnull NSNumber *)node) {
-//    [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *,UIView *> *viewRegistry) {
-//        if ([viewRegistry[node] isKindOfClass:[RCTVideo class]]) {
-//            RCTVideo *view = (RCTVideo *)viewRegistry[node];
-//            if (view.player.currentItem && view.player.currentItem.seekableTimeRanges.lastObject) {
-//                CMTimeRange seekableRange = [view.player.currentItem.seekableTimeRanges.lastObject CMTimeRangeValue];
-//                CGFloat seekableStart = CMTimeGetSeconds(seekableRange.start);
-//                CGFloat seekableDuration = CMTimeGetSeconds(seekableRange.duration);
-//                CGFloat livePosition = seekableStart + seekableDuration;
-//
-//                [view.dorisUI.input seekTo:livePosition];
-//            }
-//        }
-//    }];
-//};
-//
-//RCT_EXPORT_METHOD(seekToPosition:(nonnull NSNumber *)node position:(double)position) {
-//    [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *,UIView *> *viewRegistry) {
-//        if ([viewRegistry[node] isKindOfClass:[RCTVideo class]]) {
-//            RCTVideo *view = (RCTVideo *)viewRegistry[node];
-//            NSDictionary *info = @{
-//                @"time": [NSNumber numberWithFloat:position],
-//                @"tolerance": [NSNumber numberWithInt:100]
-//            };
-//            [view setSeek:info];
-//        }
-//    }];
-//};
-//
-//RCT_EXPORT_METHOD(replaceAdTagParameters:(nonnull NSNumber *)node payload:(NSDictionary *)payload) {
-//    [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *,UIView *> *viewRegistry) {
-//        NSMutableDictionary* _adTagParameters = [NSMutableDictionary new];
-//        NSDate *_Nullable _startDate;
-//        NSDate *_Nullable _endDate;
-//
-//        id adTagParameters = [payload objectForKey:@"adTagParameters"];
-//        id startDate = [payload objectForKey:@"startDate"];
-//        id endDate = [payload objectForKey:@"endDate"];
-//
-//        if (adTagParameters &&
-//            [adTagParameters isKindOfClass:NSDictionary.class]) {
-//            _adTagParameters = adTagParameters;
-//        }
-//
-//        if (startDate &&
-//            [startDate isKindOfClass:NSNumber.class]) {
-//            _startDate = [[NSDate alloc] initWithTimeIntervalSince1970:[startDate doubleValue]];
-//        }
-//
-//        if (endDate &&
-//            [endDate isKindOfClass:NSNumber.class]) {
-//            _endDate = [[NSDate alloc] initWithTimeIntervalSince1970:[endDate doubleValue]];
-//        }
-//
-//        if ([viewRegistry[node] isKindOfClass:[RCTVideo class]]) {
-//            RCTVideo *view = (RCTVideo *)viewRegistry[node];
-//            [view prepareAdTagParameters:_adTagParameters withCallback:^(NSDictionary * _Nullable newAdTAgParameters) {
-//                [view.dorisUI.input replaceAdTagParametersWithAdTagParameters:newAdTAgParameters
-//                                                                    validFrom: _startDate
-//                                                                   validUntil:_endDate];
-//
-//            }];
-//        }
-//    }];
-//};
-//
-//- (NSDictionary *)constantsToExport
-//{
-//    return @{
-//        @"ScaleNone": AVLayerVideoGravityResizeAspect,
-//        @"ScaleToFill": AVLayerVideoGravityResize,
-//        @"ScaleAspectFit": AVLayerVideoGravityResizeAspect,
-//        @"ScaleAspectFill": AVLayerVideoGravityResizeAspectFill
-//    };
-//}
-//
-//+ (BOOL)requiresMainQueueSetup
-//{
-//    return YES;
-//}
-//
-//@end

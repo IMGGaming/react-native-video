@@ -9,26 +9,32 @@ import AVDoris
 import AVKit
 
 class PlayerViewController {
-    weak var view: PlayerView?
-    
-    var source: Source? { didSet { loadSource() } }
-    var controls: Bool = false { didSet { controls ? dorisUI?.input?.enableUI() : dorisUI?.input?.disableUI() } }
-    var isFavourite: Bool = false { didSet { dorisUI?.input?.setIsFavourite(isFavourite) } }
-    
-    var partialVideoInformation: PartialVideoInformation?
-    var translations: NSDictionary?
-    var buttons: Buttons?
-    var theme: Theme?
-    var relatedVideos: RelatedVideos?
-    var metadata: DorisUIMetadataConfiguration?
-    var startAt: Double?
-    
     private var dorisUI: DorisUIModule?
     private let sourceMapper: AVDorisSourceMapper = AVDorisSourceMapper()
     private let muxDataMapper: AVDorisMuxDataMapper = AVDorisMuxDataMapper()
-    private var currentPlayingItemDuration: Double?
+    private let translationsMapper: AVDorisTranslationsMapper = AVDorisTranslationsMapper()
+    private let metadataMapper: AVDorisMetadataMapper = AVDorisMetadataMapper()
     private var adTagParametersModifier = AdTagParametersModifier()
     
+    private var currentPlayingItemDuration: Double?
+    private var currentPlayerState: DorisPlayerState = .initialization
+    
+    weak var view: PlayerView?
+    
+    //initial props
+    var partialVideoInformation: PartialVideoInformation?
+    var translations: Translations?
+    var buttons: Buttons?
+    var theme: Theme?
+    var relatedVideos: RelatedVideos?
+    var metadata: Metadata?
+    var startAt: Double?
+    
+    //dynamic props
+    var source: Source? { didSet { loadSource() } }
+    var controls: Bool = false { didSet { controls ? dorisUI?.input?.enableUI() : dorisUI?.input?.disableUI() } }
+    var isFavourite: Bool = false { didSet { dorisUI?.input?.setIsFavourite(isFavourite) } }
+            
     func replaceAdTagParameters(parameters: AdTagParameters) {
         let extraInfo = AdTagParametersModifierInfo(viewWidth: view?.bounds.width ?? 0.0,
                                                     viewHeight: view?.bounds.height ?? 0.0)
@@ -42,17 +48,16 @@ class PlayerViewController {
         }
     }
     
-    func didMoveToWindow() {
+    func viewDidMoveToWindow() {
         setup()
         loadSource()
     }
     
     private func setup() {
-        guard let theme = theme,
-              let translationsDict = translations else { return }
+        guard let theme = theme else { return }
         
         let player = AVPlayer()
-        let dorisTranslations = DorisUITranslations.create(from: translationsDict)
+        let dorisTranslations = translationsMapper.map(translations: translations)
         let dorisStyle = DorisUIStyle(colors: .init(primary: theme.colors.primary,
                                                     secondary: theme.colors.secondary),
                                       fonts: .init(primary: theme.fonts.primary,
@@ -86,8 +91,8 @@ class PlayerViewController {
                                                              stats: buttons.stats)
         
         dorisUI.input?.setUIButtonsConfiguration(dorisButtonsConfig)
-        if let metadata = metadata {
-            dorisUI.input?.setUIMetadataConfiguration(metadata)
+        if let metadata = metadata, let dorisUIMetadata = metadataMapper.map(metadata: metadata) {
+            dorisUI.input?.setUIMetadataConfiguration(dorisUIMetadata)
         }
         dorisUI.input?.setIsFavourite(isFavourite)
         controls ? dorisUI.input?.enableUI() : dorisUI.input?.disableUI()
@@ -104,8 +109,12 @@ class PlayerViewController {
             guard let self = self else { return }
             
             switch avDorisSource {
-            case .ima(let source): self.dorisUI?.input?.load(imaSource: source, startPlayingAt: self.startAt as NSNumber?)
-            case .regular(let source): self.dorisUI?.input?.load(playerItemSource: source, startPlayingAt: self.startAt as NSNumber?)
+            case .ima(let source):
+                self.dorisUI?.input?.load(imaSource: source,
+                                          startPlayingAt: self.startAt as NSNumber?)
+            case .regular(let source):
+                self.dorisUI?.input?.load(playerItemSource: source,
+                                          startPlayingAt: self.startAt as NSNumber?)
             case .unknown:
                 return
             }
@@ -129,70 +138,81 @@ class PlayerViewController {
 
 
 extension PlayerViewController: DorisUIModuleOutputProtocol {
-    func didTapBackButton() {
-        view?.onBackButton?(nil)
+    func onPlayerEvent(_ event: DorisPlayerEvent) {
+        switch event {
+        
+        case .stateChanged(state: let state):
+            onPlayerStateChanged(state)
+        case .finishedPlaying(endTime: _):
+            view?.onVideoEnd?(nil)
+        case .currentTimeChanged(time: let time):
+            if time > 0 {
+                view?.onVideoProgress?(["currentTime": time])
+            }
+            
+            if let duration = currentPlayingItemDuration {
+                let isAboutToEnd = time >= duration - 10
+                view?.onVideoAboutToEnd?(["isAboutToEnd": isAboutToEnd]);
+            }
+        case .itemDurationChanged(duration: let duration):
+            currentPlayingItemDuration = duration
+        default: break
+        }
     }
     
-    func didTapFavouriteButton() {
-        view?.onFavouriteButton?(nil)
+    func onAdvertisementEvent(_ event: AdvertisementEvent) {
+        switch event {
+        case .REQUIRE_AD_TAG_PARAMETERS(let data):
+            view?.onRequireAdParameters?(["date": data.date.timeIntervalSince1970,
+                                          "isBlocking": data.isBlocking])
+        default: break
+        }
     }
     
-    func didRequestAdTagParameters(for timeInterval: TimeInterval, isBlocking: Bool) {
-        view?.onRequireAdParameters?(["date": timeInterval,
-                                "isBlocking": isBlocking])
+    func onViewEvent(_ event: DorisViewEvent) {
+        switch event {
+        case .favouritesButtonTap:
+            view?.onFavouriteButton?(nil)
+        case .statsButtonTap:
+            view?.onStatsIconClick?(nil)
+        case .scheduleButtonTap:
+            view?.onEpgIconClick?(nil)
+        case .relatedVideoSelected(id: let id, type: let type):
+            view?.onRelatedVideoClicked?(["id": id, "type": type.rawValue])
+        case .moreRelatedVideosTap:
+            view?.onRelatedVideosIconClicked?(nil)
+        case .backButtonTap:
+            view?.onBackButton?(nil)
+        default: break
+        }
     }
     
-    func didGetPlaybackError() {
+    func onError(_ error: Error) {
         view?.onVideoError?(nil)
     }
     
-    func didChangeCurrentPlaybackTime(currentTime: Double) {
-        if currentTime > 0 {
-            view?.onVideoProgress?(["currentTime": currentTime])
+    func onPlayerStateChanged(_ state: DorisPlayerState) {
+        if currentPlayerState == .buffering {
+            view?.onVideoBuffer?(["isBuffering": false])
         }
         
-        if let duration = currentPlayingItemDuration {
-            view?.onVideoAboutToEnd?(["isAboutToEnd": currentTime >= duration - 10 ? true : false]);
+        currentPlayerState = state
+        
+        switch state {
+        case .failed:
+            view?.onVideoError?(nil)
+        case .loaded:
+            view?.onVideoLoad?(nil)
+        case .loading,
+             .buffering,
+             .waitingForNetwork:
+            view?.onVideoBuffer?(["isBuffering": true])
+        case .paused,
+             .stopped:
+            view?.onPlaybackRateChange?(["playbackRate": 0.0])
+        case .playing:
+            view?.onPlaybackRateChange?(["playbackRate": 1.0])
+        default: break
         }
-    }
-    
-    func didFinishPlaying(endTime: Double) {
-        view?.onVideoEnd?(nil)
-    }
-    
-    func didLoadVideo() {
-        view?.onVideoLoad?(nil)
-    }
-    
-    func didResumePlayback(_ isPlaying: Bool) {
-        view?.onPlaybackRateChange?(["playbackRate": isPlaying ? 1.0 : 0.0])
-    }
-    
-    func didStartBuffering() {
-        view?.onVideoBuffer?(["isBuffering": true])
-    }
-    
-    func didFinishBuffering() {
-        view?.onVideoBuffer?(["isBuffering": false])
-    }
-    
-    func didChangeItemDuration(_ duration: Double) {
-        currentPlayingItemDuration = duration
-    }
-    
-    func didTapMoreRelatedVideosButton() {
-        view?.onRelatedVideosIconClicked?(nil)
-    }
-    
-    func didSelectRelatedVideo(identifier: NSNumber, type: String) {
-        view?.onRelatedVideoClicked?(["id": identifier, "type": type])
-    }
-    
-    func didTapStatsButton() {
-        view?.onStatsIconClick?(nil)
-    }
-    
-    func didTapScheduleButton() {
-        view?.onEpgIconClick?(nil)
     }
 }
